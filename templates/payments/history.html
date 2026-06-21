@@ -1,0 +1,648 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Payment History - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR PAYMENT HISTORY PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .payment-table-container {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .payment-table-container:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.1);
+    }
+    
+    /* Table row hover */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+        transition: background-color 0.3s ease;
+    }
+    
+    /* Status badge styling */
+    .status-success {
+        color: #00D09C;
+    }
+    
+    .status-pending {
+        color: #fbbf24;
+    }
+    
+    .status-failed {
+        color: #f87171;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .history-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .history-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .history-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 800px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .invoice-number {
+            font-size: 0.7rem;
+        }
+        
+        .transaction-id {
+            font-size: 0.7rem;
+        }
+        
+        .summary-box {
+            padding: 0.875rem;
+        }
+        
+        .empty-state {
+            padding: 2rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+        }
+        
+        .empty-state-title {
+            font-size: 1.25rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .history-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            min-width: 700px;
+        }
+        
+        th, td {
+            padding: 0.6rem;
+            font-size: 0.75rem;
+        }
+        
+        .invoice-number {
+            font-size: 0.65rem;
+        }
+        
+        .transaction-id {
+            font-size: 0.65rem;
+            max-width: 100px;
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .status-badge {
+            font-size: 0.7rem;
+        }
+        
+        .status-badge i {
+            font-size: 0.6rem;
+        }
+        
+        .summary-box {
+            padding: 0.75rem;
+        }
+        
+        .summary-text {
+            font-size: 0.8rem;
+        }
+        
+        .empty-state {
+            padding: 1.5rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .empty-state-title {
+            font-size: 1.125rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.8rem;
+        }
+        
+        .btn-primary {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+        
+        .back-link {
+            font-size: 0.85rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .history-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        table {
+            min-width: 620px;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .invoice-number {
+            font-size: 0.6rem;
+        }
+        
+        .transaction-id {
+            font-size: 0.6rem;
+            max-width: 80px;
+        }
+        
+        .status-badge {
+            font-size: 0.65rem;
+        }
+        
+        .pdf-link {
+            font-size: 0.65rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2rem;
+        }
+        
+        .empty-state-title {
+            font-size: 1rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.75rem;
+        }
+        
+        .btn-primary {
+            padding: 0.45rem 0.875rem;
+            font-size: 0.75rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        table {
+            min-width: 580px;
+        }
+        
+        th, td {
+            padding: 0.4rem;
+            font-size: 0.65rem;
+        }
+        
+        .invoice-number {
+            font-size: 0.55rem;
+        }
+        
+        .transaction-id {
+            font-size: 0.55rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .payment-table-container:active {
+            transform: scale(0.99);
+        }
+        
+        .payment-table-container:hover {
+            transform: none;
+        }
+        
+        .pdf-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .empty-state {
+            padding: 1rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .payment-table-container {
+            border: 2px solid #E94560;
+        }
+        
+        .pdf-link {
+            border: 1px solid #E94560;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .payment-table-container:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* PDF link styling */
+    .pdf-link {
+        transition: all 0.3s ease;
+    }
+    
+    .pdf-link:hover {
+        transform: translateX(3px);
+    }
+    
+    /* Empty state animation */
+    .empty-state-icon {
+        animation: bounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 history-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">
+            <i class="fas fa-history text-[#E94560] mr-2"></i>
+            Payment History
+        </h1>
+        <p class="text-text-gray page-subtitle">View all your past transactions</p>
+    </div>
+
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 overflow-hidden payment-table-container">
+        {% if payments %}
+        <div class="overflow-x-auto table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="text-left p-3 text-text-gray">Invoice #</th>
+                        <th class="text-left p-3 text-text-gray">Date</th>
+                        <th class="text-left p-3 text-text-gray">Plan</th>
+                        <th class="text-left p-3 text-text-gray">Amount</th>
+                        <th class="text-left p-3 text-text-gray">Status</th>
+                        <th class="text-left p-3 text-text-gray">Transaction ID</th>
+                        <th class="text-left p-3 text-text-gray">Invoice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr class="border-b border-[#E94560]/10 transition-colors">
+                        <td class="p-3 text-white font-mono text-sm invoice-number">
+                            <i class="fas fa-receipt text-text-gray mr-1"></i>
+                            {{ payment.invoice_number }}
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas fa-calendar-alt text-text-gray mr-1"></i>
+                            {{ payment.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="p-3 text-white">
+                            {% if payment.membership %}
+                                <i class="fas fa-crown text-[#E94560] mr-1"></i>
+                                {{ payment.membership.plan.name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="p-3 text-white font-semibold">
+                            <i class="fas fa-rupee-sign text-[#E94560] mr-1"></i>
+                            {{ payment.amount }}
+                        </td>
+                        <td class="p-3">
+                            {% if payment.status == 'success' %}
+                                <span class="status-success status-badge">
+                                    <i class="fas fa-check-circle mr-1"></i> Success
+                                </span>
+                            {% elif payment.status == 'pending' %}
+                                <span class="status-pending status-badge">
+                                    <i class="fas fa-clock mr-1"></i> Pending
+                                </span>
+                            {% else %}
+                                <span class="status-failed status-badge">
+                                    <i class="fas fa-times-circle mr-1"></i> Failed
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="p-3">
+                            <span class="text-text-gray font-mono text-xs transaction-id">
+                                {{ payment.transaction_id|default:"-"|truncatechars:12 }}
+                            </span>
+                        </td>
+                        <td class="p-3">
+                            <a href="{% url 'payments:download_invoice' payment.id %}" class="text-[#E94560] hover:underline text-sm font-semibold pdf-link">
+                                <i class="fas fa-file-pdf mr-1"></i>PDF
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Summary -->
+        <div class="bg-[#0F0F1A] p-4 border-t border-[#E94560]/20 summary-box">
+            <div class="flex justify-between items-center flex-wrap gap-2">
+                <span class="text-text-gray summary-text">
+                    <i class="fas fa-chart-line mr-1"></i>
+                    Total Payments:
+                </span>
+                <span class="text-white font-semibold summary-text">{{ payments|length }} transactions</span>
+            </div>
+            {% if total_amount %}
+            <div class="flex justify-between items-center flex-wrap gap-2 mt-2">
+                <span class="text-text-gray summary-text">
+                    <i class="fas fa-rupee-sign mr-1"></i>
+                    Total Spent:
+                </span>
+                <span class="text-[#E94560] font-bold summary-text">₹{{ total_amount }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% else %}
+        <div class="text-center py-12 empty-state">
+            <i class="fas fa-receipt text-5xl text-text-gray mb-4 empty-state-icon"></i>
+            <h3 class="text-xl font-bold text-white mb-2 empty-state-title">No Payment History</h3>
+            <p class="text-text-gray mb-6 empty-state-text">You haven't made any payments yet.</p>
+            <a href="{% url 'membership:plans' %}" class="inline-block bg-[#E94560] text-white px-6 py-2 rounded-lg hover:bg-opacity-80 transition-all btn-primary">
+                View Membership Plans
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Back to Dashboard -->
+    <div class="text-center mt-6">
+        <a href="{% url 'dashboard' %}" class="text-[#E94560] hover:underline back-link">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+    // Add animation to table on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const paymentTable = document.querySelector('.payment-table-container');
+    if (paymentTable) {
+        paymentTable.style.opacity = '0';
+        paymentTable.style.transform = 'translateY(20px)';
+        paymentTable.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(paymentTable);
+    }
+    
+    // Search functionality
+    function searchPayments() {
+        const input = document.getElementById('searchInput');
+        if (input) {
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update summary
+            const summarySpan = document.querySelector('.summary-box .text-white');
+            if (summarySpan) {
+                summarySpan.textContent = `${visibleCount} transaction${visibleCount === 1 ? '' : 's'}`;
+            }
+        }
+    }
+    
+    // Add search box if there are payments
+    const hasPayments = document.querySelectorAll('tbody tr').length > 0;
+    const summaryBox = document.querySelector('.summary-box');
+    
+    if (hasPayments && summaryBox) {
+        const searchDiv = document.createElement('div');
+        searchDiv.className = 'mt-3 pt-3 border-t border-[#E94560]/20';
+        searchDiv.innerHTML = `
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-gray text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Search by invoice, plan, or transaction ID..." 
+                       class="w-full pl-9 pr-3 py-1.5 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white text-sm focus:outline-none focus:border-[#E94560]"
+                       onkeyup="searchPayments()">
+            </div>
+        `;
+        summaryBox.appendChild(searchDiv);
+    }
+    
+    // Export to CSV functionality
+    function exportToCSV() {
+        const rows = document.querySelectorAll('tbody tr');
+        const csvData = [];
+        
+        // Add headers
+        const headers = ['Invoice #', 'Date', 'Plan', 'Amount', 'Status', 'Transaction ID'];
+        csvData.push(headers.join(','));
+        
+        // Add data
+        rows.forEach(row => {
+            if (row.style.display !== 'none') {
+                const cells = row.querySelectorAll('td');
+                const rowData = [];
+                for (let i = 0; i < cells.length - 1; i++) { // Exclude the last column (Invoice action)
+                    let text = cells[i].textContent.trim();
+                    // Remove icons
+                    text = text.replace(/[^\w\s\-.#]/g, '').trim();
+                    rowData.push(`"${text}"`);
+                }
+                csvData.push(rowData.join(','));
+            }
+        });
+        
+        // Download CSV
+        const blob = new Blob([csvData.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `payment_history_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification('Export started!', 'success');
+    }
+    
+    // Add export button if there are payments
+    if (hasPayments && summaryBox) {
+        const exportBtn = document.createElement('button');
+        exportBtn.innerHTML = '<i class="fas fa-download mr-1"></i> Export CSV';
+        exportBtn.className = 'mt-3 w-full bg-[#E94560] text-white px-3 py-1.5 rounded-lg text-sm hover:bg-opacity-80 transition-all';
+        exportBtn.onclick = exportToCSV;
+        summaryBox.appendChild(exportBtn);
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+</script>
+{% endblock %}

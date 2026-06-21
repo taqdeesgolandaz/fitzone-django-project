@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to FitZone</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0F0F1A;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1A1A2E;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #E94560, #c72a4a);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 32px;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 40px 30px;
+            color: #EEEEEE;
+        }
+        
+        .content h2 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .content p {
+            color: #A0A0A0;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .features {
+            background: #16213E;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #E94560;
+        }
+        
+        .features h3 {
+            color: #E94560;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features li {
+            color: #EEEEEE;
+            margin: 12px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 15px;
+        }
+        
+        .features li:before {
+            content: "✓";
+            color: #00D09C;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .welcome-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .welcome-icon span {
+            font-size: 36px;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #E94560;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .button:hover {
+            background: #c72a4a;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background: #16213E;
+            padding: 20px;
+            text-align: center;
+            color: #A0A0A0;
+            font-size: 12px;
+            border-top: 1px solid rgba(233, 69, 96, 0.1);
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .footer a {
+            color: #E94560;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .social-links {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .social-links a {
+            margin: 0 10px;
+            color: #A0A0A0;
+            font-size: 14px;
+        }
+        
+        .social-links a:hover {
+            color: #E94560;
+        }
+        
+        /* ============================================
+           MEDIA QUERIES FOR ALL DEVICES
+        ============================================ */
+        
+        /* Tablets (768px to 1023px) */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                max-width: 95%;
+                border-radius: 12px;
+            }
+            
+            .header {
+                padding: 30px 15px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .header p {
+                font-size: 14px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .content h2 {
+                font-size: 22px;
+            }
+            
+            .content p {
+                font-size: 15px;
+            }
+            
+            .features {
+                padding: 15px;
+            }
+            
+            .features h3 {
+                font-size: 16px;
+            }
+            
+            .features li {
+                font-size: 14px;
+                margin: 10px 0;
+            }
+            
+            .welcome-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .welcome-icon span {
+                font-size: 30px;
+            }
+            
+            .button {
+                padding: 10px 25px;
+                font-size: 14px;
+            }
+            
+            .footer {
+                padding: 15px;
+            }
+        }
+        
+        /* Mobile Landscape (480px to 767px) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header p {
+                font-size: 12px;
+            }
+            
+            .content {
+                padding: 25px 15px;
+            }
+        
+            .content h2 {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+            
+            .content p {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+            
+            .features {
+                padding: 12px;
+                margin: 15px 0;
+            }
+            
+            .features h3 {
+                font-size: 15px;
+                margin-bottom: 10px;
+            }
+            
+            .features li {
+                font-size: 13px;
+                margin: 8px 0;
+                padding-left: 22px;
+            }
+            
+            .features li:before {
+                font-size: 14px;
+            }
+            
+            .welcome-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .welcome-icon span {
+                font-size: 26px;
+            }
+            
+            .button {
+                display: block;
+                text-align: center;
+                padding: 12px 20px;
+                font-size: 14px;
+                margin: 15px 0;
+            }
+            
+            .footer {
+                padding: 12px;
+            }
+            
+            .footer p {
+                font-size: 10px;
+            }
+            
+            .social-links a {
+                font-size: 12px;
+                margin: 0 8px;
+            }
+        }
+        
+        /* Small Mobile Devices (320px to 479px) */
+        @media (max-width: 375px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .content h2 {
+                font-size: 18px;
+            }
+            
+            .content p {
+                font-size: 13px;
+            }
+            
+            .features li {
+                font-size: 12px;
+            }
+            
+            .welcome-icon {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .welcome-icon span {
+                font-size: 24px;
+            }
+            
+            .button {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+        }
+        
+        /* Very Small Devices (below 320px) */
+        @media (max-width: 320px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .content h2 {
+                font-size: 16px;
+            }
+            
+            .content p {
+                font-size: 12px;
+            }
+            
+            .features li {
+                font-size: 11px;
+            }
+            
+            .social-links a {
+                font-size: 10px;
+                margin: 0 5px;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            .button, .social-links {
+                display: none;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0F0F1A;
+            }
+        }
+        
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .features {
+                border: 2px solid #E94560;
+            }
+            
+            .button {
+                border: 1px solid white;
+            }
+        }
+        
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .button {
+                transition: none;
+            }
+            
+            .button:hover {
+                transform: none;
+            }
+        }
+        
+        /* Email client specific fixes */
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+            }
+            
+            .features {
+                width: 100% !important;
+            }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .button:active {
+                opacity: 0.8;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="welcome-icon">
+                <span>🏋️</span>
+            </div>
+            <h1>Welcome to FitZone! 🎉</h1>
+            <p>Your Fitness Journey Starts Today</p>
+        </div>
+        <div class="content">
+            <h2>Hello {{ username }},</h2>
+            <p>Thank you for joining FitZone! We're absolutely thrilled to have you on board. Your fitness journey is about to transform!</p>
+            
+            <div class="features">
+                <h3>✨ What You Get with FitZone:</h3>
+                <ul>
+                    <li>Personalized workout plans tailored to your goals</li>
+                    <li>Custom diet recommendations for your body type</li>
+                    <li>Access to certified expert trainers</li>
+                    <li>Advanced progress tracking and analytics</li>
+                    <li>24/7 community support</li>
+                    <li>Weekly fitness challenges and rewards</li>
+                </ul>
+            </div>
+            
+            <p style="text-align: center;">
+                <a href="http://127.0.0.1:8000{{ dashboard_url }}" class="button">Go to Dashboard →</a>
+            </p>
+            
+            <p style="font-size: 14px; color: #A0A0A0;">
+                💡 <strong>Pro Tip:</strong> Complete your profile with your height, weight, and fitness goals to get personalized recommendations!
+            </p>
+            
+            <p style="margin-top: 20px; font-style: italic;">
+                "The only bad workout is the one that didn't happen. Let's get started!"
+            </p>
+            
+            <p style="margin-top: 20px;">
+                Stay fit, stay healthy!<br>
+                <strong>The FitZone Team 💪</strong>
+            </p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{ year }} FitZone Fitness Platform. All rights reserved.</p>
+            <p>123 Fitness Street, Mumbai, India | support@fitzone.com</p>
+            <p>
+                <a href="http://127.0.0.1:8000/help/">Help Center</a> | 
+                <a href="http://127.0.0.1:8000/privacy/">Privacy Policy</a> | 
+                <a href="http://127.0.0.1:8000/terms/">Terms of Service</a>
+            </p>
+            <div class="social-links">
+                <a href="#">📘 Facebook</a>
+                <a href="#">📸 Instagram</a>
+                <a href="#">🐦 Twitter</a>
+                <a href="#">▶️ YouTube</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

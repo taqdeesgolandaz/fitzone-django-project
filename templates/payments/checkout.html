@@ -1,0 +1,618 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Checkout - FitZone{% endblock %}
+
+{% block extra_css %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR CHECKOUT PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Payment method chips */
+    .payment-chip {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .payment-chip:hover {
+        background-color: rgba(233, 69, 96, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .checkout-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .order-summary-card, .payment-details-card {
+            padding: 2rem;
+        }
+        
+        .price-amount {
+            font-size: 2rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .checkout-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .checkout-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .checkout-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+        
+        .order-summary-card, .payment-details-card {
+            padding: 1.25rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+        }
+        
+        .order-item {
+            font-size: 0.85rem;
+        }
+        
+        .price-amount {
+            font-size: 1.75rem;
+        }
+        
+        .payment-chips {
+            gap: 0.5rem;
+        }
+        
+        .payment-chip {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+        }
+        
+        .pay-button {
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .bank-info {
+            padding: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .bank-info p {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .checkout-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .checkout-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .order-summary-card, .payment-details-card {
+            padding: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+        
+        .order-item {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .price-amount {
+            font-size: 1.5rem;
+        }
+        
+        .payment-methods {
+            margin-bottom: 1rem;
+        }
+        
+        .payment-chips {
+            gap: 0.5rem;
+        }
+        
+        .payment-chip {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+        }
+        
+        .pay-button {
+            padding: 0.625rem;
+            font-size: 0.85rem;
+        }
+        
+        .bank-info {
+            padding: 0.75rem;
+            margin-bottom: 0.875rem;
+        }
+        
+        .bank-info p {
+            font-size: 0.7rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .secure-text {
+            font-size: 0.7rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .checkout-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .checkout-grid {
+            gap: 0.875rem;
+        }
+        
+        .order-summary-card, .payment-details-card {
+            padding: 0.875rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+        }
+        
+        .order-item {
+            font-size: 0.75rem;
+        }
+        
+        .price-amount {
+            font-size: 1.35rem;
+        }
+        
+        .payment-chips {
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        
+        .payment-chip {
+            font-size: 0.6rem;
+            padding: 0.15rem 0.5rem;
+        }
+        
+        .pay-button {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .pay-button i {
+            font-size: 0.7rem;
+        }
+        
+        .bank-info {
+            padding: 0.625rem;
+        }
+        
+        .bank-info p {
+            font-size: 0.65rem;
+        }
+        
+        .secure-text {
+            font-size: 0.65rem;
+        }
+        
+        .payment-icons {
+            gap: 0.5rem;
+        }
+        
+        .payment-icons i, .payment-icons span {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .price-amount {
+            font-size: 1.2rem;
+        }
+        
+        .payment-chip {
+            font-size: 0.55rem;
+        }
+        
+        .pay-button {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .pay-button:active {
+            transform: scale(0.98);
+        }
+        
+        .payment-chip:active {
+            transform: scale(0.96);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .checkout-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .order-summary-card, .payment-details-card {
+            padding: 0.875rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .order-summary-card, .payment-details-card {
+            border: 2px solid #E94560;
+        }
+        
+        .pay-button {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .pay-button:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Loading state for button */
+    .pay-button.loading {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    .pay-button.loading i {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 checkout-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">Complete Your Payment</h1>
+        <p class="text-text-gray page-subtitle">Secure payment powered by Razorpay</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 checkout-grid">
+        <!-- Plan Details -->
+        <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-6 order-summary-card card-hover">
+            <h3 class="text-xl font-bold text-white mb-4 section-title">Order Summary</h3>
+            
+            <div class="space-y-3 mb-6">
+                <div class="flex justify-between pb-2 border-b border-[#E94560]/20 order-item">
+                    <span class="text-text-gray">Plan:</span>
+                    <span class="text-white font-semibold">{{ plan.name }}</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-[#E94560]/20 order-item">
+                    <span class="text-text-gray">Duration:</span>
+                    <span class="text-white">{{ plan.duration|title }}</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-[#E94560]/20 order-item">
+                    <span class="text-text-gray">Valid for:</span>
+                    <span class="text-white">{{ plan.get_duration_days }} days</span>
+                </div>
+                <div class="flex justify-between pt-2 order-item">
+                    <span class="text-text-gray font-bold">Total Amount:</span>
+                    <span class="text-[#E94560] font-bold text-2xl price-amount">₹{{ plan.price }}</span>
+                </div>
+            </div>
+
+            <!-- Payment Methods Preview -->
+            <div class="bg-[#0F0F1A] rounded-lg p-4 mb-3">
+                <p class="text-text-gray text-xs text-center mb-2">We Accept:</p>
+                <div class="flex flex-wrap justify-center gap-3 payment-icons">
+                    <i class="fab fa-google-pay text-xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                    <i class="fas fa-mobile-alt text-xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                    <span class="text-text-gray text-sm hover:text-[#E94560] transition-colors cursor-pointer">PhonePe</span>
+                    <span class="text-text-gray text-sm hover:text-[#E94560] transition-colors cursor-pointer">Paytm</span>
+                    <i class="fab fa-cc-visa text-xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                    <i class="fab fa-cc-mastercard text-xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                    <i class="fab fa-cc-amex text-xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                </div>
+            </div>
+
+            <div class="bg-[#0F0F1A] rounded-lg p-3">
+                <p class="text-text-gray text-xs text-center secure-text">
+                    <i class="fas fa-lock mr-1"></i> 
+                    100% Secure Payment. Your information is encrypted.
+                </p>
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-6 payment-details-card card-hover">
+            <h3 class="text-xl font-bold text-white mb-4 section-title">Payment Details</h3>
+            
+            <!-- Bank Account Info -->
+            {% if bank_account %}
+            <div class="bg-[#0F0F1A] rounded-lg p-4 mb-6 bank-info">
+                <p class="text-text-gray text-sm mb-2">Payment will be credited to:</p>
+                <p class="text-white font-semibold text-sm">{{ bank_account.bank_name }}</p>
+                <p class="text-text-gray text-xs">Account: XXXXXX{{ bank_account.account_number|slice:"-4:" }}</p>
+                <p class="text-text-gray text-xs">IFSC: {{ bank_account.ifsc_code }}</p>
+                {% if bank_account.upi_id %}
+                <p class="text-text-gray text-xs">UPI: {{ bank_account.upi_id }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <form id="payment-form">
+                {% csrf_token %}
+                
+                <div class="mb-6 payment-methods">
+                    <p class="text-text-gray text-sm mb-3">Click below to pay with:</p>
+                    <div class="flex flex-wrap gap-2 mb-4 payment-chips">
+                        <span class="bg-[#0F0F1A] px-3 py-1 rounded-full text-xs text-text-gray payment-chip">Google Pay</span>
+                        <span class="bg-[#0F0F1A] px-3 py-1 rounded-full text-xs text-text-gray payment-chip">PhonePe</span>
+                        <span class="bg-[#0F0F1A] px-3 py-1 rounded-full text-xs text-text-gray payment-chip">Paytm</span>
+                        <span class="bg-[#0F0F1A] px-3 py-1 rounded-full text-xs text-text-gray payment-chip">Amazon Pay</span>
+                        <span class="bg-[#0F0F1A] px-3 py-1 rounded-full text-xs text-text-gray payment-chip">Credit/Debit Card</span>
+                        <span class="bg-[#0F0F1A] px-3 py-1 rounded-full text-xs text-text-gray payment-chip">Net Banking</span>
+                    </div>
+                </div>
+
+                <!-- Pay Button -->
+                <button type="button" id="pay-button" 
+                        class="w-full bg-[#E94560] text-white py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all transform hover:scale-[1.02] pay-button">
+                    <i class="fas fa-rupee-sign mr-2"></i>
+                    Pay ₹{{ plan.price }}
+                </button>
+            </form>
+
+            <p class="text-text-gray text-xs text-center mt-4 secure-text">
+                <i class="fas fa-shield-alt mr-1"></i>
+                Your payment is secure. We never store your card details.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add loading state to pay button
+    const payButton = document.getElementById('pay-button');
+    
+    payButton.onclick = function(e){
+        // Show loading state
+        const originalText = payButton.innerHTML;
+        payButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+        payButton.classList.add('loading');
+        payButton.disabled = true;
+        
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var options = {
+            "key": "{{ razorpay_key }}",
+            "amount": "{{ razorpay_order.amount }}",
+            "currency": "INR",
+            "name": "FitZone",
+            "description": "{{ plan.name }} Membership",
+            "image": "https://img.icons8.com/color/48/000000/dumbbell.png",
+            "order_id": "{{ razorpay_order.id }}",
+            "redirect": false,
+            "handler": function(response) {
+                console.log('Payment successful:', response);
+                fetch("{% url 'payments:payment_success' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new URLSearchParams({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        console.error('Payment verification failed:', data.error);
+                        alert('Payment verification failed. Please contact support.');
+                        payButton.innerHTML = originalText;
+                        payButton.classList.remove('loading');
+                        payButton.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Payment confirmation request failed:', error);
+                    alert('Payment confirmation failed. Please refresh and check your membership status.');
+                    payButton.innerHTML = originalText;
+                    payButton.classList.remove('loading');
+                    payButton.disabled = false;
+                });
+            },
+            "prefill": {
+                "name": "{{ user.full_name|default:user.username }}",
+                "email": "{{ user.email }}",
+                "contact": "{{ user.mobile_number|default:'' }}"
+            },
+            "theme": {
+                "color": "#E94560"
+            },
+            "modal": {
+                "ondismiss": function() {
+                    // Reset button on modal dismiss
+                    payButton.innerHTML = originalText;
+                    payButton.classList.remove('loading');
+                    payButton.disabled = false;
+                    window.location.href = "{% url 'membership:plans' %}";
+                }
+            }
+        };
+        
+        var rzp = new Razorpay(options);
+        
+        rzp.on('payment.failed', function(response){
+            console.error('Payment failed:', response);
+            alert('Payment failed. Please try again.');
+            payButton.innerHTML = originalText;
+            payButton.classList.remove('loading');
+            payButton.disabled = false;
+            window.location.href = "{% url 'payments:payment_failed' %}";
+        });
+        
+        rzp.open();
+    };
+    
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.order-summary-card, .payment-details-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Add hover effect for payment chips
+    document.querySelectorAll('.payment-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            // Optional: Set payment method preference
+            console.log('Selected payment method:', this.textContent);
+        });
+    });
+</script>
+{% endblock %}

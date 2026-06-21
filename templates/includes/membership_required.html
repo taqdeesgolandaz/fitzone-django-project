@@ -1,0 +1,397 @@
+<div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-12 text-center max-w-2xl mx-auto membership-required-card">
+    <div class="w-20 h-20 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-6 lock-icon">
+        <i class="fas fa-lock text-[#E94560] text-4xl"></i>
+    </div>
+    <h2 class="text-2xl font-bold text-white mb-4 membership-title">Membership Required</h2>
+    <p class="text-text-gray mb-6 membership-text">
+        You need an active membership to access this feature.
+        Choose a plan that best suits your fitness goals!
+    </p>
+    <div class="flex flex-wrap gap-4 justify-center action-buttons">
+        <a href="{% url 'membership:plans' %}" class="bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all btn-primary">
+            <i class="fas fa-crown mr-2"></i> View Membership Plans
+        </a>
+        <a href="{% url 'dashboard' %}" class="border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all btn-secondary">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR MEMBERSHIP REQUIRED COMPONENT
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .membership-required-card {
+        animation: fadeIn 0.5s ease-out;
+        transition: all 0.3s ease;
+    }
+    
+    .membership-required-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .membership-required-card {
+            max-width: 800px;
+            padding: 3rem;
+        }
+        
+        .lock-icon {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .lock-icon i {
+            font-size: 3rem;
+        }
+        
+        .membership-title {
+            font-size: 2rem;
+        }
+        
+        .membership-text {
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .membership-required-card {
+            max-width: 700px;
+            padding: 2.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .membership-required-card {
+            max-width: 90%;
+            padding: 2rem;
+            margin: 1rem auto;
+        }
+        
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .lock-icon i {
+            font-size: 2.5rem;
+        }
+        
+        .membership-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .membership-text {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .membership-required-card {
+            max-width: 95%;
+            padding: 1.75rem;
+            margin: 1rem auto;
+        }
+        
+        .lock-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 1.25rem;
+        }
+        
+        .lock-icon i {
+            font-size: 2rem;
+        }
+        
+        .membership-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .membership-text {
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+            padding: 0 0.5rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            text-align: center;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .membership-required-card {
+            max-width: 98%;
+            padding: 1.25rem;
+            margin: 0.5rem auto;
+        }
+        
+        .lock-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+        
+        .lock-icon i {
+            font-size: 1.75rem;
+        }
+        
+        .membership-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .membership-text {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn-primary i, .btn-secondary i {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .membership-required-card {
+            max-width: 98%;
+            padding: 1rem;
+        }
+        
+        .lock-icon {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .lock-icon i {
+            font-size: 1.5rem;
+        }
+        
+        .membership-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .membership-text {
+            font-size: 0.8rem;
+            margin-bottom: 0.875rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .membership-required-card {
+            padding: 0.875rem;
+        }
+        
+        .lock-icon {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .lock-icon i {
+            font-size: 1.35rem;
+        }
+        
+        .membership-title {
+            font-size: 1.1rem;
+        }
+        
+        .membership-text {
+            font-size: 0.75rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            font-size: 0.75rem;
+            padding: 0.45rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .membership-required-card:active {
+            transform: scale(0.98);
+        }
+        
+        .membership-required-card:hover {
+            transform: none;
+        }
+        
+        .btn-primary:active, .btn-secondary:active {
+            transform: scale(0.98);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .membership-required-card {
+            max-width: 90%;
+            padding: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: auto !important;
+            min-width: 150px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .membership-required-card {
+            border: 2px solid #E94560;
+        }
+        
+        .btn-primary, .btn-secondary {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .membership-required-card {
+            animation: none;
+        }
+        
+        .membership-required-card:hover {
+            transform: none;
+        }
+        
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Loading state for buttons (optional) */
+    .btn-primary.loading, .btn-secondary.loading {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    .btn-primary.loading i, .btn-secondary.loading i {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<script>
+    // Add animation on scroll
+    document.addEventListener('DOMContentLoaded', function() {
+        const card = document.querySelector('.membership-required-card');
+        if (card) {
+            // Add intersection observer for scroll animation
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        }
+        
+        // Add click handlers for buttons with loading state
+        const buttons = document.querySelectorAll('.btn-primary, .btn-secondary');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Optional: Add loading state on click
+                // Uncomment the lines below to enable loading state
+                /*
+                if (!this.classList.contains('loading')) {
+                    e.preventDefault();
+                    this.classList.add('loading');
+                    setTimeout(() => {
+                        window.location.href = this.href;
+                    }, 500);
+                }
+                */
+            });
+        });
+    });
+</script>

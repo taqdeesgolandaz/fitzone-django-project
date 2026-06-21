@@ -1,0 +1,639 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Help Center - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR HELP CENTER PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Topic card styling */
+    .topic-card {
+        transition: all 0.3s ease;
+    }
+    
+    .topic-card:hover .topic-icon {
+        transform: scale(1.1);
+    }
+    
+    .topic-icon {
+        transition: transform 0.3s ease;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .help-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .search-input {
+            padding: 1rem 1rem 1rem 3.5rem;
+            font-size: 1rem;
+        }
+        
+        .search-icon {
+            left: 1.25rem;
+            font-size: 1.1rem;
+        }
+        
+        .topic-card {
+            padding: 1.5rem;
+        }
+        
+        .topic-icon {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .topic-icon i {
+            font-size: 1.75rem;
+        }
+        
+        .topic-title {
+            font-size: 1.25rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .help-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .help-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.95rem;
+        }
+        
+        .search-container {
+            max-width: 90%;
+            margin-top: 1rem;
+        }
+        
+        .search-input {
+            padding: 0.75rem 0.75rem 0.75rem 3rem;
+            font-size: 0.9rem;
+        }
+        
+        .topics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1.25rem;
+        }
+        
+        .topic-card {
+            padding: 1rem;
+        }
+        
+        .topic-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .topic-icon i {
+            font-size: 1.5rem;
+        }
+        
+        .topic-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .topic-description {
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .article-link {
+            font-size: 0.75rem;
+        }
+        
+        .view-all-link {
+            font-size: 0.75rem;
+            margin-top: 0.75rem;
+        }
+        
+        .help-card {
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+        
+        .help-title {
+            font-size: 1.1rem;
+        }
+        
+        .help-text {
+            font-size: 0.85rem;
+        }
+        
+        .help-buttons {
+            gap: 1rem;
+        }
+        
+        .help-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .help-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .search-container {
+            max-width: 100%;
+            margin-top: 0.75rem;
+        }
+        
+        .search-input {
+            padding: 0.6rem 0.6rem 0.6rem 2.75rem;
+            font-size: 0.85rem;
+        }
+        
+        .search-icon {
+            left: 0.75rem;
+            font-size: 0.85rem;
+        }
+        
+        .topics-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .topic-card {
+            padding: 0.875rem;
+        }
+        
+        .topic-icon {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .topic-icon i {
+            font-size: 1.25rem;
+        }
+        
+        .topic-title {
+            font-size: 1rem;
+        }
+        
+        .topic-description {
+            font-size: 0.75rem;
+        }
+        
+        .article-link {
+            font-size: 0.7rem;
+        }
+        
+        .help-card {
+            padding: 1rem;
+            margin-top: 0.875rem;
+        }
+        
+        .help-title {
+            font-size: 1rem;
+        }
+        
+        .help-text {
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .help-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .help-btn {
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .mb-12 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .help-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .search-input {
+            padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .topic-card {
+            padding: 0.75rem;
+        }
+        
+        .topic-icon {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .topic-icon i {
+            font-size: 1.1rem;
+        }
+        
+        .topic-title {
+            font-size: 0.9rem;
+        }
+        
+        .topic-description {
+            font-size: 0.7rem;
+        }
+        
+        .article-link {
+            font-size: 0.65rem;
+        }
+        
+        .help-title {
+            font-size: 0.95rem;
+        }
+        
+        .help-text {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .topic-title {
+            font-size: 0.85rem;
+        }
+        
+        .topic-description {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .help-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .search-input {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .topics-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        
+        .help-buttons {
+            flex-direction: row !important;
+        }
+        
+        .help-btn {
+            width: auto !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .topic-card {
+            border: 2px solid #E94560;
+        }
+        
+        .search-input {
+            border: 1px solid #E94560;
+        }
+        
+        .help-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .topic-icon {
+            transition: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* No results message */
+    .no-results {
+        text-align: center;
+        padding: 2rem;
+        background-color: #1A1A2E;
+        border-radius: 1rem;
+        border: 1px solid #E94560/20;
+    }
+    
+    .no-results i {
+        font-size: 3rem;
+        color: #A0A0A0;
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 640px) {
+        .no-results i {
+            font-size: 2rem;
+        }
+        
+        .no-results p {
+            font-size: 0.85rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4 help-container fade-in">
+    <!-- Back Button -->
+    <div class="mb-6 back-link">
+        <a href="javascript:history.back()" class="inline-flex items-center text-text-gray hover:text-[#E94560] transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-white mb-4 page-title">Help <span class="text-[#E94560]">Center</span></h1>
+        <p class="text-text-gray text-lg page-subtitle">How can we help you today?</p>
+        
+        <!-- Search Bar -->
+        <div class="max-w-2xl mx-auto mt-6 search-container">
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-text-gray search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search for help articles..." 
+                       class="w-full pl-12 pr-4 py-3 bg-[#1A1A2E] border border-[#E94560]/30 rounded-xl text-white focus:outline-none focus:border-[#E94560] search-input">
+            </div>
+            <p class="text-text-gray text-xs mt-2 text-left">Search by keyword, topic, or question</p>
+        </div>
+    </div>
+
+    <!-- Topics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 topics-grid" id="topicsGrid">
+        {% for topic in topics %}
+        <div class="topic-card bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 card-hover" data-title="{{ topic.title }}" data-description="{{ topic.description }}">
+            <div class="w-14 h-14 bg-[#E94560]/20 rounded-full flex items-center justify-center mb-4 topic-icon">
+                <i class="{{ topic.icon }} text-[#E94560] text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2 topic-title">{{ topic.title }}</h3>
+            <p class="text-text-gray text-sm mb-4 topic-description">{{ topic.description }}</p>
+            <div class="space-y-2">
+                {% for article in topic.articles %}
+                <a href="#" class="block text-text-gray text-sm hover:text-[#E94560] transition-colors article-link">
+                    <i class="fas fa-chevron-right text-xs mr-2"></i> {{ article }}
+                </a>
+                {% endfor %}
+            </div>
+            <a href="#" class="inline-block mt-4 text-[#E94560] text-sm hover:underline view-all-link">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- No Results Message -->
+    <div id="noResultsMessage" class="hidden no-results">
+        <i class="fas fa-search"></i>
+        <p class="text-text-gray">No results found for your search.</p>
+        <p class="text-text-gray text-sm mt-1">Try different keywords or browse our topics above.</p>
+    </div>
+
+    <!-- Still Need Help -->
+    <div class="mt-12 text-center bg-gradient-to-r from-[#E94560]/20 to-[#16213E] rounded-2xl p-8 help-card">
+        <h3 class="text-xl font-bold text-white mb-2 help-title">Still Need Help?</h3>
+        <p class="text-text-gray mb-4 help-text">Our support team is ready to assist you</p>
+        <div class="flex flex-wrap gap-4 justify-center help-buttons">
+            <a href="{% url 'support:contact_support' %}" class="bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all help-btn">
+                <i class="fas fa-headset mr-2"></i> Contact Support
+            </a>
+            <a href="{% url 'report_problem' %}" class="border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all help-btn">
+                <i class="fas fa-exclamation-triangle mr-2"></i> Report a Problem
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const topicsGrid = document.getElementById('topicsGrid');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    let searchTimeout;
+    
+    function searchHelp() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.topic-card');
+        let hasResults = false;
+        
+        if (searchTerm === '') {
+            cards.forEach(card => {
+                card.style.display = 'block';
+            });
+            noResultsMessage.classList.add('hidden');
+            return;
+        }
+        
+        cards.forEach(card => {
+            const title = card.querySelector('.topic-title').textContent.toLowerCase();
+            const description = card.querySelector('.topic-description').textContent.toLowerCase();
+            const articles = Array.from(card.querySelectorAll('.article-link')).map(link => link.textContent.toLowerCase());
+            const articleMatches = articles.some(article => article.includes(searchTerm));
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm) || articleMatches) {
+                card.style.display = 'block';
+                hasResults = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        if (!hasResults) {
+            noResultsMessage.classList.remove('hidden');
+        } else {
+            noResultsMessage.classList.add('hidden');
+        }
+    }
+    
+    // Debounced search
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(searchHelp, 300);
+    });
+    
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.topic-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity 0.5s ease, transform 0.5s ease`;
+        card.style.transitionDelay = `${Math.min(index * 0.05, 0.5)}s`;
+        observer.observe(card);
+    });
+    
+    // Track search analytics (optional)
+    function trackSearch(searchTerm) {
+        if (searchTerm.length > 2) {
+            console.log('Search performed:', searchTerm);
+            // You can add analytics tracking here
+            // ga('send', 'event', 'Help Center', 'Search', searchTerm);
+        }
+    }
+    
+    // Add keyboard shortcut (Ctrl+K or Cmd+K to focus search)
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput.focus();
+        }
+    });
+    
+    // Show keyboard shortcut hint
+    const searchContainer = document.querySelector('.search-container');
+    if (searchContainer) {
+        const shortcutHint = document.createElement('div');
+        shortcutHint.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-text-gray text-xs hidden md:block';
+        const searchWrapper = document.querySelector('.relative');
+        if (searchWrapper) {
+            searchWrapper.appendChild(shortcutHint);
+        }
+    }
+    
+    // Track popular topics (optional)
+    document.querySelectorAll('.topic-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!e.target.closest('a')) {
+                const title = this.querySelector('.topic-title').textContent;
+                console.log('Topic clicked:', title);
+            }
+        });
+    });
+</script>
+{% endblock %}

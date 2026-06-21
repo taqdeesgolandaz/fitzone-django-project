@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0F0F1A; }
+        .container { max-width: 600px; margin: 0 auto; background: #1A1A2E; border-radius: 10px; overflow: hidden; }
+        .header { background: #00D09C; padding: 20px; text-align: center; }
+        .content { padding: 30px; color: #EEEEEE; }
+        .details { background: #16213E; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .button { display: inline-block; background: #E94560; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+        .footer { background: #16213E; padding: 15px; text-align: center; color: #A0A0A0; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="color: white;">Session Confirmed! 🎉</h1>
+        </div>
+        <div class="content">
+            <h2>Hello {{ username }},</h2>
+            <p>Your training session has been confirmed!</p>
+            <div class="details">
+                <p><strong>Trainer:</strong> {{ trainer_name }}</p>
+                <p><strong>Date:</strong> {{ session_date|date:"l, F d, Y" }}</p>
+                <p><strong>Time:</strong> {{ session_time|time:"g:i A" }}</p>
+                <p><strong>Type:</strong> {{ session_type }}</p>
+                {% if meeting_link %}
+                <p><strong>Meeting Link:</strong> <a href="{{ meeting_link }}" style="color: #E94560;">Join Session</a></p>
+                {% endif %}
+            </div>
+            <a href="http://127.0.0.1:8000{{ my_sessions_url }}" class="button">View My Sessions</a>
+        </div>
+        <div class="footer">
+            <p>&copy; {% now "Y" %} FitZone. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

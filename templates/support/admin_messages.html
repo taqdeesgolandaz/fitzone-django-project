@@ -1,0 +1,669 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Support Messages - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR SUPPORT MESSAGES PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.15);
+    }
+    
+    /* Table row hover */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+        transition: background-color 0.3s ease;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .messages-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .stats-grid {
+            gap: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .messages-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .messages-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .header {
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: flex-start !important;
+            margin-bottom: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            padding: 0.75rem;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+        }
+        
+        .filter-section {
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-buttons {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.7rem;
+        }
+        
+        .status-filter {
+            width: 100%;
+        }
+        
+        .status-filter select {
+            width: 100%;
+            padding: 0.4rem;
+            font-size: 0.8rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 700px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .email-cell {
+            font-size: 0.7rem;
+        }
+        
+        .subject-cell {
+            max-width: 150px;
+        }
+        
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+        }
+        
+        .empty-state {
+            padding: 1.5rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .messages-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .header {
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            padding: 0.625rem;
+        }
+        
+        .stat-label {
+            font-size: 0.65rem;
+        }
+        
+        .stat-value {
+            font-size: 1.35rem;
+        }
+        
+        .filter-section {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .filter-buttons {
+            justify-content: center;
+        }
+        
+        .filter-btn {
+            padding: 0.25rem 0.625rem;
+            font-size: 0.7rem;
+        }
+        
+        .status-filter select {
+            width: 100%;
+            padding: 0.4rem;
+            font-size: 0.75rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            min-width: 600px;
+        }
+        
+        th, td {
+            padding: 0.6rem;
+            font-size: 0.75rem;
+        }
+        
+        .email-cell {
+            font-size: 0.65rem;
+        }
+        
+        .subject-cell {
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .badge {
+            font-size: 0.6rem;
+            padding: 0.12rem 0.4rem;
+        }
+        
+        .badge i {
+            font-size: 0.55rem;
+        }
+        
+        .action-link {
+            font-size: 0.7rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.8rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .messages-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+        }
+        
+        .filter-btn {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+        }
+        
+        table {
+            min-width: 550px;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .subject-cell {
+            max-width: 100px;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .stat-value {
+            font-size: 1rem;
+        }
+        
+        table {
+            min-width: 500px;
+        }
+        
+        th, td {
+            font-size: 0.65rem;
+        }
+        
+        .subject-cell {
+            max-width: 80px;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+        
+        .filter-btn:active, .action-link:active, .back-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .stats-grid {
+            grid-template-columns: repeat(5, 1fr) !important;
+        }
+        
+        .filter-section {
+            flex-direction: row !important;
+        }
+        
+        .status-filter select {
+            width: auto !important;
+            min-width: 150px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .stat-card {
+            border: 2px solid #E94560;
+        }
+        
+        .filter-btn, .status-filter select {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .stat-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Status colors */
+    .status-pending { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .status-read { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .status-replied { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    .status-resolved { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    
+    /* Type colors */
+    .type-contact { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .type-support { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .type-report { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+    
+    /* Pending row highlight */
+    .pending-row {
+        background-color: rgba(233, 69, 96, 0.05);
+    }
+    
+    /* Truncate subject */
+    .truncate {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    @media (max-width: 768px) {
+        .truncate {
+            max-width: 120px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .truncate {
+            max-width: 80px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 messages-container fade-in">
+    <div class="flex justify-between items-center mb-6 header flex-wrap gap-3">
+        <h1 class="text-2xl font-bold text-white page-title">
+            <i class="fas fa-headset text-[#E94560] mr-2"></i>
+            Support Messages
+        </h1>
+        <a href="{% url 'admin_dashboard:dashboard' %}" class="text-[#E94560] hover:underline back-link">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 stats-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20 text-center stat-card">
+            <i class="fas fa-envelope text-[#E94560] text-xl mb-1"></i>
+            <p class="text-text-gray text-sm stat-label">Total</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.total }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20 text-center stat-card">
+            <i class="fas fa-clock text-yellow-400 text-xl mb-1"></i>
+            <p class="text-text-gray text-sm stat-label">Pending</p>
+            <p class="text-yellow-400 text-2xl font-bold stat-value">{{ stats.pending }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20 text-center stat-card">
+            <i class="fas fa-envelope-open-text text-blue-400 text-xl mb-1"></i>
+            <p class="text-text-gray text-sm stat-label">Contact</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.contact }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20 text-center stat-card">
+            <i class="fas fa-life-ring text-green-400 text-xl mb-1"></i>
+            <p class="text-text-gray text-sm stat-label">Support</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.support }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20 text-center stat-card">
+            <i class="fas fa-flag text-red-400 text-xl mb-1"></i>
+            <p class="text-text-gray text-sm stat-label">Reports</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.report }}</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-6 filter-section">
+        <div class="flex flex-wrap gap-3 filter-buttons">
+            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}type=" class="px-3 py-1 rounded-full text-sm filter-btn {% if not current_type %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+                <i class="fas fa-list mr-1"></i> All
+            </a>
+            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}type=contact" class="px-3 py-1 rounded-full text-sm filter-btn {% if current_type == 'contact' %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+                <i class="fas fa-envelope mr-1"></i> Contact
+            </a>
+            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}type=support" class="px-3 py-1 rounded-full text-sm filter-btn {% if current_type == 'support' %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+                <i class="fas fa-life-ring mr-1"></i> Support
+            </a>
+            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}type=report" class="px-3 py-1 rounded-full text-sm filter-btn {% if current_type == 'report' %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+                <i class="fas fa-flag mr-1"></i> Report
+            </a>
+        </div>
+        
+        <div class="status-filter">
+            <select onchange="updateStatusFilter(this.value)" class="px-3 py-1 bg-[#1A1A2E] border border-[#E94560]/30 rounded-lg text-white text-sm focus:outline-none focus:border-[#E94560]">
+                <option value="">📊 All Status</option>
+                <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>🕐 Pending</option>
+                <option value="read" {% if current_status == 'read' %}selected{% endif %}>👁️ Read</option>
+                <option value="replied" {% if current_status == 'replied' %}selected{% endif %}>💬 Replied</option>
+                <option value="resolved" {% if current_status == 'resolved' %}selected{% endif %}>✅ Resolved</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Messages Table -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden">
+        <div class="overflow-x-auto table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="text-left p-3 text-text-gray">ID</th>
+                        <th class="text-left p-3 text-text-gray">Name/Email</th>
+                        <th class="text-left p-3 text-text-gray">Type</th>
+                        <th class="text-left p-3 text-text-gray">Subject</th>
+                        <th class="text-left p-3 text-text-gray">Date</th>
+                        <th class="text-left p-3 text-text-gray">Status</th>
+                        <th class="text-left p-3 text-text-gray">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for msg in support_messages %}
+                    <tr class="border-b border-[#E94560]/10 transition-colors {% if msg.status == 'pending' %}pending-row{% endif %}">
+                        <td class="p-3 text-white font-mono">#{{ msg.id }}</td>
+                        <td class="p-3">
+                            <p class="text-white">{{ msg.name }}</p>
+                            <p class="text-text-gray text-xs email-cell">{{ msg.email }}</p>
+                        </td>
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded text-xs
+                                {% if msg.message_type == 'contact' %}type-contact
+                                {% elif msg.message_type == 'support' %}type-support
+                                {% else %}type-report{% endif %}">
+                                <i class="fas 
+                                    {% if msg.message_type == 'contact' %}fa-envelope
+                                    {% elif msg.message_type == 'support' %}fa-life-ring
+                                    {% else %}fa-flag{% endif %} mr-1"></i>
+                                {{ msg.get_message_type_display }}
+                            </span>
+                        </td>
+                        <td class="p-3 text-text-gray subject-cell">
+                            <span class="truncate" title="{{ msg.subject }}">{{ msg.subject }}</span>
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas fa-calendar-alt mr-1 text-xs"></i>
+                            {{ msg.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded text-xs
+                                {% if msg.status == 'pending' %}status-pending
+                                {% elif msg.status == 'read' %}status-read
+                                {% elif msg.status == 'replied' %}status-replied
+                                {% else %}status-resolved{% endif %}">
+                                <i class="fas 
+                                    {% if msg.status == 'pending' %}fa-clock
+                                    {% elif msg.status == 'read' %}fa-eye
+                                    {% elif msg.status == 'replied' %}fa-reply
+                                    {% else %}fa-check-circle{% endif %} mr-1"></i>
+                                {{ msg.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="p-3">
+                            <a href="{% url 'support:admin_message_detail' msg.id %}" class="text-[#E94560] hover:underline text-sm action-link">
+                                View <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-text-gray empty-state">
+                            <i class="fas fa-inbox text-4xl text-text-gray mb-3 empty-state-icon"></i>
+                            <p class="empty-state-text">No messages found.</p>
+                            <p class="text-text-gray text-sm mt-1">When users send messages, they will appear here.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if support_messages.has_other_pages %}
+    <div class="mt-6 flex justify-center gap-2">
+        {% if support_messages.has_previous %}
+        <a href="?page={{ support_messages.previous_page_number }}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}" 
+           class="bg-[#1A1A2E] border border-[#E94560]/20 text-white px-3 py-1 rounded-lg hover:border-[#E94560] transition-all">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        
+        <span class="bg-[#E94560] text-white px-3 py-1 rounded-lg">
+            {{ support_messages.number }}
+        </span>
+        
+        {% if support_messages.has_next %}
+        <a href="?page={{ support_messages.next_page_number }}{% if current_type %}&type={{ current_type }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}" 
+           class="bg-[#1A1A2E] border border-[#E94560]/20 text-white px-3 py-1 rounded-lg hover:border-[#E94560] transition-all">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Update status filter
+    function updateStatusFilter(status) {
+        const currentUrl = new URL(window.location.href);
+        if (status) {
+            currentUrl.searchParams.set('status', status);
+        } else {
+            currentUrl.searchParams.delete('status');
+        }
+        // Preserve type filter
+        const currentType = '{{ current_type }}';
+        if (currentType) {
+            currentUrl.searchParams.set('type', currentType);
+        }
+        window.location.href = currentUrl.toString();
+    }
+    
+    // Add animation to stat cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.stat-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity 0.5s ease, transform 0.5s ease`;
+        card.style.transitionDelay = `${Math.min(index * 0.05, 0.3)}s`;
+        observer.observe(card);
+    });
+    
+    // Auto-refresh pending count (optional)
+    function refreshPendingCount() {
+        fetch('/support/api/pending-count/')
+            .then(response => response.json())
+            .then(data => {
+                const pendingBadge = document.querySelector('.stat-card .text-yellow-400');
+                if (pendingBadge && data.pending !== undefined) {
+                    pendingBadge.textContent = data.pending;
+                }
+            })
+            .catch(error => console.error('Error fetching pending count:', error));
+    }
+    
+    // Refresh every 30 seconds
+    setInterval(refreshPendingCount, 30000);
+</script>
+{% endblock %}

@@ -1,0 +1,506 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Notifications - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR NOTIFICATIONS PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.15);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .notifications-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .notifications-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .notifications-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .notification-card {
+            padding: 0.875rem;
+        }
+        
+        .notification-icon {
+            font-size: 0.9rem;
+        }
+        
+        .notification-title {
+            font-size: 1rem;
+        }
+        
+        .notification-message {
+            font-size: 0.8rem;
+        }
+        
+        .notification-time {
+            font-size: 0.7rem;
+        }
+        
+        .action-buttons {
+            gap: 0.5rem;
+        }
+        
+        .action-buttons a {
+            font-size: 0.7rem;
+        }
+        
+        .empty-state {
+            padding: 1.5rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .notifications-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .header {
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .mark-all-btn {
+            font-size: 0.8rem;
+        }
+        
+        .notification-card {
+            padding: 0.75rem;
+        }
+        
+        .notification-content {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .notification-main {
+            width: 100%;
+        }
+        
+        .notification-header {
+            flex-wrap: wrap;
+        }
+        
+        .notification-icon {
+            font-size: 0.85rem;
+        }
+        
+        .notification-title {
+            font-size: 0.9rem;
+        }
+        
+        .new-badge {
+            font-size: 0.6rem;
+            padding: 0.15rem 0.5rem;
+        }
+        
+        .notification-message {
+            font-size: 0.75rem;
+        }
+        
+        .action-buttons {
+            justify-content: flex-start;
+            margin-top: 0.5rem;
+        }
+        
+        .action-buttons a {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .empty-state {
+            padding: 1.25rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.8rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .notifications-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .notification-card {
+            padding: 0.625rem;
+        }
+        
+        .notification-header {
+            gap: 0.5rem;
+        }
+        
+        .notification-title {
+            font-size: 0.85rem;
+        }
+        
+        .notification-message {
+            font-size: 0.7rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .action-buttons {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .action-buttons a {
+            font-size: 0.65rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .notification-title {
+            font-size: 0.8rem;
+        }
+        
+        .notification-message {
+            font-size: 0.65rem;
+        }
+        
+        .action-buttons a {
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .action-buttons a:active,
+        .mark-all-btn:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .notifications-container {
+            max-width: 90%;
+        }
+        
+        .notification-card {
+            padding: 0.5rem;
+        }
+        
+        .notification-content {
+            flex-direction: row !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .notification-card {
+            border: 2px solid #E94560;
+        }
+        
+        .mark-all-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Notification type colors */
+    .notification-payment {
+        color: #00D09C;
+    }
+    
+    .notification-membership {
+        color: #E94560;
+    }
+    
+    .notification-workout {
+        color: #f97316;
+    }
+    
+    .notification-trainer {
+        color: #a855f7;
+    }
+    
+    .notification-default {
+        color: #A0A0A0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 notifications-container fade-in">
+    <div class="flex justify-between items-center mb-6 header flex-wrap gap-3">
+        <h1 class="text-2xl font-bold text-white page-title">
+            <i class="fas fa-bell mr-2 text-[#E94560]"></i>
+            Notifications
+            {% if unread_count > 0 %}
+                <span class="bg-[#E94560] text-white text-sm px-2 py-1 rounded-full ml-2">{{ unread_count }} new</span>
+            {% endif %}
+        </h1>
+        {% if notifications %}
+        <a href="?mark_all_read=1" class="text-[#E94560] hover:underline text-sm mark-all-btn">
+            <i class="fas fa-check-double mr-1"></i> Mark all as read
+        </a>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+    <div class="space-y-3">
+        {% for notification in notifications %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-4 notification-card card-hover {% if not notification.is_read %}border-l-4 border-l-[#E94560]{% endif %}">
+            <div class="flex justify-between items-start notification-content flex-wrap gap-3">
+                <div class="flex-1 notification-main">
+                    <div class="flex items-center gap-2 mb-2 notification-header flex-wrap">
+                        <i class="fas 
+                            {% if notification.notification_type == 'payment' %}fa-credit-card notification-payment
+                            {% elif notification.notification_type == 'membership' %}fa-id-card notification-membership
+                            {% elif notification.notification_type == 'workout' %}fa-dumbbell notification-workout
+                            {% elif notification.notification_type == 'trainer' %}fa-chalkboard-user notification-trainer
+                            {% else %}fa-bell notification-default{% endif %} notification-icon">
+                        </i>
+                        <h3 class="text-white font-semibold notification-title">{{ notification.title }}</h3>
+                        {% if not notification.is_read %}
+                            <span class="bg-[#E94560] text-white text-xs px-2 py-0.5 rounded-full new-badge">New</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-text-gray text-sm mb-2 notification-message">{{ notification.message }}</p>
+                    <p class="text-text-gray text-xs notification-time">
+                        <i class="far fa-clock mr-1"></i> {{ notification.created_at|timesince }} ago
+                    </p>
+                </div>
+                <div class="flex gap-2 action-buttons flex-wrap">
+                    {% if not notification.is_read %}
+                    <a href="{% url 'notifications:mark_read' notification.id %}" class="text-[#00D09C] hover:underline text-sm transition-colors">
+                        <i class="fas fa-check-circle mr-1"></i> Mark read
+                    </a>
+                    {% endif %}
+                    {% if notification.link %}
+                    <a href="{{ notification.link }}" class="text-[#E94560] hover:underline text-sm transition-colors">
+                        View <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'notifications:delete' notification.id %}" class="text-red-400 hover:underline text-sm transition-colors" onclick="return confirm('Are you sure you want to delete this notification?')">
+                        <i class="fas fa-trash-alt mr-1"></i> Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination (if needed) -->
+    {% if is_paginated %}
+    <div class="mt-6 flex justify-center gap-2">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="bg-[#1A1A2E] border border-[#E94560]/20 text-white px-3 py-1 rounded-lg hover:border-[#E94560] transition-all">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+        
+        <span class="bg-[#E94560] text-white px-3 py-1 rounded-lg">
+            {{ page_obj.number }}
+        </span>
+        
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="bg-[#1A1A2E] border border-[#E94560]/20 text-white px-3 py-1 rounded-lg hover:border-[#E94560] transition-all">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-12 text-center empty-state">
+        <i class="fas fa-bell-slash text-5xl text-text-gray mb-4 empty-state-icon"></i>
+        <p class="text-text-gray empty-state-text">No notifications yet.</p>
+        <p class="text-text-gray text-sm mt-2">When you receive notifications, they will appear here.</p>
+        <a href="{% url 'dashboard' %}" class="inline-block mt-4 text-[#E94560] hover:underline text-sm">
+            Go to Dashboard <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Auto-refresh notifications count (optional)
+    function updateUnreadCount() {
+        fetch('/notifications/unread-count/')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.querySelector('.page-title .bg-\\[\\#E94560\\]');
+                if (badge && data.count > 0) {
+                    badge.textContent = data.count + ' new';
+                    badge.classList.remove('hidden');
+                } else if (badge && data.count === 0) {
+                    badge.classList.add('hidden');
+                }
+            })
+            .catch(error => console.error('Error fetching unread count:', error));
+    }
+    
+    // Update count every 30 seconds if on notifications page
+    if (window.location.pathname === '/notifications/') {
+        setInterval(updateUnreadCount, 30000);
+    }
+    
+    // Add animation to notification cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.notification-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity 0.5s ease, transform 0.5s ease`;
+        card.style.transitionDelay = `${index * 0.05}s`;
+        observer.observe(card);
+    });
+    
+    // Confirm before marking all as read
+    const markAllBtn = document.querySelector('.mark-all-btn');
+    if (markAllBtn) {
+        markAllBtn.addEventListener('click', function(e) {
+            if (!confirm('Mark all notifications as read?')) {
+                e.preventDefault();
+            }
+        });
+    }
+    
+    // Show notification for new alerts (optional)
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : 'bg-[#E94560]'
+        } text-white`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+</script>
+{% endblock %}

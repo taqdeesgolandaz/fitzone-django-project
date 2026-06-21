@@ -1,0 +1,192 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Admin Notifications - FitZone{% endblock %}
+
+{% block content %}
+<div class="py-8 max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-white">Admin Notifications</h1>
+            <p class="text-text-gray text-sm">View and manage all system notifications</p>
+        </div>
+        <div class="flex gap-3">
+            <span class="bg-[#E94560]/20 text-[#E94560] px-3 py-1 rounded-full text-sm">
+                <i class="fas fa-bell mr-1"></i> {{ notifications|length }} Total
+            </span>
+            {% if unread_count > 0 %}
+            <a href="?mark_all_read=1" class="bg-[#00D09C] text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-80 transition-all">
+                <i class="fas fa-check-double mr-2"></i> Mark All Read
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20">
+            <p class="text-text-gray text-sm">Total</p>
+            <p class="text-white text-2xl font-bold">{{ notifications|length }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20">
+            <p class="text-text-gray text-sm">Unread</p>
+            <p class="text-yellow-400 text-2xl font-bold">{{ unread_count }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20">
+            <p class="text-text-gray text-sm">Read</p>
+            <p class="text-[#00D09C] text-2xl font-bold">{{ notifications|length|add:unread_count|add:"-" }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 border border-[#E94560]/20">
+            <p class="text-text-gray text-sm">Today</p>
+            <p class="text-[#E94560] text-2xl font-bold">{{ today_count|default:"0" }}</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-2 mb-6">
+        <a href="?type=" class="px-3 py-1 rounded-full text-sm {% if not current_type %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+            All
+        </a>
+        <a href="?type=membership" class="px-3 py-1 rounded-full text-sm {% if current_type == 'membership' %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+            <i class="fas fa-id-card mr-1"></i> Membership
+        </a>
+        <a href="?type=payment" class="px-3 py-1 rounded-full text-sm {% if current_type == 'payment' %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+            <i class="fas fa-credit-card mr-1"></i> Payment
+        </a>
+        <a href="?type=workout" class="px-3 py-1 rounded-full text-sm {% if current_type == 'workout' %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+            <i class="fas fa-dumbbell mr-1"></i> Workout
+        </a>
+        <a href="?type=system" class="px-3 py-1 rounded-full text-sm {% if current_type == 'system' %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all">
+            <i class="fas fa-cog mr-1"></i> System
+        </a>
+    </div>
+
+    <!-- Notifications Table -->
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">
+                            <i class="fas fa-bell mr-1"></i> Title
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">Message</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">Type</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">User</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">Created</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">Status</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-text-gray uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for n in notifications %}
+                    <tr class="border-b border-[#E94560]/10 hover:bg-[#E94560]/5 transition-all {% if not n.is_read %}bg-[#E94560]/5{% endif %}">
+                        <!-- Title -->
+                        <td class="px-4 py-4 align-top">
+                            <div class="flex items-center gap-2">
+                                {% if not n.is_read %}
+                                <span class="w-2 h-2 bg-[#E94560] rounded-full animate-pulse"></span>
+                                {% endif %}
+                                <span class="text-white font-medium">{{ n.title }}</span>
+                            </div>
+                        </td>
+                        
+                        <!-- Message -->
+                        <td class="px-4 py-4 align-top">
+                            <p class="text-text-gray text-sm">{{ n.message|truncatechars:80 }}</p>
+                        </td>
+                        
+                        <!-- Type -->
+                        <td class="px-4 py-4 align-top">
+                            <span class="px-2 py-1 rounded-full text-xs
+                                {% if n.notification_type == 'membership' %}bg-blue-500/20 text-blue-400
+                                {% elif n.notification_type == 'payment' %}bg-green-500/20 text-green-400
+                                {% elif n.notification_type == 'workout' %}bg-orange-500/20 text-orange-400
+                                {% elif n.notification_type == 'trainer' %}bg-purple-500/20 text-purple-400
+                                {% elif n.notification_type == 'achievement' %}bg-yellow-500/20 text-yellow-400
+                                {% else %}bg-gray-500/20 text-gray-400{% endif %}">
+                                {{ n.get_notification_type_display }}
+                            </span>
+                        </td>
+                        
+                        <!-- User -->
+                        <td class="px-4 py-4 align-top">
+                            <div>
+                                <p class="text-white text-sm">{{ n.user.get_full_name|default:n.user.username }}</p>
+                                <p class="text-text-gray text-xs">{{ n.user.email }}</p>
+                            </div>
+                        </td>
+                        
+                        <!-- Created -->
+                        <td class="px-4 py-4 align-top">
+                            <p class="text-text-gray text-sm">{{ n.created_at|date:"M d, Y" }}</p>
+                            <p class="text-text-gray text-xs">{{ n.created_at|time:"g:i A" }}</p>
+                        </td>
+                        
+                        <!-- Status -->
+                        <td class="px-4 py-4 align-top">
+                            {% if n.is_read %}
+                                <span class="text-[#00D09C] text-sm"><i class="fas fa-check-circle mr-1"></i> Read</span>
+                            {% else %}
+                                <span class="text-yellow-400 text-sm"><i class="fas fa-circle mr-1"></i> Unread</span>
+                            {% endif %}
+                        </td>
+                        
+                        <!-- Actions -->
+                        <td class="px-4 py-4 align-top">
+                            <div class="flex items-center gap-2">
+                                {% if n.link %}
+                                <a href="{{ n.link }}" class="text-[#E94560] hover:text-[#ff6b8a] transition-colors text-sm" title="Open">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                                {% endif %}
+                                {% if not n.is_read %}
+                                <a href="{% url 'notifications:mark_read' n.id %}" class="text-text-gray hover:text-[#00D09C] transition-colors text-sm" title="Mark as read">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'notifications:delete' n.id %}" class="text-text-gray hover:text-red-400 transition-colors text-sm" title="Delete" onclick="return confirm('Delete this notification?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-bell-slash text-5xl text-text-gray mb-4"></i>
+                                <p class="text-text-gray text-lg">No notifications found</p>
+                                <p class="text-text-gray text-sm mt-1">All caught up! 🎉</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if notifications.has_other_pages %}
+        <div class="px-6 py-4 border-t border-[#E94560]/20 bg-[#0F0F1A] flex justify-between items-center">
+            <p class="text-text-gray text-sm">
+                Showing <span class="text-white">{{ notifications.start_index }}</span> to <span class="text-white">{{ notifications.end_index }}</span> of <span class="text-white">{{ notifications.paginator.count }}</span> notifications
+            </p>
+            <div class="flex gap-2">
+                {% if notifications.has_previous %}
+                <a href="?page={{ notifications.previous_page_number }}{% if current_type %}&type={{ current_type }}{% endif %}" class="bg-[#1A1A2E] text-text-gray px-3 py-1 rounded-lg hover:border-[#E94560] border border-transparent transition-all">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+                <span class="bg-[#E94560] text-white px-3 py-1 rounded-lg">{{ notifications.number }}</span>
+                {% if notifications.has_next %}
+                <a href="?page={{ notifications.next_page_number }}{% if current_type %}&type={{ current_type }}{% endif %}" class="bg-[#1A1A2E] text-text-gray px-3 py-1 rounded-lg hover:border-[#E94560] border border-transparent transition-all">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

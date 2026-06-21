@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="FitZone - Smart Fitness & Membership Management System">
+    <meta name="theme-color" content="#E94560">
+    <title>FitZone - {% block title %}Smart Fitness Platform{% endblock %}</title>
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Theme Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#1A1A2E',
+                        'secondary-dark': '#16213E',
+                        'accent-orange': '#E94560',
+                        'text-light': '#EEEEEE',
+                        'text-gray': '#A0A0A0',
+                        'success-green': '#00D09C',
+                        'warning-yellow': '#F5A623',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS with Media Queries and Loading Spinners -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0F0F1A;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #EEEEEE;
+            overflow-x: hidden;
+        }
+
+        /* ========== PAGE LOADING SPINNER ========== */
+        .page-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 26, 0.95);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .page-loading.show {
+            display: flex;
+        }
+
+        .page-loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(233, 69, 96, 0.3);
+            border-top-color: #E94560;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .page-loading .loading-text {
+            color: #E94560;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== BUTTON LOADING SPINNER ========== */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading .btn-text {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 18px;
+            height: 18px;
+            margin-top: -9px;
+            margin-left: -9px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        /* Different button variants */
+        .btn-loading.bg-transparent::after {
+            border: 2px solid rgba(233, 69, 96, 0.3);
+            border-top-color: #E94560;
+        }
+
+        /* Inline button spinner (for icons) */
+        .btn-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        /* Profile Picture Perfect Circle */
+        .profile-picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
+            border: 3px solid #E94560;
+        }
+
+        .profile-picture-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .profile-picture-lg {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center;
+            border: 4px solid #E94560;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1A1A2E;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #E94560;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff5a7a;
+        }
+        
+        /* Glassmorphism Effect */
+        .glass {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(233, 69, 96, 0.1);
+        }
+        
+        /* Hover Effects */
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+        }
+
+        /* Add to your style section - prevents spinner flash on back button */
+.page-loading {
+    transition: opacity 0.15s ease-out;
+}
+
+.page-loading.show {
+    display: flex;
+    opacity: 1;
+}
+
+/* Fix for bfcache (back/forward cache) */
+html {
+    transition: none !important;
+}
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Alpine.js fix */
+        [x-cloak] { display: none !important; }
+
+        /* Ensure buttons stay inline on desktop */
+        @media (min-width: 1024px) {
+            nav .flex.items-center.space-x-4 {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+            }
+            
+            nav .flex.items-center.space-x-4 > a,
+            nav .flex.items-center.space-x-4 > div {
+                display: inline-flex !important;
+            }
+            
+            nav .lg\\:flex {
+                flex-direction: row !important;
+            }
+        }
+        
+        nav > div > div:first-child {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .shrink-0 {
+            flex-shrink: 0;
+        }
+        
+        .whitespace-nowrap {
+            white-space: nowrap;
+        }
+
+        /* Responsive Media Queries */
+        @media (min-width: 1400px) {
+            .container { max-width: 1320px; }
+            main.container { padding-left: 2rem; padding-right: 2rem; }
+        }
+
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .container { max-width: 1140px; }
+        }
+
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .container { max-width: 960px; }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .container { max-width: 720px; margin-left: auto !important; margin-right: auto !important; }
+            main.container { padding-left: 1rem; padding-right: 1rem; }
+            footer .container { max-width: 720px; margin-left: auto !important; margin-right: auto !important; }
+            footer .grid { gap: 1.5rem !important; justify-content: center; }
+            footer .text-center.sm\:text-left { text-align: center !important; }
+        }
+
+        @media (min-width: 576px) and (max-width: 767px) {
+            .container { max-width: 540px; margin-left: auto !important; margin-right: auto !important; }
+            footer .grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1.5rem; }
+        }
+
+        @media (max-width: 640px) {
+            html { font-size: 14px; }
+            h1 { font-size: 1.75rem !important; }
+            h2 { font-size: 1.5rem !important; }
+            h3 { font-size: 1.25rem !important; }
+        }
+
+        footer .container {
+            max-width: 1280px;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            width: 100%;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Page Loading Spinner -->
+<div id="pageLoading" class="page-loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading...</div>
+</div>
+
+<!-- Navigation Bar -->
+<nav class="bg-[#1A1A2E] border-b border-[#E94560]/20 sticky top-0 z-50" x-data="{ mobileMenuOpen: false, userMenuOpen: false }">
+    <div class="container mx-auto px-4 py-3">
+        <div class="flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2 shrink-0">
+                <i class="fas fa-dumbbell text-[#E94560] text-2xl"></i>
+                <span class="text-white text-xl font-bold">Fit<span class="text-[#E94560]">Zone</span></span>
+            </div>
+            
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex space-x-6">
+                {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'admin_dashboard:dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Dashboard</a>
+                    <a href="{% url 'admin_dashboard:revenue_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Revenue</a>
+                    <a href="{% url 'admin_dashboard:user_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Users</a>
+                    <a href="{% url 'admin_dashboard:membership_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Memberships</a>
+                    <a href="/admin/" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Admin Panel</a>
+                    
+                    <!-- Preview Features Dropdown -->
+                    <div class="relative inline-block text-left" x-data="{ open: false }">
+                        <button @click="open = !open" @click.away="open = false"
+                                class="flex items-center gap-1 text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">
+                            <i class="fas fa-eye"></i>
+                            Preview
+                            <i class="fas fa-chevron-down text-xs" :class="{'rotate-180': open}"></i>
+                        </button>
+                        
+                            <div x-show="open" x-cloak @click.away="open = false" 
+                                class="absolute right-0 mt-2 w-56 bg-[#1A1A2E] rounded-xl shadow-2xl border border-[#E94560]/20 z-50 overflow-hidden">
+                            
+                            <div class="p-2 space-y-1">
+                                <p class="text-text-gray text-xs uppercase tracking-wider px-3 py-1">User Pages</p>
+                                
+                                <a href="/" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-home w-4 text-center"></i>
+                                    <span>Home Page</span>
+                                </a>
+                                
+                                <a href="{% url 'membership:plans' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-crown w-4 text-center"></i>
+                                    <span>Membership Plans</span>
+                                </a>
+                                
+                                <a href="{% url 'workouts:list' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-dumbbell w-4 text-center"></i>
+                                    <span>Workouts</span>
+                                </a>
+                                
+                                <a href="{% url 'diet:list' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-apple-alt w-4 text-center"></i>
+                                    <span>Diet Plans</span>
+                                </a>
+                                
+                                <a href="{% url 'trainers:list' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-chalkboard-user w-4 text-center"></i>
+                                    <span>Trainers</span>
+                                </a>
+                                
+                                <a href="{% url 'tracking:dashboard' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-chart-line w-4 text-center"></i>
+                                    <span>Tracking</span>
+                                </a>
+                                
+                                <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-tachometer-alt w-4 text-center"></i>
+                                    <span>User Dashboard</span>
+                                </a>
+                                
+                                <a href="{% url 'profile' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-user w-4 text-center"></i>
+                                    <span>Profile Page</span>
+                                </a>
+                                
+                                <a href="{% url 'settings' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-cog w-4 text-center"></i>
+                                    <span>Settings</span>
+                                </a>
+
+                                <hr class="border-[#E94560]/20 my-1">
+                                
+                                <a href="{% url 'achievements:dashboard' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-trophy w-4 text-center"></i>
+                                    <span>Achievements</span>
+                                </a>
+                                
+                                <a href="{% url 'payments:payment_history' %}" class="flex items-center gap-3 px-3 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-lg transition-all">
+                                    <i class="fas fa-receipt w-4 text-center"></i>
+                                    <span>Payment History</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="/" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Home</a>
+                    <a href="{% url 'membership:plans' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Membership</a>
+                    <a href="{% url 'workouts:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Workouts</a>
+                    <a href="{% url 'diet:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Diet</a>
+                    <a href="{% url 'trainers:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Trainers</a>
+                    <a href="{% url 'tracking:dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Tracking</a>
+                    <a href="{% url 'dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Dashboard</a>
+                    <a href="{% url 'workouts:my_progress' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">
+                        <i class="fas fa-chart-line mr-1"></i>Progress
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center space-x-2 lg:space-x-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'notifications:list' %}" class="lg:hidden relative text-text-gray hover:text-[#E94560] transition-colors p-2" aria-label="Open notifications">
+                        <i class="fas fa-bell text-2xl"></i>
+                        <span id="notificationCount" class="absolute -top-1 -right-1 bg-[#E94560] text-white text-xs rounded-full w-4 h-4 hidden items-center justify-center"></span>
+                    </a>
+                {% endif %}
+
+                <!-- Mobile Menu Button -->
+                <button type="button" class="lg:hidden text-text-gray hover:text-[#E94560] transition-colors p-2" @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Toggle navigation menu">
+                    <i class="fas fa-bars text-2xl" x-show="!mobileMenuOpen"></i>
+                    <i class="fas fa-times text-2xl" x-show="mobileMenuOpen" x-cloak></i>
+                </button>
+            </div>
+            
+            <!-- User Menu / Auth Buttons -->
+            <div class="hidden lg:flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'notifications:list' %}" class="relative text-text-gray hover:text-[#E94560] transition-colors" aria-label="Open notifications">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span id="notificationCount" class="absolute -top-1 -right-1 bg-[#E94560] text-white text-xs rounded-full w-4 h-4 hidden items-center justify-center"></span>
+                    </a>
+                    
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-2 text-text-gray hover:text-[#E94560] transition-colors">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile" class="w-8 h-8 rounded-full object-cover object-center">
+                            {% else %}
+                                <div class="w-8 h-8 rounded-full bg-[#E94560] flex items-center justify-center">
+                                    <span class="text-white text-sm">{{ user.get_full_name|first|upper|default:user.username|first|upper }}</span>
+                                </div>
+                            {% endif %}
+                            <span class="hidden xl:inline">{{ user.get_full_name|default:user.username }}</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-[#16213E] rounded-lg shadow-lg z-50" x-show="open" x-cloak @click.away="open = false">
+                            <a href="{% url 'profile' %}" class="block px-4 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-t-lg transition-colors">
+                                <i class="fas fa-user mr-2"></i> My Profile
+                            </a>
+                            <a href="{% url 'settings' %}" class="block px-4 py-2 text-text-gray hover:bg-[#E94560] hover:text-white transition-colors">
+                                <i class="fas fa-cog mr-2"></i> Settings
+                            </a>
+                            <hr class="border-[#E94560]/20 my-1">
+                            <a href="{% url 'logout' %}" class="block px-4 py-2 text-text-gray hover:bg-[#E94560] hover:text-white rounded-b-lg transition-colors">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-text-gray hover:text-[#E94560] transition-colors px-3 py-2">Login</a>
+                    <a href="{% url 'register' %}" class="bg-[#E94560] text-white px-5 py-2 rounded-lg hover:bg-opacity-80 transition-all">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Links -->
+        <div class="lg:hidden mt-4 border-t border-[#E94560]/20 pt-4" x-show="mobileMenuOpen" x-cloak>
+            <div class="flex flex-col space-y-3 max-h-[70vh] overflow-y-auto">
+                {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'admin_dashboard:dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Dashboard</a>
+                    <a href="{% url 'admin_dashboard:revenue_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Revenue</a>
+                    <a href="{% url 'admin_dashboard:user_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Users</a>
+                    <a href="{% url 'admin_dashboard:membership_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Memberships</a>
+                    <a href="/admin/" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Admin Panel</a>
+                    
+                    <!-- Mobile Preview Features Dropdown -->
+                    <div x-data="{ open: false }">
+                        <button @click="open = !open" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block w-full text-left flex items-center justify-between">
+                            <span><i class="fas fa-eye mr-2"></i>Preview Features</span>
+                            <i class="fas fa-chevron-down text-xs" :class="{'rotate-180': open}"></i>
+                        </button>
+                        <div x-show="open" x-cloak class="ml-4 space-y-2 border-l-2 border-[#E94560]/20 pl-3">
+                            <a href="/" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-home mr-2"></i>Home Page
+                            </a>
+                            <a href="{% url 'membership:plans' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-crown mr-2"></i>Membership Plans
+                            </a>
+                            <a href="{% url 'workouts:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-dumbbell mr-2"></i>Workouts
+                            </a>
+                            <a href="{% url 'diet:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-apple-alt mr-2"></i>Diet Plans
+                            </a>
+                            <a href="{% url 'trainers:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-chalkboard-user mr-2"></i>Trainers
+                            </a>
+                            <a href="{% url 'tracking:dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-chart-line mr-2"></i>Tracking
+                            </a>
+                            <a href="{% url 'dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-tachometer-alt mr-2"></i>User Dashboard
+                            </a>
+                            <a href="{% url 'profile' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-user mr-2"></i>Profile Page
+                            </a>
+                            <a href="{% url 'settings' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <hr class="border-[#E94560]/20 my-1">
+                            <a href="{% url 'achievements:dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-trophy mr-2"></i>Achievements
+                            </a>
+                            <a href="{% url 'payments:payment_history' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-1 block text-sm">
+                                <i class="fas fa-receipt mr-2"></i>Payment History
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="/" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Home</a>
+                    <a href="{% url 'membership:plans' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Membership</a>
+                    <a href="{% url 'workouts:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Workouts</a>
+                    <a href="{% url 'diet:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Diet</a>
+                    <a href="{% url 'trainers:list' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Trainers</a>
+                    <a href="{% url 'tracking:dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Tracking</a>
+                    <a href="{% url 'dashboard' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Dashboard</a>
+                    <a href="{% url 'workouts:my_progress' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">
+                        <i class="fas fa-chart-line mr-1"></i>My Progress
+                    </a>
+                {% endif %}
+                
+                {% if not user.is_authenticated %}
+                    <div class="pt-3 mt-2 border-t border-[#E94560]/20">
+                        <a href="{% url 'login' %}" class="block text-center text-text-gray hover:text-[#E94560] transition-colors py-2">Login</a>
+                        <a href="{% url 'register' %}" class="block text-center bg-[#E94560] text-white px-5 py-2 rounded-lg hover:bg-opacity-80 transition-all mt-2">Sign Up</a>
+                    </div>
+                {% else %}
+                    <div class="pt-3 mt-2 border-t border-[#E94560]/20">
+                        <a href="{% url 'profile' %}" class="block text-text-gray hover:text-[#E94560] transition-colors py-2">
+                            <i class="fas fa-user mr-2"></i> My Profile
+                        </a>
+                        <a href="{% url 'settings' %}" class="block text-text-gray hover:text-[#E94560] transition-colors py-2">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                        <a href="{% url 'logout' %}" class="block text-[#E94560] hover:text-white transition-colors py-2">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Membership Warning Banner -->
+{% if user.is_authenticated and not user.membership_active and not user.is_staff %}
+<div class="bg-gradient-to-r from-[#E94560]/20 to-[#16213E] border-b border-[#E94560]/20">
+    <div class="container mx-auto px-4 py-2 text-center">
+        <p class="text-text-gray text-sm">
+            <i class="fas fa-crown text-[#E94560] mr-2"></i>
+            You don't have an active membership. 
+            <a href="{% url 'membership:plans' %}" class="text-[#E94560] font-semibold hover:underline">Subscribe now</a>
+            to unlock all features!
+        </p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Django messages (site-wide) -->
+{% if messages and request.path != '/login/' and request.path != '/forgot-password/' and request.path|slice:":15" != '/reset-password' %}
+<div class="container mx-auto px-4 mt-4">
+    {% for message in messages %}
+        {% if 'success' in message.tags %}
+        <div class="alert bg-[#052e15] border border-[#00D09C]/20 text-white px-4 py-3 rounded-lg mb-3">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle text-[#00D09C] mt-1"></i>
+                </div>
+                <div>
+                    <p class="text-white">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+        {% elif 'error' in message.tags %}
+        <div class="alert bg-[#2b0f12] border border-[#E94560]/20 text-white px-4 py-3 rounded-lg mb-3">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-[#E94560] mt-1"></i>
+                </div>
+                <div>
+                    <p class="text-white">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+        {% elif 'warning' in message.tags %}
+        <div class="alert bg-[#2b230f] border border-[#F5A623]/20 text-white px-4 py-3 rounded-lg mb-3">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-[#F5A623] mt-1"></i>
+                </div>
+                <div>
+                    <p class="text-white">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert bg-[#1A1A2E] border border-[#E94560]/20 text-text-gray px-4 py-3 rounded-lg mb-3">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-info-circle text-[#E94560] mt-1"></i>
+                </div>
+                <div>
+                    <p class="text-white">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Main Content -->
+<main class="container mx-auto px-4 py-4 fade-in">
+    {% block content %}
+    {% endblock %}
+</main>
+
+<!-- Achievements Banner -->
+{% if request.path == '/dashboard/' %}
+<div class="w-full px-4 mt-2 mb-4">
+    <a href="{% url 'achievements:dashboard' %}" class="flex items-center justify-center w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-white px-6 py-3 rounded-lg font-semibold gap-3">
+        <i class="fas fa-trophy"></i>
+        <span>Achievements</span>
+        {% if available_badges_count > 0 %}
+        <span class="bg-black/30 text-white text-xs rounded-full px-2 py-0.5">{{ available_badges_count }}</span>
+        {% endif %}
+    </a>
+</div>
+{% endif %}
+
+<!-- Footer -->
+<footer class="bg-[#1A1A2E] border-t border-[#E94560]/20 mt-0">
+    <div class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="text-center sm:text-left">
+                <div class="flex items-center space-x-2 mb-3 justify-center sm:justify-start">
+                    <i class="fas fa-dumbbell text-[#E94560] text-2xl"></i>
+                    <span class="text-white text-xl font-bold">Fit<span class="text-[#E94560]">Zone</span></span>
+                </div>
+                <p class="text-text-gray text-sm mb-3 max-w-xs mx-auto sm:mx-0">
+                    Your journey to a healthier, fitter lifestyle begins here. Join thousands of satisfied members.
+                </p>
+                <div class="flex space-x-3 justify-center sm:justify-start">
+                    <a href="#" class="w-8 h-8 rounded-full bg-[#0F0F1A] flex items-center justify-center text-text-gray hover:bg-[#E94560] hover:text-white transition-all">
+                        <i class="fab fa-facebook-f text-sm"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-[#0F0F1A] flex items-center justify-center text-text-gray hover:bg-[#E94560] hover:text-white transition-all">
+                        <i class="fab fa-instagram text-sm"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-[#0F0F1A] flex items-center justify-center text-text-gray hover:bg-[#E94560] hover:text-white transition-all">
+                        <i class="fab fa-twitter text-sm"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-[#0F0F1A] flex items-center justify-center text-text-gray hover:bg-[#E94560] hover:text-white transition-all">
+                        <i class="fab fa-youtube text-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center sm:text-left">
+                <h4 class="text-white font-semibold mb-3">Quick Links</h4>
+                <ul class="space-y-1 text-text-gray text-sm">
+                    <li><a href="{% url 'workouts:list' %}" class="hover:text-[#E94560] transition-colors">Workouts</a></li>
+                    <li><a href="{% url 'diet:list' %}" class="hover:text-[#E94560] transition-colors">Diet Plans</a></li>
+                    <li><a href="{% url 'trainers:list' %}" class="hover:text-[#E94560] transition-colors">Trainers</a></li>
+                    <li><a href="{% url 'membership:plans' %}" class="hover:text-[#E94560] transition-colors">Membership</a></li>
+                    <li><a href="{% url 'tracking:dashboard' %}" class="hover:text-[#E94560] transition-colors">Fitness Tracking</a></li>
+                </ul>
+            </div>
+
+            <div class="text-center sm:text-left">
+                <h4 class="text-white font-semibold mb-3">Support</h4>
+                <ul class="space-y-1 text-text-gray text-sm">
+                    <li><a href="{% url 'faq' %}" class="hover:text-[#E94560] transition-colors">FAQ</a></li>
+                    <li><a href="{% url 'contact' %}" class="hover:text-[#E94560] transition-colors">Contact Us</a></li>
+                    <li><a href="{% url 'help_center' %}" class="hover:text-[#E94560] transition-colors">Help Center</a></li>
+                    <li><a href="{% url 'privacy_policy' %}" class="hover:text-[#E94560] transition-colors">Privacy Policy</a></li>
+                    <li><a href="{% url 'terms_of_service' %}" class="hover:text-[#E94560] transition-colors">Terms of Service</a></li>
+                    <li><a href="{% url 'refund_policy' %}" class="hover:text-[#E94560] transition-colors">Refund Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="text-center sm:text-left">
+                <h4 class="text-white font-semibold mb-3">Get in Touch</h4>
+                <ul class="space-y-2 text-text-gray text-sm">
+                    <li class="flex items-center gap-3 justify-center sm:justify-start">
+                        <i class="fas fa-map-marker-alt text-[#E94560] w-4"></i>
+                        <span>Plot No D, 232, TTC Industrial Area, MIDC, Nerul, Navi Mumbai, Maharashtra 410210</span>
+                    </li>
+                    <li class="flex items-center gap-3 justify-center sm:justify-start">
+                        <i class="fas fa-phone text-[#E94560] w-4"></i>
+                        <span>+91 9223210800</span>
+                    </li>
+                    <li class="flex items-center gap-3 justify-center sm:justify-start">
+                        <i class="fas fa-envelope text-[#E94560] w-4"></i>
+                        <span>support@fitzone.com</span>
+                    </li>
+                    <li class="flex items-center gap-3 justify-center sm:justify-start">
+                        <i class="fas fa-clock text-[#E94560] w-4"></i>
+                        <span>Mon-Sun: 6AM - 10PM</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-[#E94560]/20 mt-6 pt-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="text-center md:text-left">
+                    <p class="text-white text-sm font-semibold">Subscribe to our Newsletter</p>
+                    <p class="text-text-gray text-xs">Get weekly workout tips and diet advice</p>
+                </div>
+                <form method="POST" action="{% url 'notifications:subscribe' %}" class="flex w-full md:w-auto flex-col sm:flex-row gap-2" data-ajax="false">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <input type="email" name="email" placeholder="Your email address" required
+                           class="flex-1 px-3 py-1.5 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg sm:rounded-l-lg sm:rounded-r-none text-white text-sm focus:outline-none focus:border-[#E94560]">
+                    <button type="submit" class="bg-[#E94560] text-white px-4 py-1.5 rounded-lg sm:rounded-r-lg sm:rounded-l-none hover:bg-opacity-80 transition-all text-sm">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="border-t border-[#E94560]/20 mt-6 pt-4 text-center">
+            <p class="text-text-gray text-xs">
+                &copy; {% now "Y" %} FitZone Fitness Platform. All rights reserved. | 
+                Designed with <i class="fas fa-heart text-[#E94560] text-xs"></i> for your fitness journey
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- Alpine.js -->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<!-- Main JavaScript with Loading Spinners -->
+<!-- Main JavaScript with Loading Spinners - FIXED FOR BACK BUTTON -->
+<script>
+    // ========== PAGE LOADING SPINNER ==========
+    let loadingTimeout = null;
+    
+    function showPageLoading() {
+        const loader = document.getElementById('pageLoading');
+        if (loader) {
+            loader.classList.add('show');
+        }
+    }
+    
+    function hidePageLoading() {
+        const loader = document.getElementById('pageLoading');
+        if (loader) {
+            loader.classList.remove('show');
+        }
+        if (loadingTimeout) {
+            clearTimeout(loadingTimeout);
+            loadingTimeout = null;
+        }
+    }
+    
+    // ========== RESET ALL BUTTON STATES ==========
+    function resetAllButtons() {
+        try {
+            // Remove all button spinners and restore original state
+            document.querySelectorAll('button, input[type="submit"], a.btn, a[role="button"]').forEach(btn => {
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+                
+                // Restore original HTML if stored
+                const originalHtml = btn.getAttribute('data-original-html');
+                if (originalHtml) {
+                    btn.innerHTML = originalHtml;
+                    btn.removeAttribute('data-original-html');
+                }
+                
+                // Clear any pending timeouts
+                const timeoutId = btn.getAttribute('data-spinner-timeout');
+                if (timeoutId) {
+                    clearTimeout(parseInt(timeoutId));
+                    btn.removeAttribute('data-spinner-timeout');
+                }
+            });
+        } catch (e) {
+            console.log('Reset buttons error:', e);
+        }
+    }
+    
+    // ========== COMPLETE PAGE RESET ==========
+    function completePageReset() {
+        hidePageLoading();
+        resetAllButtons();
+        window._disableButtonSpinners = false;
+    }
+    
+    // ========== HANDLE BACK/FORWARD BUTTONS ==========
+    // Hide loading spinner immediately when page is restored from cache
+    window.addEventListener('pageshow', function(event) {
+        // Always hide the loading spinner on pageshow (both cached and fresh load)
+        completePageReset();
+        
+        // Re-initialize all button handlers after page restore
+        setTimeout(function() {
+            initButtonSpinners();
+            initNavigationSpinners();
+            initFormSpinners();
+        }, 50);
+    });
+    
+    // Hide spinner on popstate (back/forward) and allow navigation to proceed
+    window.addEventListener('popstate', function() {
+        // Don't prevent default - allow normal back navigation
+        completePageReset();
+        
+        // Re-initialize handlers
+        setTimeout(function() {
+            initButtonSpinners();
+            initNavigationSpinners();
+            initFormSpinners();
+        }, 50);
+    });
+
+    // If the page becomes visible again, ensure spinners are cleared
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            completePageReset();
+        }
+    });
+    
+    // Hide spinner when page fully loads
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            completePageReset();
+            initButtonSpinners();
+            initNavigationSpinners();
+            initFormSpinners();
+        }, 100);
+    });
+    
+    // Also hide on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+        completePageReset();
+    });
+
+    
+    // ========== BUTTON LOADING SPINNER ==========
+    // Global flag to disable spinner behavior (used when restoring from bfcache/back navigation)
+    window._disableButtonSpinners = false;
+
+    function disableButtonSpinners() {
+        window._disableButtonSpinners = true;
+        try {
+            const elements = document.querySelectorAll(
+                'button:not(.no-spinner), input[type="submit"]:not(.no-spinner), a[role="button"]:not(.no-spinner), .btn:not(.no-spinner)'
+            );
+            elements.forEach(el => {
+                try { el.removeEventListener('click', handleButtonClick); } catch (e) {}
+                try { hideButtonSpinner(el); } catch (e) {}
+            });
+        } catch (e) {}
+    }
+    function showButtonSpinner(button) {
+        if (!button) return;
+        
+        // Store original content
+        const originalHtml = button.innerHTML;
+        button.setAttribute('data-original-html', originalHtml);
+        
+        // Add loading class
+        button.classList.add('btn-loading');
+        
+        // Wrap text in span if not already
+        const textNode = button.childNodes[0];
+        if (textNode && textNode.nodeType === Node.TEXT_NODE && textNode.textContent.trim()) {
+            const span = document.createElement('span');
+            span.className = 'btn-text';
+            span.textContent = textNode.textContent;
+            textNode.replaceWith(span);
+        } else {
+            const existingText = button.querySelector('.btn-text');
+            if (!existingText) {
+                const allText = Array.from(button.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+                if (allText.length) {
+                    const wrapper = document.createElement('span');
+                    wrapper.className = 'btn-text';
+                    wrapper.textContent = allText[0].textContent;
+                    allText[0].replaceWith(wrapper);
+                }
+            }
+        }
+    }
+    
+    function hideButtonSpinner(button) {
+        if (!button) return;
+        // Clear any per-button timeout
+        try {
+            const t = button.getAttribute('data-spinner-timeout');
+            if (t) {
+                clearTimeout(parseInt(t));
+                button.removeAttribute('data-spinner-timeout');
+            }
+        } catch (e) {}
+
+        button.classList.remove('btn-loading');
+        const originalHtml = button.getAttribute('data-original-html');
+        if (originalHtml) {
+            button.innerHTML = originalHtml;
+            button.removeAttribute('data-original-html');
+        }
+    }
+    
+    // ========== HANDLE ALL BUTTON CLICKS WITH SPINNER ==========
+    function initButtonSpinners() {
+        if (window._disableButtonSpinners) return;
+        const interactiveElements = document.querySelectorAll(
+            'button:not(.no-spinner):not([type="button"]), ' +
+            'input[type="submit"]:not(.no-spinner), ' +
+            'a[role="button"]:not(.no-spinner), ' +
+            '.btn:not(.no-spinner), ' +
+            'form button:not(.no-spinner), ' +
+            'form input[type="submit"]:not(.no-spinner)'
+        );
+        
+        interactiveElements.forEach(element => {
+            element.removeEventListener('click', handleButtonClick);
+            element.addEventListener('click', handleButtonClick);
+        });
+    }
+    
+    function handleButtonClick(e) {
+        const button = e.currentTarget;
+        
+        if (button.classList.contains('btn-loading')) {
+            e.preventDefault();
+            return;
+        }
+        
+        const parentForm = button.closest('form');
+        
+        if (parentForm) {
+            // Show spinner quickly, and set a per-button fallback to hide it
+            setTimeout(() => {
+                showButtonSpinner(button);
+            }, 10);
+
+            // Per-button fallback timeout (shorter) — will be cleared when the button is hidden normally
+            const hideId = setTimeout(() => {
+                hideButtonSpinner(button);
+            }, 3000);
+            try { button.setAttribute('data-spinner-timeout', hideId); } catch (e) {}
+
+            return;
+        }
+        
+        const href = button.getAttribute('href');
+        if (href && href !== '#' && !href.startsWith('javascript:')) {
+            e.preventDefault();
+            showButtonSpinner(button);
+            showPageLoading();
+            window.location.href = href;
+        }
+    }
+    
+    // ========== HANDLE ALL NAVIGATION LINKS ==========
+    function initNavigationSpinners() {
+        const links = document.querySelectorAll('a:not(.no-spinner)');
+        
+        links.forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href || href === '#' || href.startsWith('javascript:') || 
+                href.startsWith('mailto:') || href.startsWith('tel:') ||
+                link.getAttribute('target') === '_blank') {
+                return;
+            }
+            
+            link.removeEventListener('click', handleLinkClick);
+            link.addEventListener('click', handleLinkClick);
+        });
+    }
+    
+    function handleLinkClick(e) {
+        const link = e.currentTarget;
+        const href = link.getAttribute('href');
+        
+        if (e.ctrlKey || e.metaKey) {
+            return;
+        }
+        
+        if (link.classList.contains('btn-loading')) {
+            e.preventDefault();
+            return;
+        }
+        
+        e.preventDefault();
+        showPageLoading();
+        
+        // Set a safety timeout to hide loading if navigation takes too long
+        loadingTimeout = setTimeout(() => {
+            hidePageLoading();
+        }, 10000);
+        
+        window.location.href = href;
+    }
+    
+    // ========== FORM SUBMIT HANDLER ==========
+    function initFormSpinners() {
+        const forms = document.querySelectorAll('form:not([data-ajax="true"])');
+        
+        forms.forEach(form => {
+            form.removeEventListener('submit', handleFormSubmit);
+            form.addEventListener('submit', handleFormSubmit);
+        });
+    }
+    
+    function handleFormSubmit(e) {
+        const form = e.currentTarget;
+        const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+        
+        if (submitButton && !submitButton.classList.contains('btn-loading')) {
+            setTimeout(() => {
+                showButtonSpinner(submitButton);
+            }, 10);
+        }
+        
+        if (!form.hasAttribute('data-ajax')) {
+            showPageLoading();
+        }
+    }
+    
+    // ========== REMOVE LOADING SPINNER ON PAGE LOAD ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hide any visible loading spinners immediately
+        hidePageLoading();
+        
+        // Initialize all spinners
+        initButtonSpinners();
+        initNavigationSpinners();
+        initFormSpinners();
+        
+        // Re-initialize after any dynamic content loads
+        if (window.MutationObserver) {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length) {
+                        initButtonSpinners();
+                        initNavigationSpinners();
+                        initFormSpinners();
+                    }
+                });
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+
+        // Ensure any lingering button spinners are cleared (in case of back/forward cache or partial reloads)
+        try {
+            document.querySelectorAll('button.btn-loading, a.btn-loading, input.btn-loading').forEach(b => {
+                hideButtonSpinner(b);
+            });
+        } catch (e) {}
+    });
+    
+    // ========== NOTIFICATION COUNT ==========
+    function updateNotificationCount() {
+        const countElement = document.getElementById('notificationCount');
+        if (!countElement) return;
+        
+        fetch('/notifications/unread-count/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    countElement.textContent = data.count;
+                    countElement.classList.remove('hidden');
+                    countElement.classList.add('flex');
+                } else {
+                    countElement.classList.add('hidden');
+                    countElement.classList.remove('flex');
+                }
+            })
+            .catch(error => console.error('Error fetching notification count:', error));
+    }
+    
+    if (document.getElementById('notificationCount')) {
+        updateNotificationCount();
+        setInterval(updateNotificationCount, 30000);
+    }
+    
+    // ========== AUTO-HIDE ALERTS ==========
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 5000);
+    
+    // ========== ACTIVE NAVIGATION HIGHLIGHT ==========
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('nav a').forEach(link => {
+        const linkPath = link.getAttribute('href');
+        if (linkPath && linkPath !== '/' && currentPath.includes(linkPath) && linkPath !== '#') {
+            link.classList.add('text-[#E94560]');
+        }
+    });
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

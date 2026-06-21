@@ -1,0 +1,642 @@
+{% extends 'base/base.html' %}
+
+{% block title %}My Membership - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR MEMBERSHIP PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .membership-container {
+            max-width: 1280px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .plan-name {
+            font-size: 1.75rem;
+        }
+        
+        .days-remaining {
+            font-size: 3rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .membership-container {
+            max-width: 960px;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .membership-container {
+            max-width: 720px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+        }
+        
+        .days-remaining {
+            font-size: 2.5rem;
+        }
+        
+        .active-membership-card {
+            padding: 1.25rem;
+        }
+        
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        /* Table responsive */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 600px;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .membership-container {
+            max-width: 540px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .active-membership-card {
+            padding: 1rem;
+        }
+        
+        .active-membership-content {
+            flex-direction: column !important;
+            text-align: center;
+        }
+        
+        .active-membership-left {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .active-membership-left .flex {
+            justify-content: center;
+        }
+        
+        .active-membership-right {
+            text-align: center !important;
+        }
+        
+        .plan-name {
+            font-size: 1.35rem;
+        }
+        
+        .days-remaining {
+            font-size: 2rem;
+        }
+        
+        .progress-bar {
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .quick-action-card {
+            padding: 0.875rem;
+        }
+        
+        .quick-action-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .quick-action-text {
+            font-size: 0.85rem;
+        }
+        
+        /* No membership card */
+        .no-membership-card {
+            padding: 1.5rem;
+        }
+        
+        .no-membership-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .no-membership-title {
+            font-size: 1.35rem;
+        }
+        
+        .no-membership-text {
+            font-size: 0.85rem;
+        }
+        
+        .btn-primary {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Table responsive */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 550px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .history-title {
+            font-size: 1.25rem;
+        }
+        
+        .py-12 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1.5rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .membership-container {
+            max-width: 95%;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .active-membership-card {
+            padding: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .plan-name {
+            font-size: 1.2rem;
+        }
+        
+        .membership-detail {
+            font-size: 0.8rem;
+        }
+        
+        .days-remaining {
+            font-size: 1.75rem;
+        }
+        
+        .days-label {
+            font-size: 0.7rem;
+        }
+        
+        .features-access-card {
+            padding: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .features-title {
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .feature-item {
+            font-size: 0.75rem;
+        }
+        
+        .feature-icon {
+            font-size: 0.7rem;
+            margin-right: 0.5rem;
+        }
+        
+        .quick-actions-grid {
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-action-card {
+            padding: 0.75rem;
+        }
+        
+        .quick-action-icon {
+            font-size: 1.25rem;
+        }
+        
+        .quick-action-text {
+            font-size: 0.8rem;
+        }
+        
+        .no-membership-card {
+            padding: 1.25rem;
+        }
+        
+        .no-membership-icon {
+            font-size: 2.5rem;
+        }
+        
+        .no-membership-title {
+            font-size: 1.2rem;
+        }
+        
+        .history-title {
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 500px;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .status-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .membership-container {
+            max-width: 98%;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .plan-name {
+            font-size: 1.1rem;
+        }
+        
+        .days-remaining {
+            font-size: 1.5rem;
+        }
+        
+        .feature-item {
+            font-size: 0.7rem;
+        }
+        
+        .quick-action-text {
+            font-size: 0.7rem;
+        }
+        
+        th, td {
+            padding: 0.4rem;
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .plan-name {
+            font-size: 1rem;
+        }
+        
+        .days-remaining {
+            font-size: 1.35rem;
+        }
+        
+        .feature-item {
+            font-size: 0.65rem;
+        }
+        
+        .quick-action-text {
+            font-size: 0.65rem;
+        }
+        
+        th, td {
+            padding: 0.35rem;
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .quick-action-card:active,
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .active-membership-content {
+            flex-direction: row !important;
+            text-align: left;
+        }
+        
+        .active-membership-left {
+            text-align: left;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .active-membership-card,
+        .features-access-card,
+        .quick-action-card {
+            border: 2px solid #E94560;
+        }
+        
+        .btn-primary {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover,
+        .quick-action-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Progress bar animation */
+    .progress-fill {
+        transition: width 0.5s ease;
+    }
+    
+    /* Table row hover effect */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 membership-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">My Membership</h1>
+        <p class="text-text-gray page-subtitle">View and manage your membership details</p>
+    </div>
+
+    {% if active_membership %}
+    <!-- Active Membership Card -->
+    <div class="bg-gradient-to-r from-[#1A1A2E] to-[#16213E] rounded-2xl border border-[#E94560]/30 p-6 mb-8 active-membership-card card-hover">
+        <div class="flex flex-col md:flex-row justify-between items-center active-membership-content">
+            <div class="active-membership-left">
+                <div class="flex items-center mb-3 justify-center md:justify-start">
+                    <i class="fas fa-crown text-[#E94560] text-2xl mr-2"></i>
+                    <h2 class="text-2xl font-bold text-white plan-name">{{ active_membership.plan.name }}</h2>
+                    {% if active_membership.plan.is_popular %}
+                        <span class="ml-3 bg-[#E94560] text-white text-xs px-2 py-1 rounded">POPULAR</span>
+                    {% endif %}
+                </div>
+                <p class="text-text-gray mb-2 membership-detail">Status: 
+                    <span class="text-[#00D09C] font-semibold">
+                        <i class="fas fa-circle text-xs mr-1"></i>Active
+                    </span>
+                </p>
+                <p class="text-text-gray membership-detail">Member since: {{ active_membership.start_date|date:"M d, Y" }}</p>
+                <p class="text-text-gray membership-detail">Expires on: {{ active_membership.end_date|date:"M d, Y" }}</p>
+            </div>
+            <div class="text-center md:text-right mt-4 md:mt-0 active-membership-right">
+                <p class="text-text-gray text-sm days-label">Days Remaining</p>
+                <p class="text-4xl font-bold text-[#E94560] days-remaining">{{ active_membership.days_remaining }}</p>
+                <p class="text-text-gray text-sm days-label">days</p>
+                <div class="w-32 bg-[#0F0F1A] rounded-full h-2 mt-2 progress-bar mx-auto md:mx-0">
+                    <div class="bg-[#E94560] rounded-full h-2 progress-fill" style="width: {% widthratio active_membership.days_remaining active_membership.plan.get_duration_days 100 %}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Access -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 mb-8 features-access-card card-hover">
+        <h3 class="text-xl font-bold text-white mb-4 features-title">Your Access Includes:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 features-grid">
+            {% for feature in active_membership.plan.features %}
+            <div class="flex items-start feature-item">
+                <i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm mt-0.5 feature-icon"></i>
+                <span class="text-text-gray">{{ feature }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 quick-actions-grid">
+        <a href="{% url 'workouts:list' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-lg p-4 text-center hover:border-[#E94560] transition-all quick-action-card card-hover">
+            <i class="fas fa-dumbbell text-[#E94560] text-2xl mb-2 block quick-action-icon"></i>
+            <span class="text-white quick-action-text">View Workouts</span>
+        </a>
+        <a href="{% url 'diet:plans' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-lg p-4 text-center hover:border-[#E94560] transition-all quick-action-card card-hover">
+            <i class="fas fa-apple-alt text-[#E94560] text-2xl mb-2 block quick-action-icon"></i>
+            <span class="text-white quick-action-text">View Diet Plans</span>
+        </a>
+        <a href="{% url 'tracking:progress' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-lg p-4 text-center hover:border-[#E94560] transition-all quick-action-card card-hover">
+            <i class="fas fa-chart-line text-[#E94560] text-2xl mb-2 block quick-action-icon"></i>
+            <span class="text-white quick-action-text">Track Progress</span>
+        </a>
+    </div>
+
+    {% else %}
+    <!-- No Active Membership -->
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-12 text-center no-membership-card card-hover">
+        <i class="fas fa-id-card text-6xl text-text-gray mb-4 no-membership-icon"></i>
+        <h2 class="text-2xl font-bold text-white mb-2 no-membership-title">No Active Membership</h2>
+        <p class="text-text-gray mb-6 no-membership-text">You don't have an active membership plan. Choose a plan to get started!</p>
+        <a href="{% url 'membership:plans' %}" class="inline-block bg-[#E94560] text-white px-6 py-2 rounded-lg hover:bg-opacity-80 transition-all btn-primary">
+            View Membership Plans
+            <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Membership History -->
+    {% if expired_memberships %}
+    <div class="mt-8">
+        <h3 class="text-xl font-bold text-white mb-4 history-title">Membership History</h3>
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="text-left p-3 text-text-gray">Plan</th>
+                        <th class="text-left p-3 text-text-gray">Start Date</th>
+                        <th class="text-left p-3 text-text-gray">End Date</th>
+                        <th class="text-left p-3 text-text-gray">Amount</th>
+                        <th class="text-left p-3 text-text-gray">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membership in expired_memberships %}
+                    <tr class="border-b border-[#E94560]/10 transition-colors">
+                        <td class="p-3 text-white">{{ membership.plan.name }}</td>
+                        <td class="p-3 text-text-gray">{{ membership.start_date|date:"M d, Y" }}</td>
+                        <td class="p-3 text-text-gray">{{ membership.end_date|date:"M d, Y" }}</td>
+                        <td class="p-3 text-white">₹{{ membership.amount_paid }}</td>
+                        <td class="p-3">
+                            {% if membership.status == 'expired' %}
+                                <span class="text-red-400 status-badge">Expired</span>
+                            {% else %}
+                                <span class="text-yellow-400 status-badge">{{ membership.status|title }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.active-membership-card, .features-access-card, .quick-action-card, .no-membership-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Progress bar animation
+    window.addEventListener('load', function() {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    });
+</script>
+{% endblock %}

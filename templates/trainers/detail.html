@@ -1,0 +1,626 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ trainer.full_name }} - FitZone Trainer{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR TRAINER DETAIL PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .detail-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .detail-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.15);
+    }
+    
+    /* Star rating styling */
+    .star-rating {
+        color: #fbbf24;
+        font-size: 1rem;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .trainer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .trainer-name {
+            font-size: 1.75rem;
+        }
+        
+        .profile-image {
+            height: 320px;
+        }
+        
+        .price-amount {
+            font-size: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .trainer-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .trainer-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .profile-section {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+        
+        .profile-card {
+            position: relative;
+            top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-image {
+            height: 280px;
+        }
+        
+        .trainer-name {
+            font-size: 1.5rem;
+        }
+        
+        .specialization {
+            font-size: 0.9rem;
+        }
+        
+        .booking-form {
+            margin-top: 1rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .trainer-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .profile-section {
+            grid-template-columns: 1fr !important;
+            gap: 1.25rem;
+        }
+        
+        .profile-card {
+            position: relative;
+            top: 0;
+        }
+        
+        .profile-image {
+            height: 240px;
+        }
+        
+        .profile-info {
+            padding: 1rem;
+        }
+        
+        .trainer-name {
+            font-size: 1.35rem;
+        }
+        
+        .specialization {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .rating {
+            margin-bottom: 1rem;
+        }
+        
+        .details-list {
+            margin-bottom: 1rem;
+        }
+        
+        .detail-item {
+            font-size: 0.85rem;
+        }
+        
+        .price-amount {
+            font-size: 1.25rem;
+        }
+        
+        .subscribe-btn {
+            padding: 0.6rem;
+            font-size: 0.9rem;
+        }
+        
+        .details-section {
+            padding: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .section-text {
+            font-size: 0.85rem;
+        }
+        
+        .booking-form {
+            padding: 1rem;
+        }
+        
+        .form-title {
+            font-size: 1.1rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .book-btn {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.9rem;
+        }
+        
+        .review-card {
+            padding: 0.75rem;
+        }
+        
+        .review-text {
+            font-size: 0.8rem;
+        }
+        
+        .review-meta {
+            font-size: 0.7rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .trainer-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .profile-image {
+            height: 200px;
+        }
+        
+        .trainer-name {
+            font-size: 1.2rem;
+        }
+        
+        .specialization {
+            font-size: 0.8rem;
+        }
+        
+        .detail-item {
+            font-size: 0.75rem;
+        }
+        
+        .price-amount {
+            font-size: 1.1rem;
+        }
+        
+        .subscribe-btn {
+            font-size: 0.8rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+        }
+        
+        .section-text {
+            font-size: 0.75rem;
+        }
+        
+        .form-title {
+            font-size: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            font-size: 0.75rem;
+            padding: 0.45rem;
+        }
+        
+        .review-text {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .trainer-name {
+            font-size: 1.1rem;
+        }
+        
+        .detail-item {
+            font-size: 0.7rem;
+        }
+        
+        .section-text {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .detail-card:active {
+            transform: scale(0.99);
+        }
+        
+        .subscribe-btn:active, .book-btn:active {
+            transform: scale(0.98);
+        }
+        
+        input, select, textarea {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .profile-section {
+            grid-template-columns: 1fr 1fr !important;
+        }
+        
+        .profile-card {
+            position: relative;
+            top: 0;
+        }
+        
+        .profile-image {
+            height: 200px;
+        }
+        
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .detail-card {
+            border: 2px solid #E94560;
+        }
+        
+        .subscribe-btn, .book-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .detail-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Smooth scroll */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Sticky profile card on desktop */
+    @media (min-width: 992px) {
+        .profile-card {
+            position: sticky;
+            top: 80px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 trainer-container fade-in">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 profile-section">
+        <!-- Trainer Profile Column -->
+        <div class="lg:col-span-1">
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden profile-card detail-card">
+                <!-- Image -->
+                <div class="h-64 bg-gradient-to-b from-[#E94560]/20 to-transparent profile-image">
+                    {% if trainer.profile_picture %}
+                        <img src="{{ trainer.profile_picture.url }}" alt="{{ trainer.full_name }}" class="w-full h-full object-cover object-top">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center">
+                            <i class="fas fa-user-circle text-8xl text-text-gray"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="p-6 profile-info">
+                    <h1 class="text-2xl font-bold text-white mb-1 trainer-name">{{ trainer.full_name }}</h1>
+                    <p class="text-[#E94560] mb-3 specialization">{{ trainer.get_specialization_display }}</p>
+                    
+                    <div class="flex items-center mb-4 rating">
+                        <div class="star-rating">
+                            {% with stars=trainer.get_rating_stars %}
+                                {% for i in ""|ljust:stars.full %}★{% endfor %}
+                                {% if stars.half %}½{% endif %}
+                                {% for i in ""|ljust:stars.empty %}☆{% endfor %}
+                            {% endwith %}
+                        </div>
+                        <span class="text-white ml-2">{{ trainer.average_rating|default:"0" }}</span>
+                        <span class="text-text-gray text-sm ml-1">({{ trainer.total_ratings|default:"0" }} reviews)</span>
+                    </div>
+                    
+                    <div class="space-y-3 mb-6 details-list">
+                        <div class="flex justify-between detail-item">
+                            <span class="text-text-gray">Experience:</span>
+                            <span class="text-white">{{ trainer.years_of_experience }} years</span>
+                        </div>
+                        <div class="flex justify-between detail-item">
+                            <span class="text-text-gray">Monthly Plan:</span>
+                            <span class="text-[#E94560] font-bold text-xl price-amount">₹{{ trainer.monthly_rate }}/month</span>
+                        </div>
+                        <div class="flex justify-between detail-item">
+                            <span class="text-text-gray">Status:</span>
+                            {% if trainer.is_available %}
+                                <span class="text-[#00D09C]"><i class="fas fa-circle text-xs mr-1"></i> Available</span>
+                            {% else %}
+                                <span class="text-red-500"><i class="fas fa-circle text-xs mr-1"></i> Not Available</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if trainer.is_available %}
+    {% if user.is_authenticated %}
+        <button onclick="document.getElementById('bookingForm').scrollIntoView({behavior: 'smooth'})" 
+                class="w-full bg-[#E94560] text-white py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all subscribe-btn">
+            <i class="fas fa-calendar-check mr-2"></i>
+            Subscribe Monthly
+        </button>
+    {% else %}
+        <a href="{% url 'login' %}" 
+           class="block w-full bg-[#E94560] text-white py-3 rounded-lg font-semibold text-center hover:bg-opacity-80 transition-all">
+            <i class="fas fa-sign-in-alt mr-2"></i>
+            Login to Subscribe
+        </a>
+    {% endif %}
+{% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Details Column -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Bio -->
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 detail-card details-section">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">
+                    <i class="fas fa-user text-[#E94560] mr-2"></i> About Me
+                </h2>
+                <p class="text-text-gray section-text">{{ trainer.bio }}</p>
+            </div>
+            
+            <!-- Qualifications -->
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 detail-card details-section">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">
+                    <i class="fas fa-graduation-cap text-[#E94560] mr-2"></i> Qualifications
+                </h2>
+                <p class="text-text-gray whitespace-pre-line section-text">{{ trainer.qualifications }}</p>
+            </div>
+            
+            <!-- Achievements -->
+            {% if trainer.achievements %}
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 detail-card details-section">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">
+                    <i class="fas fa-trophy text-[#E94560] mr-2"></i> Achievements
+                </h2>
+                <p class="text-text-gray whitespace-pre-line section-text">{{ trainer.achievements }}</p>
+            </div>
+            {% endif %}
+            
+            <!-- Reviews -->
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 detail-card details-section">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-3">
+                    <h2 class="text-xl font-bold text-white section-title">
+                        <i class="fas fa-star text-[#E94560] mr-2"></i> Client Reviews
+                    </h2>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'trainers:add_review' trainer.id %}" class="text-[#E94560] hover:underline text-sm">
+                        Write a Review <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                
+                {% if reviews %}
+                <div class="space-y-4">
+                    {% for review in reviews %}
+                    <div class="border-b border-[#E94560]/20 pb-3 last:border-0 review-card">
+                        <div class="flex justify-between items-start flex-wrap gap-2">
+                            <div>
+                                <div class="star-rating text-sm">
+                                    {% for i in ""|ljust:review.rating %}★{% endfor %}
+                                    {% for i in ""|ljust:5 %}{% if forloop.counter > review.rating %}☆{% endif %}{% endfor %}
+                                </div>
+                                <p class="text-text-gray text-sm mt-1 review-text">{{ review.review }}</p>
+                                <p class="text-text-gray text-xs mt-2 review-meta">
+                                    <i class="fas fa-user-circle mr-1"></i> {{ review.user.username }} 
+                                    <i class="fas fa-calendar-alt ml-2 mr-1"></i> {{ review.created_at|date:"M d, Y" }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-text-gray review-text">No reviews yet. Be the first to review!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Booking Form Section -->
+    <div id="bookingForm" class="mt-8 bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 booking-form detail-card">
+        <h2 class="text-xl font-bold text-white mb-4 form-title">
+            <i class="fas fa-calendar-alt text-[#E94560] mr-2"></i> Subscribe to Monthly Plan
+        </h2>
+        <p class="text-text-gray mb-4 section-text">Get personalized training sessions for the entire month at ₹{{ trainer.monthly_rate }}/month</p>
+        
+        {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'trainers:book' trainer.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="subscribe_monthly" value="1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 form-grid">
+                    <div>
+                        <label class="text-text-gray block mb-2 form-label">Select Start Date</label>
+                        <input type="date" name="session_date" required min="{% now 'Y-m-d' %}"
+                               class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] form-input">
+                    </div>
+                    <div>
+                        <label class="text-text-gray block mb-2 form-label">Preferred Time</label>
+                        <select name="session_time" required class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] form-select">
+                            <option value="">Select time</option>
+                            <option value="09:00">🌅 9:00 AM</option>
+                            <option value="10:00">☀️ 10:00 AM</option>
+                            <option value="11:00">☀️ 11:00 AM</option>
+                            <option value="14:00">🌤️ 2:00 PM</option>
+                            <option value="15:00">🌤️ 3:00 PM</option>
+                            <option value="16:00">🌤️ 4:00 PM</option>
+                            <option value="17:00">🌙 5:00 PM</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-text-gray block mb-2 form-label">Session Type</label>
+                        <select name="session_type" class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] form-select">
+                            <option value="online">💻 Online</option>
+                            <option value="in_person">🏢 In Person</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-text-gray block mb-2 form-label">Additional Notes</label>
+                        <textarea name="user_notes" rows="3" class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] form-textarea" placeholder="Tell us about your fitness goals..."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="mt-4 bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all book-btn">
+                    <i class="fas fa-rupee-sign mr-2"></i> Subscribe for ₹{{ trainer.monthly_rate }}/month
+                </button>
+            </form>
+        {% else %}
+            <p class="text-text-gray section-text">Please <a href="{% url 'login' %}" class="text-[#E94560] hover:underline">login</a> to subscribe to {{ trainer.full_name }}'s monthly plan.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.detail-card, .profile-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Set minimum date for session date picker
+    const dateInput = document.querySelector('input[name="session_date"]');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    }
+    
+    // Show success message if coming from redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('subscribed') === '1') {
+        showNotification('Subscription successful! Check your email for details.', 'success');
+    } else if (urlParams.get('reviewed') === '1') {
+        showNotification('Review submitted successfully!', 'success');
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+</script>
+{% endblock %}

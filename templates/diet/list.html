@@ -1,0 +1,606 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Diet Plans - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR DIET PLANS LISTING PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .diet-plans-container {
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+        }
+        
+        .plans-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 1.5rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .diet-plans-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        
+        .plans-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1.25rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .diet-plans-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+            padding: 0 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.35rem;
+        }
+        
+        .section-badge {
+            font-size: 0.7rem;
+        }
+        
+        .plans-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .plan-card {
+            padding: 1rem;
+        }
+        
+        .plan-title {
+            font-size: 1rem;
+        }
+        
+        .plan-description {
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .plan-calories {
+            font-size: 0.7rem;
+        }
+        
+        .view-link {
+            font-size: 0.7rem;
+        }
+        
+        .restricted-card {
+            padding: 1.5rem;
+            margin: 1rem auto;
+        }
+        
+        .restricted-icon {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .restricted-icon i {
+            font-size: 1.75rem;
+        }
+        
+        .restricted-title {
+            font-size: 1.35rem;
+        }
+        
+        .restricted-text {
+            font-size: 0.85rem;
+        }
+        
+        .action-buttons {
+            gap: 0.75rem;
+        }
+        
+        .action-buttons a {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .diet-plans-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+        }
+        
+        .section-icon {
+            font-size: 1.25rem;
+        }
+        
+        .plans-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .plan-card {
+            padding: 1rem;
+        }
+        
+        .plan-title {
+            font-size: 1rem;
+        }
+        
+        .plan-description {
+            font-size: 0.8rem;
+        }
+        
+        .restricted-card {
+            padding: 1.25rem;
+            margin: 1rem;
+        }
+        
+        .restricted-icon {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 1rem;
+        }
+        
+        .restricted-icon i {
+            font-size: 1.5rem;
+        }
+        
+        .restricted-title {
+            font-size: 1.2rem;
+        }
+        
+        .restricted-text {
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .action-buttons a {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-12 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 0.75rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .diet-plans-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+        }
+        
+        .section-icon {
+            font-size: 1.125rem;
+        }
+        
+        .section-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+        }
+        
+        .plans-grid {
+            gap: 0.75rem;
+        }
+        
+        .plan-card {
+            padding: 0.875rem;
+        }
+        
+        .plan-title {
+            font-size: 0.9rem;
+        }
+        
+        .plan-description {
+            font-size: 0.7rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-calories {
+            font-size: 0.65rem;
+        }
+        
+        .view-link {
+            font-size: 0.65rem;
+        }
+        
+        .restricted-card {
+            padding: 1rem;
+            margin: 0.5rem;
+        }
+        
+        .restricted-title {
+            font-size: 1.1rem;
+        }
+        
+        .restricted-text {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+        }
+        
+        .plan-title {
+            font-size: 0.85rem;
+        }
+        
+        .plan-description {
+            font-size: 0.65rem;
+        }
+        
+        .restricted-title {
+            font-size: 1rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .action-buttons a:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .plans-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .action-buttons a {
+            width: auto !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .plan-card, .restricted-card {
+            border: 2px solid #E94560;
+        }
+        
+        .action-buttons a {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Section hover effect */
+    .section-header {
+        transition: all 0.3s ease;
+    }
+    
+    .section-header:hover {
+        transform: translateX(5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if not user.membership_active and not user.is_staff %}
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-12 text-center max-w-2xl mx-auto mt-12 mb-12 restricted-card card-hover fade-in">
+        <div class="w-20 h-20 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-6 restricted-icon">
+            <i class="fas fa-lock text-[#E94560] text-4xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-4 restricted-title">Membership Required</h2>
+        <p class="text-text-gray mb-6 restricted-text">
+            You need an active membership to access diet plans.
+            Choose a plan that best suits your fitness goals!
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center action-buttons">
+            <a href="{% url 'membership:plans' %}" class="bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all">
+                <i class="fas fa-crown mr-2"></i> View Membership Plans
+            </a>
+            <a href="{% url 'dashboard' %}" class="border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+{% else %}
+<div class="py-12 diet-plans-container fade-in">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-white mb-4 page-title">Diet <span class="text-[#E94560]">Plans</span></h1>
+        <p class="text-text-gray text-lg max-w-2xl mx-auto page-subtitle">
+            Choose a diet plan that matches your fitness goals and start eating healthy!
+        </p>
+    </div>
+
+    <!-- Weight Loss Plans -->
+    <div class="mb-12">
+        <div class="flex items-center gap-3 mb-6 section-header">
+            <i class="fas fa-weight-scale text-[#00D09C] text-2xl section-icon"></i>
+            <h2 class="text-2xl font-bold text-white section-title">Weight Loss Plans</h2>
+            <span class="bg-[#00D09C]/20 text-[#00D09C] px-2 py-1 rounded text-xs section-badge">{{ weight_loss_plans|length }} plans</span>
+        </div>
+        
+        {% if weight_loss_plans %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 plans-grid">
+            {% for plan in weight_loss_plans %}
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 plan-card card-hover">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-bold text-white plan-title">{{ plan.get_day_of_week_display }}</h3>
+                    <i class="fas fa-calendar-day text-[#E94560] text-sm"></i>
+                </div>
+                <p class="text-text-gray text-sm mb-3 plan-description">{{ plan.description|truncatechars:80 }}</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-text-gray text-xs plan-calories">
+                        <i class="fas fa-fire mr-1"></i> {{ plan.total_calories }} cal
+                    </span>
+                    <a href="{% url 'diet:detail' plan.id %}" class="text-[#E94560] hover:underline text-sm view-link">
+                        View Plan <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-[#1A1A2E] rounded-xl p-8 text-center border border-[#E94560]/20">
+            <p class="text-text-gray">No weight loss plans available yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Weight Gain Plans -->
+    <div class="mb-12">
+        <div class="flex items-center gap-3 mb-6 section-header">
+            <i class="fas fa-chart-line text-[#E94560] text-2xl section-icon"></i>
+            <h2 class="text-2xl font-bold text-white section-title">Weight Gain Plans</h2>
+            <span class="bg-[#E94560]/20 text-[#E94560] px-2 py-1 rounded text-xs section-badge">{{ weight_gain_plans|length }} plans</span>
+        </div>
+        
+        {% if weight_gain_plans %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 plans-grid">
+            {% for plan in weight_gain_plans %}
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 plan-card card-hover">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-bold text-white plan-title">{{ plan.get_day_of_week_display }}</h3>
+                    <i class="fas fa-calendar-day text-[#E94560] text-sm"></i>
+                </div>
+                <p class="text-text-gray text-sm mb-3 plan-description">{{ plan.description|truncatechars:80 }}</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-text-gray text-xs plan-calories">
+                        <i class="fas fa-fire mr-1"></i> {{ plan.total_calories }} cal
+                    </span>
+                    <a href="{% url 'diet:detail' plan.id %}" class="text-[#E94560] hover:underline text-sm view-link">
+                        View Plan <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-[#1A1A2E] rounded-xl p-8 text-center border border-[#E94560]/20">
+            <p class="text-text-gray">No weight gain plans available yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Muscle Gain Plans -->
+    <div class="mb-12">
+        <div class="flex items-center gap-3 mb-6 section-header">
+            <i class="fas fa-dumbbell text-orange-500 text-2xl section-icon"></i>
+            <h2 class="text-2xl font-bold text-white section-title">Muscle Gain Plans</h2>
+            <span class="bg-orange-500/20 text-orange-500 px-2 py-1 rounded text-xs section-badge">{{ muscle_gain_plans|length }} plans</span>
+        </div>
+        
+        {% if muscle_gain_plans %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 plans-grid">
+            {% for plan in muscle_gain_plans %}
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 plan-card card-hover">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-bold text-white plan-title">{{ plan.get_day_of_week_display }}</h3>
+                    <i class="fas fa-calendar-day text-[#E94560] text-sm"></i>
+                </div>
+                <p class="text-text-gray text-sm mb-3 plan-description">{{ plan.description|truncatechars:80 }}</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-text-gray text-xs plan-calories">
+                        <i class="fas fa-fire mr-1"></i> {{ plan.total_calories }} cal
+                    </span>
+                    <a href="{% url 'diet:detail' plan.id %}" class="text-[#E94560] hover:underline text-sm view-link">
+                        View Plan <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-[#1A1A2E] rounded-xl p-8 text-center border border-[#E94560]/20">
+            <p class="text-text-gray">No muscle gain plans available yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Maintenance Plans -->
+    <div class="mb-12">
+        <div class="flex items-center gap-3 mb-6 section-header">
+            <i class="fas fa-heart text-pink-500 text-2xl section-icon"></i>
+            <h2 class="text-2xl font-bold text-white section-title">Maintenance Plans</h2>
+            <span class="bg-pink-500/20 text-pink-500 px-2 py-1 rounded text-xs section-badge">{{ maintenance_plans|length }} plans</span>
+        </div>
+        
+        {% if maintenance_plans %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 plans-grid">
+            {% for plan in maintenance_plans %}
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 plan-card card-hover">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-bold text-white plan-title">{{ plan.get_day_of_week_display }}</h3>
+                    <i class="fas fa-calendar-day text-[#E94560] text-sm"></i>
+                </div>
+                <p class="text-text-gray text-sm mb-3 plan-description">{{ plan.description|truncatechars:80 }}</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-text-gray text-xs plan-calories">
+                        <i class="fas fa-fire mr-1"></i> {{ plan.total_calories }} cal
+                    </span>
+                    <a href="{% url 'diet:detail' plan.id %}" class="text-[#E94560] hover:underline text-sm view-link">
+                        View Plan <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-[#1A1A2E] rounded-xl p-8 text-center border border-[#E94560]/20">
+            <p class="text-text-gray">No maintenance plans available yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    // Animate plan cards
+    document.querySelectorAll('.plan-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Animate section headers
+    document.querySelectorAll('.section-header').forEach(header => {
+        header.style.opacity = '0';
+        header.style.transform = 'translateX(-10px)';
+        header.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(header);
+    });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,784 @@
+{% extends 'base/base.html' %}
+
+{% block title %}My Sessions - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR MY SESSIONS PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .session-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .session-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.15);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .sessions-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+        }
+        
+        .session-card {
+            padding: 1.25rem;
+        }
+        
+        .trainer-name {
+            font-size: 1.1rem;
+        }
+        
+        .session-detail {
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .sessions-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .sessions-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+        }
+        
+        .session-card {
+            padding: 1rem;
+        }
+        
+        .session-content {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        
+        .session-info {
+            width: 100%;
+        }
+        
+        .session-actions {
+            width: 100%;
+            text-align: left !important;
+        }
+        
+        .trainer-name {
+            font-size: 1rem;
+        }
+        
+        .session-detail {
+            font-size: 0.85rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .cancel-link, .join-link {
+            display: inline-block;
+            margin-right: 1rem;
+        }
+        
+        .empty-state {
+            padding: 1.5rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .sessions-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .session-card {
+            padding: 0.875rem;
+        }
+        
+        .trainer-name {
+            font-size: 0.95rem;
+        }
+        
+        .session-detail {
+            font-size: 0.8rem;
+        }
+        
+        .session-price {
+            font-size: 0.85rem;
+        }
+        
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+        }
+        
+        .cancel-link, .join-link {
+            font-size: 0.75rem;
+        }
+        
+        .empty-state {
+            padding: 1.25rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.8rem;
+        }
+        
+        .review-section {
+            padding: 0.875rem;
+        }
+        
+        .review-text {
+            font-size: 0.8rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 0.75rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .sessions-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+        }
+        
+        .section-title i {
+            font-size: 0.9rem;
+        }
+        
+        .session-card {
+            padding: 0.75rem;
+        }
+        
+        .trainer-name {
+            font-size: 0.9rem;
+        }
+        
+        .session-detail {
+            font-size: 0.75rem;
+        }
+        
+        .session-price {
+            font-size: 0.8rem;
+        }
+        
+        .cancel-link, .join-link {
+            font-size: 0.7rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .trainer-name {
+            font-size: 0.85rem;
+        }
+        
+        .session-detail {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .session-card:active {
+            transform: scale(0.99);
+        }
+        
+        .session-card:hover {
+            transform: none;
+        }
+        
+        .cancel-link:active, .join-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .session-content {
+            flex-direction: row !important;
+        }
+        
+        .session-actions {
+            text-align: right !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .session-card {
+            border: 2px solid #E94560;
+        }
+        
+        .cancel-link, .join-link {
+            border: 1px solid;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .session-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Status badge colors */
+    .status-pending {
+        background-color: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
+    }
+    
+    .status-approved {
+        background-color: rgba(0, 208, 156, 0.2);
+        color: #00D09C;
+    }
+    
+    .status-completed {
+        background-color: rgba(0, 208, 156, 0.2);
+        color: #00D09C;
+    }
+    
+    .status-cancelled {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 sessions-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">
+            <i class="fas fa-calendar-alt text-[#E94560] mr-2"></i>
+            My Sessions
+        </h1>
+        <p class="text-text-gray page-subtitle">View and manage your booked training sessions</p>
+    </div>
+
+<!-- Upcoming Sessions -->
+<!-- Upcoming Sessions -->
+<div class="mb-8">
+    <h2 class="text-xl font-bold text-white mb-4">
+        <i class="fas fa-calendar-alt text-[#E94560] mr-2"></i> Upcoming Sessions
+        <span class="ml-2 bg-[#E94560]/20 text-[#E94560] text-xs px-2 py-0.5 rounded-full">{{ upcoming_sessions|length }} session{% if upcoming_sessions|length != 1 %}s{% endif %}</span>
+    </h2>
+    
+    {% if upcoming_sessions %}
+    <div class="space-y-4">
+        {% for session in upcoming_sessions %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-white">{{ session.trainer.full_name }}</h3>
+                    <p class="text-text-gray text-sm">
+                        <i class="far fa-calendar mr-1"></i> {{ session.session_date|date:"l, F d, Y" }}
+                        at {{ session.session_time|time:"g:i A" }}
+                    </p>
+                    <p class="text-text-gray text-sm">
+                        <i class="fas fa-video mr-1"></i> {{ session.get_session_type_display }}
+                    </p>
+                    <p class="text-[#E94560] font-semibold mt-1">₹{{ session.amount }}</p>
+                </div>
+                <div class="text-right">
+                    <div class="mb-2">
+                        {% if session.status == 'pending' %}
+                            <span class="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded text-xs">Pending Confirmation</span>
+                        {% elif session.status == 'approved' %}
+                            <span class="bg-[#00D09C]/20 text-[#00D09C] px-2 py-1 rounded text-xs">Approved</span>
+                        {% elif session.status == 'paid' %}
+                            <span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs">Paid</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Pay Now Button - Redirect to checkout page -->
+                    {% if session.status == 'approved' %}
+                        <a href="{% url 'payments:initiate_session_payment' session.id %}" 
+                           class="bg-[#E94560] text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-80 transition-all inline-block">
+                            <i class="fas fa-credit-card mr-1"></i> Pay Now
+                        </a>
+                    {% endif %}
+                    
+                    {% if session.status == 'paid' %}
+                        <span class="text-[#00D09C] text-sm">
+                            <i class="fas fa-check-circle mr-1"></i> Payment Completed
+                        </span>
+                    {% endif %}
+                    
+                    {% if session.meeting_link and session.status == 'paid' %}
+                        <a href="{{ session.meeting_link }}" target="_blank" 
+                           class="block mt-2 text-[#E94560] hover:underline text-sm">
+                            <i class="fas fa-video mr-1"></i> Join Meeting
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-8 text-center">
+        <p class="text-text-gray">No upcoming sessions.</p>
+        <a href="{% url 'trainers:list' %}" class="inline-block mt-3 text-[#E94560] hover:underline">
+            Book a session with a trainer →
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+  <!-- Rejected Sessions -->
+{% if rejected_sessions %}
+<div class="mt-8">
+    <h2 class="text-xl font-bold text-white mb-4">
+        <i class="fas fa-times-circle text-red-400 mr-2"></i> Rejected Sessions
+    </h2>
+    <div class="space-y-3">
+        {% for session in rejected_sessions %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-red-500/30 p-4 opacity-75">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-white">{{ session.trainer.full_name }}</h3>
+                    <p class="text-text-gray text-sm">
+                        {{ session.session_date|date:"l, F d, Y" }} at {{ session.session_time|time:"g:i A" }}
+                    </p>
+                    <p class="text-text-gray text-sm">{{ session.get_session_type_display }}</p>
+                    {% if session.cancellation_reason %}
+                    <p class="text-red-400 text-sm mt-1">
+                        <i class="fas fa-info-circle mr-1"></i> Reason: {{ session.cancellation_reason }}
+                    </p>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs">
+                        Rejected
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+
+    <!-- Past Sessions -->
+    <div class="mb-8 mt-12">
+        <h2 class="text-xl font-bold text-white mb-4 section-title">
+            <i class="fas fa-history text-[#E94560] mr-2"></i> Past Sessions
+            {% if past_sessions %}
+            <span class="text-sm text-text-gray font-normal ml-2">({{ past_sessions|length }} session{{ past_sessions|pluralize }})</span>
+            {% endif %}
+        </h2>
+        
+        {% if past_sessions %}
+        <div class="space-y-3">
+            {% for session in past_sessions %}
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-4 opacity-75 session-card">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 session-content">
+                    <div class="session-info">
+                        <h3 class="text-lg font-bold text-white trainer-name">{{ session.trainer.full_name }}</h3>
+                        <p class="text-text-gray text-sm session-detail">
+                            <i class="far fa-calendar mr-1"></i> {{ session.session_date|date:"l, F d, Y" }}
+                            at {{ session.session_time|time:"g:i A" }}
+                        </p>
+                        <p class="text-text-gray text-sm session-detail">
+                            <i class="fas fa-video mr-1"></i> {{ session.get_session_type_display }}
+                        </p>
+                    </div>
+                    <div class="session-actions">
+                        {% if session.status == 'completed' %}
+                            <span class="status-completed px-2 py-1 rounded text-xs status-badge">
+                                <i class="fas fa-check-circle mr-1"></i> Completed
+                            </span>
+                        {% elif session.status == 'cancelled' %}
+                            <span class="status-cancelled px-2 py-1 rounded text-xs status-badge">
+                                <i class="fas fa-times-circle mr-1"></i> Cancelled
+                            </span>
+                        {% else %}
+                            <span class="bg-gray-500/20 text-text-gray px-2 py-1 rounded text-xs status-badge">
+                                {{ session.status|title }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-8 text-center empty-state">
+            <i class="fas fa-history text-4xl text-text-gray mb-3 empty-state-icon"></i>
+            <p class="text-text-gray empty-state-text">No past sessions.</p>
+        </div>
+        {% endif %}
+    </div>
+
+  
+    <!-- Add Review Section -->
+    {% if completed_sessions %}
+    <div>
+        <h2 class="text-xl font-bold text-white mb-4 section-title">
+            <i class="fas fa-star text-[#E94560] mr-2"></i> Rate Your Experience
+        </h2>
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-4 review-section session-card">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-3">
+                <div>
+                    <p class="text-text-gray review-text">
+                        <i class="fas fa-smile-beam text-[#E94560] mr-1"></i>
+                        You have {{ completed_sessions|length }} completed session{{ completed_sessions|pluralize }}. Share your feedback!
+                    </p>
+                </div>
+                <a href="{% url 'trainers:list' %}" class="text-[#E94560] hover:underline text-sm">
+                    Leave a review for your trainer <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4">
+    <div class="bg-[#1A1A2E] rounded-xl max-w-md w-full">
+        <div class="flex justify-between items-center p-4 border-b border-[#E94560]/20">
+            <h3 class="text-white font-semibold">Complete Payment</h3>
+            <button onclick="closePaymentModal()" class="text-text-gray hover:text-[#E94560]">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <div class="mb-4 text-center">
+                <i class="fas fa-credit-card text-[#E94560] text-4xl mb-2"></i>
+                <p class="text-white font-semibold" id="modalTrainerName"></p>
+                <p class="text-[#E94560] text-2xl font-bold mt-2" id="modalAmount"></p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2">Select Payment Method</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="flex items-center p-3 bg-[#0F0F1A] rounded-lg cursor-pointer border border-transparent hover:border-[#E94560]">
+                        <input type="radio" name="modal_payment_method" value="card" class="mr-2" checked>
+                        <i class="fab fa-cc-visa text-text-gray"></i>
+                        <span class="text-text-gray text-sm ml-2">Card</span>
+                    </label>
+                    <label class="flex items-center p-3 bg-[#0F0F1A] rounded-lg cursor-pointer border border-transparent hover:border-[#E94560]">
+                        <input type="radio" name="modal_payment_method" value="upi" class="mr-2">
+                        <i class="fas fa-mobile-alt text-text-gray"></i>
+                        <span class="text-text-gray text-sm ml-2">UPI</span>
+                    </label>
+                </div>
+            </div>
+            
+            <button id="modalPayBtn" class="w-full bg-[#E94560] text-white py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all">
+                <i class="fas fa-rupee-sign mr-2"></i> Pay Now
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentSessionId = null;
+    let currentAmount = null;
+    let currentTrainerName = null;
+    
+    function openPaymentModal(sessionId, trainerName, amount) {
+        currentSessionId = sessionId;
+        currentAmount = amount;
+        currentTrainerName = trainerName;
+        
+        document.getElementById('modalTrainerName').innerHTML = `<i class="fas fa-chalkboard-user mr-1"></i> ${trainerName}`;
+        document.getElementById('modalAmount').innerHTML = `₹${amount}`;
+        document.getElementById('paymentModal').classList.remove('hidden');
+        document.getElementById('paymentModal').classList.add('flex');
+    }
+    
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.add('hidden');
+        document.getElementById('paymentModal').classList.remove('flex');
+    }
+    
+    // Handle payment when Pay Now button is clicked
+    document.getElementById('modalPayBtn').addEventListener('click', function() {
+        const paymentMethod = document.querySelector('input[name="modal_payment_method"]:checked').value;
+        
+        // Disable button and show loading
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+        btn.disabled = true;
+        
+        // Call API to create Razorpay order
+        fetch(`/payments/create-session-order/${currentSessionId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                payment_method: paymentMethod
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Open Razorpay checkout
+                var options = {
+                    "key": data.razorpay_key,
+                    "amount": data.amount,
+                    "currency": "INR",
+                    "name": "FitZone",
+                    "description": `Trainer Session with ${currentTrainerName}`,
+                    "order_id": data.order_id,
+                    "handler": function(response) {
+                        // Payment successful - verify on server
+                        fetch('/payments/verify-session-payment/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature,
+                                session_id: currentSessionId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(result => {
+                            if (result.success) {
+                                alert('Payment successful! Your session is confirmed.');
+                                window.location.reload();
+                            } else {
+                                alert('Payment verification failed. Please contact support.');
+                            }
+                        });
+                    },
+                    "prefill": {
+                        "name": "{{ user.full_name|default:user.username }}",
+                        "email": "{{ user.email }}",
+                        "contact": "{{ user.mobile_number|default:'9876543210' }}"
+                    },
+                    "theme": {
+                        "color": "#E94560"
+                    },
+                    "modal": {
+                        "ondismiss": function() {
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }
+                    }
+                };
+                
+                var rzp = new Razorpay(options);
+                rzp.open();
+                
+                rzp.on('payment.failed', function(response) {
+                    alert('Payment failed. Please try again.');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    closePaymentModal();
+                });
+            } else {
+                alert(data.error || 'Failed to create order. Please try again.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Something went wrong. Please try again.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    });
+    
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePaymentModal();
+        }
+    });
+    
+    // Close modal on outside click
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePaymentModal();
+        }
+    });
+</script>
+
+{% csrf_token %}
+
+<script>
+    // Add animation to session cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.session-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity 0.5s ease, transform 0.5s ease`;
+        card.style.transitionDelay = `${Math.min(index * 0.05, 0.5)}s`;
+        observer.observe(card);
+    });
+    
+    // Show notification based on URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('cancelled') === '1') {
+        showNotification('Session cancelled successfully', 'success');
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Add join meeting button functionality with tracking
+    const joinLinks = document.querySelectorAll('.join-link');
+    joinLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            console.log('Joining meeting for session');
+        });
+    });
+</script>
+{% endblock %}

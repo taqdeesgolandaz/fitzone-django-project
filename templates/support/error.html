@@ -1,0 +1,593 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Error - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR ERROR PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .error-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .error-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+    }
+    
+    /* Icon animation */
+    .error-icon {
+        animation: shake 0.5s ease-in-out;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-8px); }
+        75% { transform: translateX(8px); }
+    }
+    
+    /* Pulse animation for icon */
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    .error-icon-pulse {
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .error-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .error-card {
+            padding: 3rem;
+        }
+        
+        .error-icon {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .error-icon svg {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+        }
+        
+        .error-message {
+            font-size: 1.1rem;
+        }
+        
+        .solutions-box {
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+        
+        .solution-title {
+            font-size: 0.95rem;
+        }
+        
+        .solution-item {
+            font-size: 0.9rem;
+        }
+        
+        .btn-back, .btn-try {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .error-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .error-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .error-card {
+            padding: 2rem;
+        }
+        
+        .error-icon {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .error-icon svg {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .error-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .error-message {
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        
+        .solutions-box {
+            padding: 1rem;
+            margin: 1.25rem 0;
+        }
+        
+        .solution-title {
+            font-size: 0.85rem;
+        }
+        
+        .solution-item {
+            font-size: 0.8rem;
+        }
+        
+        .action-buttons {
+            gap: 1rem;
+        }
+        
+        .btn-back, .btn-try {
+            padding: 0.6rem 1.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .alternative-contact {
+            margin-top: 1.5rem;
+        }
+        
+        .contact-text {
+            font-size: 0.85rem;
+        }
+        
+        .contact-link {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .error-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .error-card {
+            padding: 1.5rem;
+        }
+        
+        .error-icon {
+            width: 90px;
+            height: 90px;
+        }
+        
+        .error-icon svg {
+            width: 45px;
+            height: 45px;
+        }
+        
+        .error-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .error-message {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .solutions-box {
+            padding: 0.875rem;
+            margin: 1rem 0;
+        }
+        
+        .solution-title {
+            font-size: 0.8rem;
+        }
+        
+        .solution-item {
+            font-size: 0.75rem;
+            margin-left: 1.25rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn-back, .btn-try {
+            width: 100%;
+            justify-content: center;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .alternative-contact {
+            margin-top: 1.25rem;
+        }
+        
+        .alternative-contact p {
+            font-size: 0.8rem;
+        }
+        
+        .contact-links {
+            gap: 0.75rem;
+        }
+        
+        .contact-link {
+            font-size: 0.75rem;
+        }
+        
+        .contact-divider {
+            font-size: 0.7rem;
+        }
+        
+        .py-20 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .error-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .error-card {
+            padding: 1.25rem;
+        }
+        
+        .error-icon {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .error-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .error-title {
+            font-size: 1.35rem;
+        }
+        
+        .error-message {
+            font-size: 0.85rem;
+        }
+        
+        .solutions-box {
+            padding: 0.75rem;
+        }
+        
+        .solution-title {
+            font-size: 0.75rem;
+        }
+        
+        .solution-item {
+            font-size: 0.7rem;
+        }
+        
+        .btn-back, .btn-try {
+            font-size: 0.8rem;
+        }
+        
+        .contact-link {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .error-card {
+            padding: 1rem;
+        }
+        
+        .error-icon {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .error-title {
+            font-size: 1.2rem;
+        }
+        
+        .error-message {
+            font-size: 0.8rem;
+        }
+        
+        .solution-item {
+            font-size: 0.65rem;
+        }
+        
+        .contact-link {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .error-title {
+            font-size: 1.1rem;
+        }
+        
+        .error-message {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .error-card:active {
+            transform: scale(0.98);
+        }
+        
+        .error-card:hover {
+            transform: none;
+        }
+        
+        .btn-back:active, .btn-try:active {
+            transform: scale(0.98);
+        }
+        
+        .contact-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .error-container {
+            max-width: 90%;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .btn-back, .btn-try {
+            width: auto !important;
+            min-width: 140px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .error-card {
+            border: 2px solid #ef4444;
+        }
+        
+        .solutions-box {
+            border: 1px solid #ef4444;
+        }
+        
+        .btn-back, .btn-try {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .error-icon {
+            animation: none;
+        }
+        
+        .error-icon-pulse {
+            animation: none;
+        }
+        
+        .error-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Print styles */
+    @media print {
+        .action-buttons, .alternative-contact {
+            display: none;
+        }
+        
+        .error-card {
+            border: 1px solid #ddd;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-20 error-container fade-in">
+    <div class="bg-[#1A1A2E] rounded-2xl border border-red-500/30 p-10 text-center error-card">
+        <!-- Error Icon -->
+        <div class="mb-6">
+            <div class="w-24 h-24 bg-red-500/20 rounded-full flex items-center justify-center mx-auto error-icon">
+                <svg class="w-12 h-12 text-red-500 error-icon-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <h1 class="text-3xl font-bold text-white mb-3 error-title">Something Went Wrong! 😞</h1>
+        
+        <p class="text-text-gray text-lg mb-4 error-message">{{ error_message|default:"We couldn't send your message. Please try again." }}</p>
+        
+        <div class="bg-[#0F0F1A] rounded-lg p-4 my-6 text-left solutions-box">
+            <p class="text-text-gray text-sm mb-2 solution-title">
+                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>
+                <strong>Try these solutions:</strong>
+            </p>
+            <ul class="text-text-gray text-sm space-y-2 ml-6 list-disc solution-item">
+                <li>Check your internet connection</li>
+                <li>Make sure all required fields are filled</li>
+                <li>Try refreshing the page</li>
+                <li>Contact us directly via phone or email</li>
+            </ul>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center action-buttons">
+            <a href="javascript:history.back()" 
+               class="inline-flex items-center justify-center gap-2 bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Go Back
+            </a>
+            <a href="{% url 'support:contact' %}" 
+               class="inline-flex items-center justify-center gap-2 border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg font-semibold hover:bg-[#E94560] hover:text-white transition-all btn-try">
+                <i class="fas fa-redo-alt"></i>
+                Try Again
+            </a>
+        </div>
+    </div>
+    
+    <!-- Alternative Contact -->
+    <div class="mt-8 text-center alternative-contact">
+        <p class="text-text-gray text-sm contact-text">Still having issues?</p>
+        <div class="flex flex-wrap gap-3 justify-center mt-3 contact-links">
+            <a href="tel:+919876543210" class="text-[#E94560] hover:underline text-sm contact-link">
+                <i class="fas fa-phone mr-1"></i> Call Us: +91 98765 43210
+            </a>
+            <span class="text-text-gray contact-divider">•</span>
+            <a href="mailto:support@fitzone.com" class="text-[#E94560] hover:underline text-sm contact-link">
+                <i class="fas fa-envelope mr-1"></i> support@fitzone.com
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Log error to console for debugging
+    console.log('Error page displayed');
+    
+    // Track error event (optional analytics)
+    function trackError() {
+        const errorMessage = '{{ error_message|default:"Unknown error" }}';
+        console.log('Error tracked:', errorMessage);
+        // You can add analytics tracking here
+        // ga('send', 'event', 'Error', 'Page View', errorMessage);
+    }
+    
+    trackError();
+    
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const errorCard = document.querySelector('.error-card');
+    if (errorCard) {
+        errorCard.style.opacity = '0';
+        errorCard.style.transform = 'translateY(20px)';
+        errorCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(errorCard);
+    }
+    
+    // Auto-refresh after 30 seconds (optional)
+    let refreshTimer;
+    function startRefreshTimer() {
+        refreshTimer = setTimeout(() => {
+            location.reload();
+        }, 30000);
+    }
+    
+    // Uncomment to enable auto-refresh
+    // startRefreshTimer();
+    
+    // Clear timer on user interaction
+    document.addEventListener('click', () => {
+        if (refreshTimer) {
+            clearTimeout(refreshTimer);
+        }
+    });
+    
+    // Copy error details to clipboard (for debugging)
+    function copyErrorDetails() {
+        const errorDetails = {
+            error: '{{ error_message|default:"Unknown error" }}',
+            url: window.location.href,
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent
+        };
+        
+        navigator.clipboard.writeText(JSON.stringify(errorDetails, null, 2))
+            .then(() => {
+                showNotification('Error details copied to clipboard', 'success');
+            })
+            .catch(() => {
+                console.log('Failed to copy error details');
+            });
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+</script>
+{% endblock %}

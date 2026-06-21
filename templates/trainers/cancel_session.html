@@ -1,0 +1,592 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Cancel Session - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR CANCEL SESSION PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .cancel-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .cancel-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+    }
+    
+    /* Icon animation */
+    .warning-icon {
+        animation: shake 0.5s ease-in-out;
+    }
+    
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .cancel-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .cancel-card {
+            padding: 2rem;
+        }
+        
+        .warning-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .session-details {
+            padding: 1rem;
+        }
+        
+        .session-detail {
+            font-size: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.95rem;
+        }
+        
+        .form-textarea {
+            padding: 0.6rem;
+            font-size: 0.95rem;
+        }
+        
+        .btn-cancel, .btn-back {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .cancel-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .cancel-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .cancel-card {
+            padding: 1.5rem;
+        }
+        
+        .warning-icon {
+            font-size: 3.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .session-details {
+            padding: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .session-detail {
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-label {
+            font-size: 0.85rem;
+        }
+        
+        .form-textarea {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .action-buttons {
+            gap: 0.75rem;
+        }
+        
+        .btn-cancel, .btn-back {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .cancel-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .cancel-card {
+            padding: 1.25rem;
+        }
+        
+        .warning-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .session-details {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .session-detail {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .session-label {
+            font-weight: 600;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-textarea {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            min-height: 80px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .btn-cancel, .btn-back {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .cancel-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .cancel-card {
+            padding: 1rem;
+        }
+        
+        .warning-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .session-details {
+            padding: 0.625rem;
+            margin-bottom: 0.875rem;
+        }
+        
+        .session-detail {
+            font-size: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+        }
+        
+        .form-textarea {
+            padding: 0.45rem;
+            font-size: 0.75rem;
+            min-height: 70px;
+        }
+        
+        .btn-cancel, .btn-back {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-cancel i, .btn-back i {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .cancel-card {
+            padding: 0.875rem;
+        }
+        
+        .warning-icon {
+            font-size: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .session-detail {
+            font-size: 0.7rem;
+        }
+        
+        .btn-cancel, .btn-back {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .page-title {
+            font-size: 1rem;
+        }
+        
+        .session-detail {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .cancel-card:active {
+            transform: scale(0.98);
+        }
+        
+        .cancel-card:hover {
+            transform: none;
+        }
+        
+        .btn-cancel:active, .btn-back:active {
+            transform: scale(0.98);
+        }
+        
+        textarea {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .btn-cancel, .btn-back {
+            width: auto !important;
+            min-width: 140px;
+        }
+        
+        .session-details {
+            padding: 0.5rem;
+        }
+        
+        .form-textarea {
+            min-height: 60px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .cancel-card {
+            border: 2px solid #ef4444;
+        }
+        
+        .session-details {
+            border: 1px solid #ef4444;
+        }
+        
+        .btn-cancel, .btn-back {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .warning-icon {
+            animation: none;
+        }
+        
+        .cancel-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Helper classes */
+    .required-star {
+        color: #E94560;
+        margin-left: 2px;
+    }
+    
+    /* Warning text styling */
+    .warning-text {
+        color: #f87171;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 cancel-container fade-in">
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 cancel-card">
+        <div class="text-center mb-6">
+            <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-exclamation-triangle text-red-500 text-4xl warning-icon"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white page-title">Cancel Session</h2>
+            <p class="text-text-gray page-subtitle">Are you sure you want to cancel this session?</p>
+        </div>
+
+        <div class="bg-[#0F0F1A] rounded-lg p-4 mb-6 session-details">
+            <div class="grid grid-cols-1 gap-2">
+                <div class="flex justify-between items-center flex-wrap gap-2 session-detail">
+                    <span class="text-text-gray session-label">👨‍🏫 Trainer:</span>
+                    <span class="text-white font-semibold">{{ session.trainer.full_name }}</span>
+                </div>
+                <div class="flex justify-between items-center flex-wrap gap-2 session-detail">
+                    <span class="text-text-gray session-label">📅 Date:</span>
+                    <span class="text-white">{{ session.session_date|date:"l, F d, Y" }}</span>
+                </div>
+                <div class="flex justify-between items-center flex-wrap gap-2 session-detail">
+                    <span class="text-text-gray session-label">⏰ Time:</span>
+                    <span class="text-white">{{ session.session_time|time:"g:i A" }}</span>
+                </div>
+                <div class="flex justify-between items-center flex-wrap gap-2 session-detail">
+                    <span class="text-text-gray session-label">💻 Type:</span>
+                    <span class="text-white">{{ session.get_session_type_display }}</span>
+                </div>
+                <div class="flex justify-between items-center flex-wrap gap-2 session-detail">
+                    <span class="text-text-gray session-label">💰 Amount:</span>
+                    <span class="text-[#E94560] font-semibold">₹{{ session.amount }}</span>
+                </div>
+                {% if session.status == 'pending' %}
+                <div class="flex justify-between items-center flex-wrap gap-2 session-detail">
+                    <span class="text-text-gray session-label">📊 Status:</span>
+                    <span class="text-yellow-400">Pending</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Cancellation Policy Notice -->
+            <div class="mt-3 pt-3 border-t border-red-500/20">
+                <p class="text-red-400 text-xs">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Note: Cancellation may be subject to our cancellation policy. Refunds will be processed as per policy.
+                </p>
+            </div>
+        </div>
+
+        <form method="POST" id="cancelForm">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    Reason for cancellation <span class="text-text-gray text-xs">(optional)</span>
+                </label>
+                <textarea name="cancellation_reason" rows="3" 
+                          placeholder="Please let us know why you're canceling this session..."
+                          class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-red-500 transition-all form-textarea"></textarea>
+                <p class="text-text-gray text-xs mt-1">Your feedback helps us improve our service.</p>
+            </div>
+            
+            <div class="flex gap-4 action-buttons">
+                <button type="submit" id="cancelBtn" class="flex-1 bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition-all btn-cancel">
+                    <span id="btnText"><i class="fas fa-trash-alt mr-2"></i> Yes, Cancel Session</span>
+                    <span id="btnLoader" class="hidden">
+                        <svg class="animate-spin h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
+                <a href="{% url 'trainers:my_sessions' %}" 
+                   class="flex-1 text-center border border-[#E94560] text-[#E94560] py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all btn-back">
+                    <i class="fas fa-arrow-left mr-2"></i> No, Go Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Form submission with loading state
+    const form = document.getElementById('cancelForm');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Show confirmation dialog
+            const confirmed = confirm('Are you absolutely sure you want to cancel this session? This action cannot be undone.');
+            if (!confirmed) {
+                e.preventDefault();
+                return;
+            }
+            
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            cancelBtn.disabled = true;
+            cancelBtn.classList.add('opacity-70');
+        });
+    }
+    
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const cancelCard = document.querySelector('.cancel-card');
+    if (cancelCard) {
+        cancelCard.style.opacity = '0';
+        cancelCard.style.transform = 'translateY(20px)';
+        cancelCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(cancelCard);
+    }
+    
+    // Show notification based on URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('cancelled') === '1') {
+        showNotification('Session cancelled successfully', 'success');
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Character counter for cancellation reason
+    const reasonTextarea = document.querySelector('textarea[name="cancellation_reason"]');
+    if (reasonTextarea) {
+        // Optional: Add character counter
+        const counter = document.createElement('div');
+        counter.className = 'text-text-gray text-xs mt-1 text-right';
+        counter.innerHTML = '0 / 500 characters';
+        reasonTextarea.parentNode.appendChild(counter);
+        
+        reasonTextarea.addEventListener('input', function() {
+            const length = this.value.length;
+            counter.innerHTML = `${length} / 500 characters`;
+            if (length > 500) {
+                this.value = this.value.substring(0, 500);
+                counter.innerHTML = '500 / 500 characters';
+                counter.style.color = '#E94560';
+            } else {
+                counter.style.color = '#A0A0A0';
+            }
+        });
+    }
+    
+    // Warn before leaving if form has changes
+    let formChanged = false;
+    const reasonInput = document.querySelector('textarea[name="cancellation_reason"]');
+    if (reasonInput) {
+        reasonInput.addEventListener('input', function() {
+            formChanged = this.value.length > 0;
+        });
+    }
+    
+    window.addEventListener('beforeunload', function(e) {
+        if (formChanged) {
+            e.preventDefault();
+            e.returnValue = 'You have entered a cancellation reason. Are you sure you want to leave?';
+            return e.returnValue;
+        }
+    });
+    
+    form.addEventListener('submit', function() {
+        formChanged = false;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Trainer Report - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+
+    /* Table row hover effect */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+        transition: background-color 0.3s ease;
+    }
+
+    /* Status badge styling */
+    .status-completed {
+        color: #00D09C;
+        background-color: rgba(0, 208, 156, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        color: #F5A623;
+        background-color: rgba(245, 166, 35, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .status-cancelled {
+        color: #f87171;
+        background-color: rgba(248, 113, 113, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .summary-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4 md:px-8 fade-in">
+    <div class="flex justify-between items-center mb-8 flex-wrap gap-3">
+        <h1 class="text-3xl font-bold text-white">Trainer Report</h1>
+        <a href="{% url 'admin_dashboard:dashboard' %}" class="text-[#E94560] hover:underline">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 summary-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-text-gray text-sm">Total Sessions</p>
+                    <p class="text-white text-3xl font-bold">{{ total_sessions }}</p>
+                </div>
+                <i class="fas fa-calendar text-[#E94560] text-3xl opacity-50"></i>
+            </div>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-text-gray text-sm">Completed</p>
+                    <p class="text-white text-3xl font-bold">{{ completed_sessions }}</p>
+                    <p class="text-[#00D09C] text-xs mt-2">
+                        {% if total_sessions %}
+                            {% widthratio completed_sessions total_sessions 100 %}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </p>
+                </div>
+                <i class="fas fa-check-circle text-[#00D09C] text-3xl opacity-50"></i>
+            </div>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-text-gray text-sm">Pending</p>
+                    <p class="text-white text-3xl font-bold">{{ pending_sessions }}</p>
+                    <p class="text-[#F5A623] text-xs mt-2">Awaiting approval</p>
+                </div>
+                <i class="fas fa-clock text-[#F5A623] text-3xl opacity-50"></i>
+            </div>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-text-gray text-sm">Cancelled</p>
+                    <p class="text-white text-3xl font-bold">{{ cancelled_sessions }}</p>
+                </div>
+                <i class="fas fa-times-circle text-red-400 text-3xl opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sessions Table -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden card-hover">
+        <div class="px-6 py-4 border-b border-[#E94560]/20 bg-[#0F0F1A] flex justify-between items-center flex-wrap gap-3">
+            <h3 class="text-white font-semibold">All Sessions</h3>
+            <div class="text-text-gray text-sm">
+                <i class="fas fa-list mr-1"></i> 
+                Showing {{ sessions|length }} sessions
+            </div>
+        </div>
+        
+        {% if sessions %}
+        <div class="overflow-x-auto table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-text-gray text-sm font-semibold">Trainer</th>
+                        <th class="px-6 py-3 text-left text-text-gray text-sm font-semibold">User</th>
+                        <th class="px-6 py-3 text-left text-text-gray text-sm font-semibold">Status</th>
+                        <th class="px-6 py-3 text-left text-text-gray text-sm font-semibold">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr class="border-b border-[#E94560]/10">
+                        <td class="px-6 py-3 text-white">{{ session.trainer.full_name }}</td>
+                        <td class="px-6 py-3 text-white">{{ session.user.get_full_name|default:session.user.username }}</td>
+                        <td class="px-6 py-3">
+                            {% if session.status == 'completed' %}
+                                <span class="status-completed">✓ Completed</span>
+                            {% elif session.status == 'pending' %}
+                                <span class="status-pending">⏳ Pending</span>
+                            {% elif session.status == 'cancelled' %}
+                                <span class="status-cancelled">✕ Cancelled</span>
+                            {% else %}
+                                <span class="text-text-gray">{{ session.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-3 text-text-gray">{{ session.created_at|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="px-6 py-12 text-center">
+            <i class="fas fa-inbox text-4xl text-[#E94560]/30 mb-3"></i>
+            <p class="text-text-gray">No sessions found</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

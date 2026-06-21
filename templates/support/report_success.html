@@ -1,0 +1,576 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Report Submitted - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR REPORT SUBMITTED PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .success-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .success-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 208, 156, 0.2);
+    }
+    
+    /* Icon animation */
+    @keyframes checkmark {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    .success-icon {
+        animation: checkmark 0.5s ease-out;
+    }
+    
+    /* Confetti animation */
+    @keyframes confetti {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .success-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .success-card {
+            padding: 3rem;
+        }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .success-icon svg {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .success-title {
+            font-size: 2rem;
+        }
+        
+        .success-message {
+            font-size: 1.1rem;
+        }
+        
+        .details-box {
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+        
+        .details-title {
+            font-size: 0.95rem;
+        }
+        
+        .detail-item {
+            font-size: 0.9rem;
+        }
+        
+        .action-buttons {
+            gap: 1.5rem;
+        }
+        
+        .btn-report, .btn-dashboard {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .success-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .success-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .success-card {
+            padding: 2rem;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .success-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .success-message {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .details-box {
+            padding: 1rem;
+            margin: 1.25rem 0;
+        }
+        
+        .details-title {
+            font-size: 0.85rem;
+        }
+        
+        .detail-item {
+            font-size: 0.8rem;
+        }
+        
+        .action-buttons {
+            gap: 1rem;
+        }
+        
+        .btn-report, .btn-dashboard {
+            padding: 0.6rem 1.25rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .success-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .success-card {
+            padding: 1.5rem;
+        }
+        
+        .success-icon {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .success-icon svg {
+            width: 35px;
+            height: 35px;
+        }
+        
+        .success-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-message {
+            font-size: 0.9rem;
+        }
+        
+        .details-box {
+            padding: 0.875rem;
+            margin: 1rem 0;
+        }
+        
+        .details-title {
+            font-size: 0.8rem;
+        }
+        
+        .detail-item {
+            font-size: 0.75rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn-report, .btn-dashboard {
+            width: 100%;
+            justify-content: center;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .py-20 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .success-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .success-card {
+            padding: 1.25rem;
+        }
+        
+        .success-icon {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .success-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .success-title {
+            font-size: 1.35rem;
+        }
+        
+        .success-message {
+            font-size: 0.85rem;
+        }
+        
+        .details-box {
+            padding: 0.75rem;
+        }
+        
+        .details-title {
+            font-size: 0.75rem;
+        }
+        
+        .detail-item {
+            font-size: 0.7rem;
+        }
+        
+        .btn-report, .btn-dashboard {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .success-card {
+            padding: 1rem;
+        }
+        
+        .success-icon {
+            width: 55px;
+            height: 55px;
+        }
+        
+        .success-title {
+            font-size: 1.2rem;
+        }
+        
+        .detail-item {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .success-title {
+            font-size: 1.1rem;
+        }
+        
+        .detail-item {
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .success-card:active {
+            transform: scale(0.98);
+        }
+        
+        .success-card:hover {
+            transform: none;
+        }
+        
+        .btn-report:active, .btn-dashboard:active {
+            transform: scale(0.98);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .success-container {
+            max-width: 90%;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .btn-report, .btn-dashboard {
+            width: auto !important;
+            min-width: 160px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .success-card {
+            border: 2px solid #00D09C;
+        }
+        
+        .details-box {
+            border: 1px solid #00D09C;
+        }
+        
+        .btn-report, .btn-dashboard {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .success-icon {
+            animation: none;
+        }
+        
+        .confetti {
+            animation: none;
+        }
+        
+        .success-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Print styles */
+    @media print {
+        .action-buttons {
+            display: none;
+        }
+        
+        .success-card {
+            border: 1px solid #ddd;
+            box-shadow: none;
+        }
+        
+        body {
+            background: white;
+        }
+        
+        .success-title, .success-message {
+            color: black;
+        }
+    }
+    
+    /* Additional styling */
+    .report-id {
+        font-family: monospace;
+        background-color: rgba(233, 69, 96, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 success-container fade-in">
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#00D09C]/30 p-10 text-center success-card">
+        <!-- Success Animation -->
+        <div class="mb-6">
+            <div class="w-24 h-24 bg-[#00D09C]/20 rounded-full flex items-center justify-center mx-auto success-icon">
+                <svg class="w-12 h-12 text-[#00D09C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+        </div>
+        
+        <h1 class="text-3xl font-bold text-white mb-3 success-title">Report Submitted Successfully! 🔧</h1>
+        
+        <p class="text-text-gray text-lg mb-2 success-message">Thank you for helping us improve FitZone!</p>
+        
+        <div class="bg-[#0F0F1A] rounded-lg p-4 my-6 text-left details-box">
+            <p class="text-text-gray text-sm mb-2 details-title">
+                <i class="fas fa-clipboard-list mr-2 text-[#E94560]"></i>
+                <strong>Report Details:</strong>
+            </p>
+            <ul class="text-text-gray text-sm space-y-2 ml-6 list-disc detail-item">
+                <li>Report ID: <span class="text-[#E94560] font-mono report-id">#{{ report_id }}</span></li>
+                <li>Our team will investigate the issue</li>
+                <li>You will receive updates via email</li>
+                <li>Response time: 24-48 hours</li>
+            </ul>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center action-buttons">
+            <a href="{% url 'support:report_problem' %}" 
+               class="inline-flex items-center justify-center gap-2 bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all btn-report">
+                <i class="fas fa-plus-circle"></i>
+                Report Another Issue
+            </a>
+            <a href="{% url 'dashboard' %}" 
+               class="inline-flex items-center justify-center gap-2 border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg font-semibold hover:bg-[#E94560] hover:text-white transition-all btn-dashboard">
+                <i class="fas fa-home"></i>
+                Back to Dashboard
+            </a>
+        </div>
+        
+        <!-- Additional Help Text -->
+        <div class="mt-6 pt-4 border-t border-[#E94560]/20">
+            <p class="text-text-gray text-xs">
+                <i class="fas fa-envelope mr-1"></i>
+                Check your email for a confirmation of this report.
+            </p>
+            <p class="text-text-gray text-xs mt-1">
+                <i class="fas fa-phone mr-1"></i>
+                For urgent issues, please call our support team at <a href="tel:+919876543210" class="text-[#E94560] hover:underline">+91 98765 43210</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const successCard = document.querySelector('.success-card');
+    if (successCard) {
+        successCard.style.opacity = '0';
+        successCard.style.transform = 'translateY(20px)';
+        successCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(successCard);
+    }
+    
+    // Track successful submission (analytics)
+    function trackSubmission() {
+        console.log('Report submitted successfully with ID: {{ report_id }}');
+        // You can add analytics tracking here
+        // ga('send', 'event', 'Report', 'Submitted', '{{ report_id }}');
+    }
+    
+    trackSubmission();
+    
+    // Add confetti effect (optional - uncomment to enable)
+    function createConfetti() {
+        const colors = ['#E94560', '#00D09C', '#F5A623', '#E94560', '#00D09C'];
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.cssText = `
+                position: fixed;
+                width: 10px;
+                height: 10px;
+                background-color: ${colors[Math.floor(Math.random() * colors.length)]};
+                left: ${Math.random() * 100}%;
+                top: -10px;
+                border-radius: 2px;
+                pointer-events: none;
+                z-index: 9999;
+                animation: confetti ${Math.random() * 2 + 2}s linear forwards;
+            `;
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 4000);
+        }
+    }
+    
+    // Uncomment to enable confetti effect
+    // createConfetti();
+    
+    // Auto-redirect after 10 seconds (optional)
+    let redirectTimer;
+    function startRedirectTimer() {
+        redirectTimer = setTimeout(() => {
+            window.location.href = "{% url 'dashboard' %}";
+        }, 10000);
+    }
+    
+    // Uncomment to enable auto-redirect
+    // startRedirectTimer();
+    
+    // Clear timer on user interaction
+    document.addEventListener('click', () => {
+        if (redirectTimer) {
+            clearTimeout(redirectTimer);
+        }
+    });
+    
+    // Add loading state to buttons
+    document.querySelectorAll('.btn-report, .btn-dashboard').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Loading...';
+            this.classList.add('opacity-70');
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.classList.remove('opacity-70');
+            }, 2000);
+        });
+    });
+    
+    // Show a welcome back message
+    console.log('Thank you for your feedback! We appreciate your help in improving FitZone.');
+</script>
+{% endblock %}

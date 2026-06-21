@@ -1,0 +1,542 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Refund Policy - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR REFUND POLICY PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .policy-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .policy-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Section hover effect */
+    .policy-section {
+        transition: all 0.3s ease;
+    }
+    
+    .policy-section:hover {
+        padding-left: 0.75rem;
+        border-left-color: #E94560;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .policy-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .policy-card {
+            padding: 2rem;
+        }
+        
+        .policy-title {
+            font-size: 2rem;
+        }
+        
+        .policy-date {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .section-text {
+            font-size: 0.95rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .policy-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .policy-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .policy-card {
+            padding: 1.5rem;
+        }
+        
+        .policy-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .policy-date {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-text {
+            font-size: 0.85rem;
+        }
+        
+        .footer-link {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .policy-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.5rem;
+        }
+        
+        .policy-card {
+            padding: 1.25rem;
+        }
+        
+        .policy-title {
+            font-size: 1.5rem;
+        }
+        
+        .policy-date {
+            font-size: 0.8rem;
+            margin-bottom: 0.875rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-text {
+            font-size: 0.8rem;
+        }
+        
+        .space-y-6 {
+            gap: 1rem;
+        }
+        
+        .footer-link {
+            margin-top: 1rem;
+            padding-top: 0.875rem;
+        }
+        
+        .footer-link a {
+            font-size: 0.85rem;
+        }
+        
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .policy-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .policy-card {
+            padding: 1rem;
+        }
+        
+        .policy-title {
+            font-size: 1.35rem;
+        }
+        
+        .policy-date {
+            font-size: 0.7rem;
+        }
+        
+        .section-title {
+            font-size: 0.95rem;
+        }
+        
+        .section-text {
+            font-size: 0.75rem;
+        }
+        
+        .footer-link a {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .policy-title {
+            font-size: 1.2rem;
+        }
+        
+        .section-title {
+            font-size: 0.9rem;
+        }
+        
+        .section-text {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .policy-title {
+            font-size: 1.1rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .policy-card:active {
+            transform: scale(0.98);
+        }
+        
+        .policy-card:hover {
+            transform: none;
+        }
+        
+        .footer-link a:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .space-y-6 {
+            gap: 0.75rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .policy-card {
+            border: 2px solid #E94560;
+        }
+        
+        .footer-link a {
+            border: 1px solid #E94560;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .policy-section:hover {
+            padding-left: 0;
+        }
+        
+        .policy-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Print styles */
+    @media print {
+        .back-link, .footer-link {
+            display: none;
+        }
+        
+        .policy-card {
+            border: 1px solid #ddd;
+            box-shadow: none;
+        }
+        
+        body {
+            background: white;
+            color: black;
+        }
+        
+        .policy-title, .section-title {
+            color: black;
+        }
+        
+        .section-text {
+            color: #333;
+        }
+    }
+    
+    /* Custom warning box */
+    .warning-box {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(233, 69, 96, 0.05));
+        border-left: 4px solid #E94560;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+    }
+    
+    .warning-box p {
+        color: #f87171;
+        font-size: 0.85rem;
+    }
+    
+    @media (max-width: 640px) {
+        .warning-box {
+            padding: 0.75rem;
+        }
+        
+        .warning-box p {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Table of contents */
+    .toc {
+        background-color: rgba(233, 69, 96, 0.1);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .toc-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .toc-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .toc-link {
+        font-size: 0.75rem;
+        color: #E94560;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .toc-link:hover {
+        text-decoration: underline;
+        transform: translateX(2px);
+    }
+    
+    @media (max-width: 640px) {
+        .toc-links {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4 policy-container fade-in">
+    <!-- Back Button -->
+    <div class="mb-6 back-link">
+        <a href="javascript:history.back()" class="inline-flex items-center text-text-gray hover:text-[#E94560] transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-8 policy-card">
+        <h1 class="text-3xl font-bold text-white mb-4 policy-title">Refund Policy</h1>
+        <p class="text-text-gray mb-6 policy-date">Last updated: {% now "F d, Y" %}</p>
+        
+        <!-- Warning Box -->
+        <div class="warning-box mb-6">
+            <p>⚠️ Please read our refund policy carefully before making a purchase. Membership fees are generally non-refundable except in exceptional circumstances.</p>
+        </div>
+        
+        <!-- Table of Contents -->
+        <div class="toc mb-6">
+            <p class="text-white text-sm font-semibold toc-title">📑 Quick Navigation</p>
+            <div class="toc-links">
+                <a href="#section1" class="toc-link">1. Membership Refunds</a>
+                <a href="#section2" class="toc-link">2. Free Trial</a>
+                <a href="#section3" class="toc-link">3. Cancellation Policy</a>
+                <a href="#section4" class="toc-link">4. Technical Issues</a>
+                <a href="#section5" class="toc-link">5. How to Request a Refund</a>
+                <a href="#section6" class="toc-link">6. Payment Disputes</a>
+                <a href="#section7" class="toc-link">7. Chargebacks</a>
+                <a href="#section8" class="toc-link">8. Questions</a>
+            </div>
+        </div>
+        
+        <div class="space-y-6">
+            <div id="section1" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">1. Membership Refunds</h2>
+                <p class="text-text-gray section-text">Membership fees are generally non-refundable. However, we may consider refund requests on a case-by-case basis under exceptional circumstances.</p>
+                <p class="text-text-gray text-sm mt-2">💰 Refund requests must be submitted within 7 days of the original purchase date.</p>
+            </div>
+            
+            <div id="section2" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">2. Free Trial</h2>
+                <p class="text-text-gray section-text">We offer a 7-day free trial on our Pro and Premium plans. You will not be charged during the trial period. If you cancel before the trial ends, no charges will apply.</p>
+                <p class="text-text-gray text-sm mt-2">🎯 Reminder: Cancel anytime during your trial to avoid being charged.</p>
+            </div>
+            
+            <div id="section3" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">3. Cancellation Policy</h2>
+                <p class="text-text-gray section-text">You can cancel your membership at any time from your account settings. Cancellation will take effect at the end of your current billing cycle. No partial refunds will be issued for unused time.</p>
+            </div>
+            
+            <div id="section4" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">4. Technical Issues</h2>
+                <p class="text-text-gray section-text">If you experience technical issues that prevent you from using our services, please contact our support team. We will work to resolve the issue promptly. Refunds may be considered if the issue cannot be resolved within a reasonable time.</p>
+                <p class="text-text-gray text-sm mt-2">🛠️ For technical support, email <a href="mailto:support@fitzone.com" class="text-[#E94560] hover:underline">support@fitzone.com</a></p>
+            </div>
+            
+            <div id="section5" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">5. How to Request a Refund</h2>
+                <p class="text-text-gray section-text">To request a refund, please contact our support team at <a href="mailto:refunds@fitzone.com" class="text-[#E94560] hover:underline">refunds@fitzone.com</a> with your account information and reason for the refund request. We will review your request and respond within 5-7 business days.</p>
+                <p class="text-text-gray text-sm mt-2">📧 Please include your invoice number and order details for faster processing.</p>
+            </div>
+            
+            <div id="section6" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">6. Payment Disputes</h2>
+                <p class="text-text-gray section-text">If you believe you were charged incorrectly, please contact us immediately. We will investigate and correct any billing errors promptly.</p>
+            </div>
+            
+            <div id="section7" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">7. Chargebacks</h2>
+                <p class="text-text-gray section-text">If you initiate a chargeback without first contacting us, your account may be suspended. We will work with you to resolve any issues before resorting to account suspension.</p>
+            </div>
+            
+            <div id="section8" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">8. Questions</h2>
+                <p class="text-text-gray section-text">If you have any questions about our refund policy, please contact us at <a href="mailto:support@fitzone.com" class="text-[#E94560] hover:underline">support@fitzone.com</a></p>
+            </div>
+        </div>
+        
+        <div class="mt-8 pt-6 border-t border-[#E94560]/20 footer-link">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <a href="{% url 'contact' %}" class="text-[#E94560] hover:underline">
+                    Contact Support →
+                </a>
+                <p class="text-text-gray text-xs text-center sm:text-right">
+                    Version 1.0 | Effective from {% now "F d, Y" %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Smooth scroll for table of contents links
+    document.querySelectorAll('.toc-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Add highlight effect when section is in view
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute('id');
+                // Remove active class from all toc links
+                document.querySelectorAll('.toc-link').forEach(link => {
+                    link.style.fontWeight = 'normal';
+                });
+                // Add active class to corresponding toc link
+                const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+                if (activeLink) {
+                    activeLink.style.fontWeight = 'bold';
+                }
+                // Add highlight to section
+                entry.target.style.borderLeftColor = '#E94560';
+                setTimeout(() => {
+                    entry.target.style.borderLeftColor = 'transparent';
+                }, 1500);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.policy-section').forEach(section => {
+        observer.observe(section);
+    });
+    
+    // Add animation to card on scroll
+    const cardObserverOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const cardObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                cardObserver.unobserve(entry.target);
+            }
+        });
+    }, cardObserverOptions);
+    
+    const policyCard = document.querySelector('.policy-card');
+    if (policyCard) {
+        policyCard.style.opacity = '0';
+        policyCard.style.transform = 'translateY(20px)';
+        policyCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        cardObserver.observe(policyCard);
+    }
+</script>
+{% endblock %}

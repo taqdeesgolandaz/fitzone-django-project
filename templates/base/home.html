@@ -1,0 +1,480 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}FitZone - Smart Fitness Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Base styles - Desktop First Approach */
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #1A1A2E;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #E94560;
+        border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #c72a4a;
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* ============================================
+       MEDIA QUERIES FOR RESPONSIVE DESIGN
+    ============================================ */
+    
+    /* Large Tablets and Small Laptops (max-width: 1024px) */
+    @media (max-width: 1024px) {
+        .container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets (max-width: 768px) */
+    @media (max-width: 768px) {
+        /* Hero Section */
+        .hero-title {
+            font-size: 2.5rem !important;
+            line-height: 1.2 !important;
+        }
+        
+        .hero-subtitle {
+            font-size: 1rem !important;
+            padding: 0 1rem;
+        }
+        
+        /* Features Section */
+        .features-grid {
+            gap: 1.5rem !important;
+        }
+        
+        .feature-card {
+            padding: 1.5rem !important;
+        }
+        
+        .feature-icon {
+            width: 4rem !important;
+            height: 4rem !important;
+        }
+        
+        .feature-icon i {
+            font-size: 1.5rem !important;
+        }
+        
+        /* Pricing Section */
+        .pricing-grid {
+            gap: 1.5rem !important;
+        }
+        
+        .pricing-card {
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .price-amount {
+            font-size: 2rem !important;
+        }
+        
+        /* Buttons */
+        .btn-hero {
+            padding: 0.75rem 1.5rem !important;
+            font-size: 0.9rem !important;
+            text-align: center;
+        }
+
+
+        
+        
+
+        
+        /* Section Headers */
+        .section-title {
+            font-size: 2rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .section-subtitle {
+            font-size: 0.9rem !important;
+            padding: 0 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (max-width: 640px) */
+    @media (max-width: 640px) {
+        /* Hero Section */
+        .hero-section {
+            padding: 2rem 0 !important;
+        }
+        
+        .hero-title {
+            font-size: 2rem !important;
+        }
+        
+        .hero-title br {
+            display: none;
+        }
+        
+        .hero-buttons {
+            flex-direction: column !important;
+            gap: 1rem !important;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        
+        .hero-buttons a {
+            width: 100%;
+            text-align: center;
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 2rem 0 !important;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.25rem !important;
+        }
+        
+        .feature-card {
+            padding: 1.25rem !important;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.25rem !important;
+        }
+        
+        .feature-card p {
+            font-size: 0.875rem !important;
+        }
+        
+        /* Pricing Section */
+        .pricing-section {
+            padding: 2rem 0 !important;
+        }
+        
+        .pricing-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+        }
+        
+        .pricing-card {
+            max-width: 100%;
+        }
+        
+        .price-amount {
+            font-size: 1.75rem !important;
+        }
+        
+        .price-period {
+            font-size: 0.75rem !important;
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.25rem !important;
+        }
+        
+        .features-list li {
+            font-size: 0.875rem !important;
+        }
+        
+        .features-list i {
+            font-size: 0.75rem !important;
+        }
+        
+        /* Popular Badge */
+        .popular-badge {
+            font-size: 0.7rem !important;
+            padding: 0.25rem 0.75rem !important;
+        }
+        
+        /* Section Headers */
+        .section-title {
+            font-size: 1.75rem !important;
+        }
+        
+        .section-subtitle {
+            font-size: 0.875rem !important;
+            margin-top: 0.5rem !important;
+        }
+    }
+    
+    /* Small Mobile Devices (max-width: 480px) */
+    @media (max-width: 480px) {
+        /* Hero Section */
+        .hero-title {
+            font-size: 1.75rem !important;
+        }
+        
+        .hero-subtitle {
+            font-size: 0.875rem !important;
+            margin-bottom: 1.5rem !important;
+        }
+        
+        /* Features Section */
+        .feature-icon {
+            width: 3.5rem !important;
+            height: 3.5rem !important;
+        }
+        
+        .feature-icon i {
+            font-size: 1.25rem !important;
+        }
+        
+        /* Pricing Section */
+        .price-amount {
+            font-size: 1.5rem !important;
+        }
+        
+        .pricing-card {
+            padding: 1.25rem !important;
+        }
+        
+        .features-list {
+            margin-bottom: 1.25rem !important;
+        }
+        
+        .features-list li {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        /* Section spacing */
+        .section-spacing {
+            margin-bottom: 2rem !important;
+        }
+        
+        .section-title {
+            font-size: 1.5rem !important;
+        }
+    }
+    
+    /* Very Small Devices (max-width: 360px) */
+    @media (max-width: 360px) {
+        .hero-title {
+            font-size: 1.5rem !important;
+        }
+        
+        .btn-hero {
+            font-size: 0.875rem !important;
+            padding: 0.625rem 1rem !important;
+        }
+        
+        .section-title {
+            font-size: 1.35rem !important;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.125rem !important;
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.125rem !important;
+        }
+    }
+    
+    /* Tablet Landscape (768px to 1024px) - Special adjustments */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        
+        .features-grid .feature-card:last-child {
+            grid-column: span 2;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .pricing-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        
+        .pricing-grid .pricing-card:last-child {
+            grid-column: span 2;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+    }
+    
+    /* Large Desktop Screens (min-width: 1440px) */
+    @media (min-width: 1440px) {
+        .container {
+            max-width: 1280px;
+        }
+        
+        .hero-title {
+            font-size: 4rem !important;
+        }
+        
+        .section-title {
+            font-size: 2.5rem !important;
+        }
+    }
+    
+    /* Print Styles */
+    @media print {
+        .hero-buttons a,
+        .pricing-card a {
+            display: none !important;
+        }
+    }
+    
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Improved touch targets for mobile */
+    @media (max-width: 768px) {
+        button, 
+        a,
+        [role="button"] {
+            min-height: 44px;
+            min-width: 44px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="relative overflow-hidden hero-section">
+    <div class="absolute inset-0 bg-gradient-to-r from-[#E94560]/10 to-transparent"></div>
+    <div class="container mx-auto px-4 py-12 text-center relative">
+        <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 hero-title">
+            Transform Your <span class="text-[#E94560]">Body</span>,<br>
+            Transform Your <span class="text-[#E94560]">Life</span>
+        </h1>
+        <p class="text-text-gray text-lg md:text-xl max-w-2xl mx-auto mb-8 hero-subtitle">
+            Join FitZone today and get access to personalized workout plans, diet guidance, 
+            professional trainers, and a supportive fitness community.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center hero-buttons">
+            {% if user.is_authenticated %}
+               <a href="{% url 'dashboard' %}" 
+   class="bg-[#E94560] text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all inline-flex items-center justify-center btn-hero">
+    Go to Dashboard
+    <i class="fas fa-arrow-right ml-2"></i>
+</a>
+            {% else %}
+               <a href="{% url 'register' %}" 
+   class="bg-[#E94560] text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all inline-flex items-center justify-center btn-hero">
+    Get Started Free
+    <i class="fas fa-arrow-right ml-2"></i>
+</a>
+<a href="{% url 'login' %}" 
+   class="border border-[#E94560] text-[#E94560] px-8 py-3 rounded-lg font-semibold hover:bg-[#E94560] hover:text-white transition-all inline-flex items-center justify-center btn-hero">
+    Sign In
+</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="py-8 pt-0 features-section">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-white mt-8 mb-0 section-title">Why Choose <span class="text-[#E94560]">FitZone</span>?</h2>
+        <p class="text-text-gray max-w-2xl mt-0 mx-auto section-subtitle">Everything you need to achieve your fitness goals in one place</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 features-grid">
+        <div class="bg-[#1A1A2E] p-6 rounded-xl border border-[#E94560]/20 text-center card-hover feature-card">
+            <div class="w-16 h-16 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-4 feature-icon">
+                <i class="fas fa-dumbbell text-[#E94560] text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Smart Workouts</h3>
+            <p class="text-text-gray">Personalized workout plans based on your fitness level and goals.</p>
+            <a href="/membership/plans/" class="inline-block mt-3 text-[#E94560] hover:underline text-sm">Learn More →</a>
+        </div>
+        
+        <div class="bg-[#1A1A2E] p-6 rounded-xl border border-[#E94560]/20 text-center card-hover feature-card">
+            <div class="w-16 h-16 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-4 feature-icon">
+                <i class="fas fa-apple-alt text-[#E94560] text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Diet Guidance</h3>
+            <p class="text-text-gray">Customized meal plans with nutrition tracking and recipes.</p>
+            <a href="/membership/plans/" class="inline-block mt-3 text-[#E94560] hover:underline text-sm">Learn More →</a>
+        </div>
+        
+        <div class="bg-[#1A1A2E] p-6 rounded-xl border border-[#E94560]/20 text-center card-hover feature-card">
+            <div class="w-16 h-16 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-4 feature-icon">
+                <i class="fas fa-chalkboard-user text-[#E94560] text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Expert Trainers</h3>
+            <p class="text-text-gray">Get guidance from certified professional trainers.</p>
+            <a href="/membership/plans/" class="inline-block mt-3 text-[#E94560] hover:underline text-sm">Learn More →</a>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Section -->
+<div class="py-12 pt-0 pricing-section">
+    <div class="text-center mb-8">
+       <h2 class="text-3xl font-bold text-white section-title">Simple, <span class="text-[#E94560]">Transparent</span> Pricing</h2>
+        <p class="text-text-gray max-w-2xl mx-auto mt-0 mb-12 section-subtitle">Choose the plan that works best for you</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 pricing-grid">
+        <!-- Basic Plan -->
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 card-hover pricing-card">
+            <h3 class="text-xl font-bold text-white text-center mb-2">Basic</h3>
+            <p class="text-3xl font-bold text-[#E94560] text-center mb-4 price-amount">₹199<span class="text-text-gray text-sm price-period">/month</span></p>
+            <ul class="space-y-2 mb-6 features-list">
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Basic Workout Plans</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Basic Diet Plans</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Progress Tracking</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Basic Analytics & Reports</span></li>
+            </ul>
+            <a href="/membership/plans/" class="block text-center border border-[#E94560] text-[#E94560] py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all">Choose Plan</a>
+        </div>
+        
+        <!-- Pro Plan -->
+        <div class="bg-[#1A1A2E] rounded-xl border-2 border-[#E94560] p-6 card-hover relative pricing-card">
+            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#E94560] text-white text-xs px-3 py-1 rounded-full popular-badge">Most Popular</div>
+            <h3 class="text-xl font-bold text-white text-center mb-2">Pro</h3>
+            <p class="text-3xl font-bold text-[#E94560] text-center mb-4 price-amount">₹399<span class="text-text-gray text-sm price-period">/month</span></p>
+            <ul class="space-y-2 mb-6 features-list">
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">All Basic Features</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Advanced Workouts</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Video Tutorials</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Priority Support</span></li>
+            </ul>
+            <a href="/membership/plans/" class="block text-center bg-[#E94560] text-white py-2 rounded-lg hover:bg-opacity-80 transition-all">Choose Plan</a>
+        </div>
+        
+        <!-- Premium Plan -->
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 card-hover pricing-card">
+            <h3 class="text-xl font-bold text-white text-center mb-2">Premium</h3>
+            <p class="text-3xl font-bold text-[#E94560] text-center mb-4 price-amount">₹699<span class="text-text-gray text-sm price-period">/month</span></p>
+            <ul class="space-y-2 mb-6 features-list">
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">All Pro Features</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">1-on-1 Personal Trainer</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Custom Meal Plans</span></li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">24/7 Support</span></li>
+            </ul>
+            <a href="/membership/plans/" class="block text-center border border-[#E94560] text-[#E94560] py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all">Choose Plan</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

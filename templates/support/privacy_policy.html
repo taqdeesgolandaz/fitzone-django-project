@@ -1,0 +1,581 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Privacy Policy - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR PRIVACY POLICY PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .policy-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .policy-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Section hover effect */
+    .policy-section {
+        transition: all 0.3s ease;
+    }
+    
+    .policy-section:hover {
+        padding-left: 0.75rem;
+        border-left-color: #E94560;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .policy-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .policy-card {
+            padding: 2rem;
+        }
+        
+        .policy-title {
+            font-size: 2rem;
+        }
+        
+        .policy-date {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .section-text {
+            font-size: 0.95rem;
+        }
+        
+        .list-item {
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .policy-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .policy-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .policy-card {
+            padding: 1.5rem;
+        }
+        
+        .policy-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .policy-date {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-text {
+            font-size: 0.85rem;
+        }
+        
+        .list-item {
+            font-size: 0.8rem;
+        }
+        
+        .footer-link {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .policy-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.5rem;
+        }
+        
+        .policy-card {
+            padding: 1.25rem;
+        }
+        
+        .policy-title {
+            font-size: 1.5rem;
+        }
+        
+        .policy-date {
+            font-size: 0.8rem;
+            margin-bottom: 0.875rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-text {
+            font-size: 0.8rem;
+        }
+        
+        .list-item {
+            font-size: 0.75rem;
+            margin-left: 1rem;
+        }
+        
+        .space-y-6 {
+            gap: 1rem;
+        }
+        
+        .footer-link {
+            margin-top: 1rem;
+            padding-top: 0.875rem;
+        }
+        
+        .footer-link a {
+            font-size: 0.85rem;
+        }
+        
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .policy-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .policy-card {
+            padding: 1rem;
+        }
+        
+        .policy-title {
+            font-size: 1.35rem;
+        }
+        
+        .policy-date {
+            font-size: 0.7rem;
+        }
+        
+        .section-title {
+            font-size: 0.95rem;
+        }
+        
+        .section-text {
+            font-size: 0.75rem;
+        }
+        
+        .list-item {
+            font-size: 0.7rem;
+            margin-left: 0.75rem;
+        }
+        
+        .list-disc {
+            padding-left: 0.5rem;
+        }
+        
+        .footer-link a {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .policy-title {
+            font-size: 1.2rem;
+        }
+        
+        .section-title {
+            font-size: 0.9rem;
+        }
+        
+        .section-text {
+            font-size: 0.7rem;
+        }
+        
+        .list-item {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .policy-title {
+            font-size: 1.1rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .policy-card:active {
+            transform: scale(0.98);
+        }
+        
+        .policy-card:hover {
+            transform: none;
+        }
+        
+        .footer-link a:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .space-y-6 {
+            gap: 0.75rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .policy-card {
+            border: 2px solid #E94560;
+        }
+        
+        .footer-link a {
+            border: 1px solid #E94560;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .policy-section:hover {
+            padding-left: 0;
+        }
+        
+        .policy-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Print styles */
+    @media print {
+        .back-link, .footer-link {
+            display: none;
+        }
+        
+        .policy-card {
+            border: 1px solid #ddd;
+            box-shadow: none;
+        }
+        
+        body {
+            background: white;
+            color: black;
+        }
+        
+        .policy-title, .section-title {
+            color: black;
+        }
+        
+        .section-text, .list-item {
+            color: #333;
+        }
+    }
+    
+    /* Custom list styling */
+    .custom-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    
+    .custom-list li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .custom-list li:before {
+        content: "▹";
+        position: absolute;
+        left: 0;
+        color: #E94560;
+    }
+    
+    @media (max-width: 640px) {
+        .custom-list li {
+            padding-left: 1.25rem;
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Table of contents (optional) */
+    .toc {
+        background-color: rgba(233, 69, 96, 0.1);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .toc-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .toc-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .toc-link {
+        font-size: 0.75rem;
+        color: #E94560;
+        text-decoration: none;
+    }
+    
+    .toc-link:hover {
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 640px) {
+        .toc-links {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4 policy-container fade-in">
+    <!-- Back Button -->
+    <div class="mb-6 back-link">
+        <a href="javascript:history.back()" class="inline-flex items-center text-text-gray hover:text-[#E94560] transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-8 policy-card">
+        <h1 class="text-3xl font-bold text-white mb-4 policy-title">Privacy Policy</h1>
+        <p class="text-text-gray mb-6 policy-date">Last updated: {% now "F d, Y" %}</p>
+        
+        <!-- Table of Contents -->
+        <div class="toc mb-6">
+            <p class="text-white text-sm font-semibold toc-title">📑 Table of Contents</p>
+            <div class="toc-links">
+                <a href="#section1" class="toc-link">1. Information We Collect</a>
+                <a href="#section2" class="toc-link">2. How We Use Your Information</a>
+                <a href="#section3" class="toc-link">3. Sharing of Information</a>
+                <a href="#section4" class="toc-link">4. Data Security</a>
+                <a href="#section5" class="toc-link">5. Your Rights</a>
+                <a href="#section6" class="toc-link">6. Cookies</a>
+                <a href="#section7" class="toc-link">7. Contact Us</a>
+            </div>
+        </div>
+        
+        <div class="space-y-6">
+            <div id="section1" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">1. Information We Collect</h2>
+                <p class="text-text-gray section-text">We collect information you provide directly to us, such as when you create an account, purchase a membership, or contact us. This may include:</p>
+                <ul class="custom-list mt-2 space-y-1">
+                    <li class="text-text-gray list-item">Name, email address, phone number</li>
+                    <li class="text-text-gray list-item">Billing and payment information</li>
+                    <li class="text-text-gray list-item">Fitness goals and progress data</li>
+                    <li class="text-text-gray list-item">Workout and diet preferences</li>
+                </ul>
+            </div>
+            
+            <div id="section2" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">2. How We Use Your Information</h2>
+                <p class="text-text-gray section-text">We use the information we collect to:</p>
+                <ul class="custom-list mt-2 space-y-1">
+                    <li class="text-text-gray list-item">Provide, maintain, and improve our services</li>
+                    <li class="text-text-gray list-item">Process your transactions and manage your membership</li>
+                    <li class="text-text-gray list-item">Send you technical notices and support messages</li>
+                    <li class="text-text-gray list-item">Communicate with you about products, services, and events</li>
+                </ul>
+            </div>
+            
+            <div id="section3" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">3. Sharing of Information</h2>
+                <p class="text-text-gray section-text">We do not share your personal information with third parties except:</p>
+                <ul class="custom-list mt-2 space-y-1">
+                    <li class="text-text-gray list-item">With your consent</li>
+                    <li class="text-text-gray list-item">For payment processing through Razorpay</li>
+                    <li class="text-text-gray list-item">To comply with legal obligations</li>
+                </ul>
+            </div>
+            
+            <div id="section4" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">4. Data Security</h2>
+                <p class="text-text-gray section-text">We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+                <p class="text-text-gray text-sm mt-2">🔒 All payment information is encrypted using SSL technology.</p>
+            </div>
+            
+            <div id="section5" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">5. Your Rights</h2>
+                <p class="text-text-gray section-text">You have the right to:</p>
+                <ul class="custom-list mt-2 space-y-1">
+                    <li class="text-text-gray list-item">Access your personal information</li>
+                    <li class="text-text-gray list-item">Correct inaccurate information</li>
+                    <li class="text-text-gray list-item">Request deletion of your data</li>
+                    <li class="text-text-gray list-item">Opt-out of marketing communications</li>
+                </ul>
+                <p class="text-text-gray text-sm mt-2">To exercise these rights, please contact our support team.</p>
+            </div>
+            
+            <div id="section6" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">6. Cookies</h2>
+                <p class="text-text-gray section-text">We use cookies to enhance your experience on our platform. You can control cookie settings through your browser preferences.</p>
+                <p class="text-text-gray text-sm mt-2">🍪 By using our website, you consent to our use of cookies.</p>
+            </div>
+            
+            <div id="section7" class="policy-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">7. Contact Us</h2>
+                <p class="text-text-gray section-text">If you have any questions about this Privacy Policy, please contact us at <a href="mailto:privacy@fitzone.com" class="text-[#E94560] hover:underline">privacy@fitzone.com</a></p>
+            </div>
+        </div>
+        
+        <div class="mt-8 pt-6 border-t border-[#E94560]/20 footer-link">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <a href="{% url 'contact' %}" class="text-[#E94560] hover:underline">
+                    Contact Us →
+                </a>
+                <p class="text-text-gray text-xs text-center sm:text-right">
+                    Version 2.0 | Effective from {% now "F d, Y" %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Smooth scroll for table of contents links
+    document.querySelectorAll('.toc-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Add highlight effect when section is in view
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute('id');
+                // Remove active class from all toc links
+                document.querySelectorAll('.toc-link').forEach(link => {
+                    link.style.fontWeight = 'normal';
+                    link.style.color = '#E94560';
+                });
+                // Add active class to corresponding toc link
+                const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+                if (activeLink) {
+                    activeLink.style.fontWeight = 'bold';
+                    activeLink.style.color = '#E94560';
+                }
+                // Add highlight to section
+                entry.target.style.borderLeftColor = '#E94560';
+                setTimeout(() => {
+                    entry.target.style.borderLeftColor = 'transparent';
+                }, 1500);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.policy-section').forEach(section => {
+        observer.observe(section);
+    });
+    
+    // Add animation to card on scroll
+    const cardObserverOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const cardObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                cardObserver.unobserve(entry.target);
+            }
+        });
+    }, cardObserverOptions);
+    
+    const policyCard = document.querySelector('.policy-card');
+    if (policyCard) {
+        policyCard.style.opacity = '0';
+        policyCard.style.transform = 'translateY(20px)';
+        policyCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        cardObserver.observe(policyCard);
+    }
+</script>
+{% endblock %}

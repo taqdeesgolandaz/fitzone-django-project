@@ -1,0 +1,548 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Membership Report - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR MEMBERSHIP REPORT
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .report-container {
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+        
+        .report-title {
+            font-size: 1.75rem;
+        }
+        
+        .summary-value {
+            font-size: 2.5rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .report-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .report-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .report-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .report-title {
+            font-size: 1.5rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .summary-card {
+            padding: 1rem;
+        }
+        
+        .summary-label {
+            font-size: 0.8rem;
+        }
+        
+        .summary-value {
+            font-size: 1.75rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 700px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .report-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .report-header {
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .report-title {
+            font-size: 1.35rem;
+        }
+        
+        .back-link {
+            font-size: 0.85rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .summary-card {
+            padding: 0.875rem;
+        }
+        
+        .summary-label {
+            font-size: 0.7rem;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+        }
+        
+        .table-header {
+            padding: 0.75rem;
+        }
+        
+        .table-title {
+            font-size: 1rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 650px;
+        }
+        
+        th, td {
+            padding: 0.6rem;
+            font-size: 0.75rem;
+        }
+        
+        .status-badge {
+            font-size: 0.7rem;
+        }
+        
+        .py-8 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .report-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .report-title {
+            font-size: 1.2rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        
+        .summary-card {
+            padding: 0.75rem;
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 0.7rem;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+        }
+        
+        .table-header {
+            padding: 0.625rem;
+        }
+        
+        .table-title {
+            font-size: 0.9rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            min-width: 580px;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .status-badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.4rem;
+        }
+        
+        .empty-state {
+            padding: 2rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .report-title {
+            font-size: 1.1rem;
+        }
+        
+        .summary-value {
+            font-size: 1.35rem;
+        }
+        
+        table {
+            min-width: 520px;
+        }
+        
+        th, td {
+            padding: 0.4rem;
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .report-title {
+            font-size: 1rem;
+        }
+        
+        .summary-value {
+            font-size: 1.25rem;
+        }
+        
+        th, td {
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .back-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .summary-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .summary-card, .report-table {
+            border: 2px solid #E94560;
+        }
+        
+        .back-link {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Table row hover effect */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+        transition: background-color 0.3s ease;
+    }
+    
+    /* Status badge styling */
+    .status-active {
+        color: #00D09C;
+    }
+    
+    .status-expired {
+        color: #f87171;
+    }
+    
+    .status-pending {
+        color: #fbbf24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 report-container fade-in">
+    <div class="flex justify-between items-center mb-6 report-header flex-wrap gap-3">
+        <h1 class="text-2xl font-bold text-white report-title">Membership Report</h1>
+        <a href="{% url 'admin_dashboard:dashboard' %}" class="text-[#E94560] hover:underline back-link">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8 summary-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <p class="text-text-gray text-sm summary-label">Total Memberships</p>
+            <p class="text-white text-3xl font-bold summary-value">{{ total_memberships }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <p class="text-text-gray text-sm summary-label">Active Memberships</p>
+            <p class="text-white text-3xl font-bold summary-value">{{ active_memberships }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <p class="text-text-gray text-sm summary-label">Expired Memberships</p>
+            <p class="text-white text-3xl font-bold summary-value">{{ expired_memberships }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <p class="text-text-gray text-sm summary-label">Active Rate</p>
+            <p class="text-white text-3xl font-bold summary-value">
+                {% widthratio active_memberships total_memberships 100 %}%
+            </p>
+        </div>
+    </div>
+
+    <!-- Memberships Table -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden report-table card-hover">
+        <div class="px-6 py-4 border-b border-[#E94560]/20 bg-[#0F0F1A] table-header">
+            <h3 class="text-white font-semibold table-title">All Memberships</h3>
+        </div>
+        
+        {% if memberships %}
+        <div class="overflow-x-auto table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="text-left p-3 text-text-gray">User</th>
+                        <th class="text-left p-3 text-text-gray">Plan</th>
+                        <th class="text-left p-3 text-text-gray">Start Date</th>
+                        <th class="text-left p-3 text-text-gray">End Date</th>
+                        <th class="text-left p-3 text-text-gray">Amount</th>
+                        <th class="text-left p-3 text-text-gray">Status</th>
+                        <th class="text-left p-3 text-text-gray">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membership in memberships %}
+                    <tr class="border-b border-[#E94560]/10 transition-colors">
+                        <td class="p-3 text-white">{{ membership.user.username }}</td>
+                        <td class="p-3 text-text-gray">{{ membership.plan.name }}</td>
+                        <td class="p-3 text-text-gray">{{ membership.start_date|date:"M d, Y" }}</td>
+                        <td class="p-3 text-text-gray">{{ membership.end_date|date:"M d, Y" }}</td>
+                        <td class="p-3 text-[#E94560] font-semibold">₹{{ membership.amount_paid }}</td>
+                        <td class="p-3">
+                            {% if membership.status == 'active' %}
+                                <span class="status-active status-badge">
+                                    <i class="fas fa-circle text-[10px] mr-1"></i> Active
+                                </span>
+                            {% elif membership.status == 'expired' %}
+                                <span class="status-expired status-badge">
+                                    <i class="fas fa-circle text-[10px] mr-1"></i> Expired
+                                </span>
+                            {% else %}
+                                <span class="status-pending status-badge">
+                                    <i class="fas fa-circle text-[10px] mr-1"></i> {{ membership.status|title }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="p-3">
+                            {% if membership.status != 'cancelled' %}
+                            <form method="POST" action="{% url 'admin_dashboard:cancel_membership' membership.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Cancel membership for {{ membership.user.username }}? They will be able to purchase a new plan.');" class="bg-[#E94560] text-white px-3 py-1 rounded-lg text-xs hover:bg-opacity-80 transition-all">
+                                    <i class="fas fa-times-circle mr-1"></i>Cancel
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-text-gray text-xs">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 empty-state">
+            <i class="fas fa-chart-line text-5xl text-text-gray mb-3"></i>
+            <p class="text-text-gray empty-state-text">No memberships found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    // Animate summary cards
+    document.querySelectorAll('.summary-card, .report-table').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Add search/filter functionality (optional)
+    function filterTable() {
+        const input = document.getElementById('searchInput');
+        if (input) {
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    }
+    
+    // Export table data to CSV
+    function exportToCSV() {
+        const rows = document.querySelectorAll('tbody tr');
+        const csvData = [];
+        
+        // Add headers (skip Action column)
+        const headers = ['User', 'Plan', 'Start Date', 'End Date', 'Amount', 'Status'];
+        csvData.push(headers.join(','));
+        
+        // Add data
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            // Get first 6 cells (skip the Action cell which is the 7th)
+            const rowData = Array.from(cells).slice(0, 6).map(cell => cell.textContent.trim());
+            csvData.push(rowData.join(','));
+        });
+        
+        // Download CSV
+        const blob = new Blob([csvData.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'membership_report.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    
+    // Add export button if needed
+    const tableHeader = document.querySelector('.table-header');
+    if (tableHeader && document.querySelector('tbody tr')) {
+        const exportBtn = document.createElement('button');
+        exportBtn.innerHTML = '<i class="fas fa-download mr-1"></i> Export CSV';
+        exportBtn.className = 'bg-[#E94560] text-white px-3 py-1 rounded-lg text-sm hover:bg-opacity-80 transition-all ml-auto';
+        exportBtn.onclick = exportToCSV;
+        tableHeader.appendChild(exportBtn);
+    }
+</script>
+{% endblock %}

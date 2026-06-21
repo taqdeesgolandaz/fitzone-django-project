@@ -1,0 +1,633 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ workout_plan.name }} - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR WORKOUT PLAN DETAIL PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .exercise-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .exercise-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.1);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .workout-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .exercise-number {
+            width: 2rem;
+            height: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .exercise-name {
+            font-size: 1.25rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .workout-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .workout-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+            padding: 0 1rem;
+        }
+        
+        .badge-container {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+        }
+        
+        .exercise-content {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .exercise-info {
+            width: 100%;
+        }
+        
+        .exercise-number {
+            width: 28px;
+            height: 28px;
+            font-size: 0.8rem;
+        }
+        
+        .exercise-name {
+            font-size: 1rem;
+        }
+        
+        .exercise-details {
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        
+        .exercise-detail {
+            font-size: 0.75rem;
+        }
+        
+        .video-btn {
+            align-self: flex-start;
+        }
+        
+        .instructions-box {
+            margin-top: 0.75rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .action-buttons a, .action-buttons div {
+            width: 100%;
+            text-align: center;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .workout-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .badge-container {
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+        }
+        
+        .exercise-card {
+            padding: 0.875rem;
+        }
+        
+        .exercise-number {
+            width: 24px;
+            height: 24px;
+            font-size: 0.75rem;
+        }
+        
+        .exercise-name {
+            font-size: 0.95rem;
+        }
+        
+        .body-part-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+        }
+        
+        .exercise-details {
+            gap: 0.5rem;
+        }
+        
+        .exercise-detail {
+            font-size: 0.7rem;
+        }
+        
+        .video-btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.7rem;
+        }
+        
+        .instructions-box {
+            padding: 0.75rem;
+        }
+        
+        .instructions-text {
+            font-size: 0.7rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+        }
+        
+        .summary-value {
+            font-size: 1.25rem;
+        }
+        
+        .summary-label {
+            font-size: 0.7rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .action-buttons a, .action-buttons div {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+        
+        .mt-6 {
+            margin-top: 1rem;
+        }
+        
+        .mt-8 {
+            margin-top: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .workout-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+        }
+        
+        .badge i {
+            font-size: 0.6rem;
+        }
+        
+        .exercise-card {
+            padding: 0.75rem;
+        }
+        
+        .exercise-number {
+            width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
+        }
+        
+        .exercise-name {
+            font-size: 0.85rem;
+        }
+        
+        .exercise-detail {
+            font-size: 0.65rem;
+        }
+        
+        .video-btn {
+            padding: 0.35rem 0.6rem;
+            font-size: 0.65rem;
+        }
+        
+        .summary-value {
+            font-size: 1.1rem;
+        }
+        
+        .summary-label {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .exercise-name {
+            font-size: 0.8rem;
+        }
+        
+        .exercise-detail {
+            font-size: 0.6rem;
+        }
+        
+        .summary-value {
+            font-size: 1rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .exercise-card:active {
+            transform: translateX(3px);
+        }
+        
+        .video-btn:active, .action-buttons a:active {
+            transform: scale(0.98);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .exercise-content {
+            flex-direction: row !important;
+        }
+        
+        .video-btn {
+            align-self: center;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .action-buttons a, .action-buttons div {
+            width: auto !important;
+            min-width: 150px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .exercise-card {
+            border: 1px solid #E94560;
+        }
+        
+        .video-btn, .action-buttons a {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .exercise-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Modal responsive */
+    @media (max-width: 640px) {
+        #videoModal .bg-[#1A1A2E] {
+            width: 95%;
+        }
+        
+        #videoModal h3 {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if membership_required and not user.is_staff %}
+<!-- Membership Required Message -->
+<div class="py-12">
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-12 text-center max-w-2xl mx-auto">
+        <div class="w-20 h-20 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-lock text-[#E94560] text-4xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-4">Membership Required</h2>
+        <p class="text-text-gray mb-6">
+            You need an active membership to view workout details. Choose a plan that best suits your fitness goals!
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center">
+            <a href="{% url 'membership:plans' %}" class="bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all">
+                <i class="fas fa-crown mr-2"></i> View Membership Plans
+            </a>
+            <a href="{% url 'dashboard' %}" class="border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<div class="py-12 workout-container fade-in">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">{{ workout_plan.name }}</h1>
+        <p class="text-text-gray page-subtitle">{{ workout_plan.description }}</p>
+        <div class="flex items-center justify-center gap-3 mt-4 badge-container flex-wrap">
+            <div class="inline-block bg-[#E94560]/20 text-[#E94560] px-3 py-1 rounded-full text-sm badge">
+                <i class="fas fa-chart-line mr-1"></i> {{ workout_plan.get_difficulty_display }}
+            </div>
+            <div class="inline-block bg-[#E94560]/20 text-[#E94560] px-3 py-1 rounded-full text-sm badge">
+                <i class="fas fa-calendar-day mr-1"></i> {{ workout_plan.get_day_of_week_display }}
+            </div>
+            <div class="inline-block bg-[#E94560]/20 text-[#E94560] px-3 py-1 rounded-full text-sm badge">
+                <i class="far fa-clock mr-1"></i> {{ workout_plan.duration_weeks }} weeks
+            </div>
+        </div>
+    </div>
+
+    <!-- Exercises List -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden">
+        <div class="px-4 py-3 border-b border-[#E94560]/20 bg-[#0F0F1A]">
+            <h2 class="text-white font-semibold"><i class="fas fa-dumbbell text-[#E94560] mr-2"></i> Exercises</h2>
+        </div>
+        
+        <div class="divide-y divide-[#E94560]/10">
+            {% for workout_exercise in exercises %}
+            <div class="p-4 hover:bg-[#E94560]/5 transition-colors exercise-card">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 exercise-content">
+                    <!-- Exercise Info -->
+                    <div class="flex-1 exercise-info">
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <span class="bg-[#E94560] text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center exercise-number">
+                                {{ workout_exercise.order }}
+                            </span>
+                            <h3 class="text-lg font-bold text-white exercise-name">{{ workout_exercise.exercise.name }}</h3>
+                            <span class="text-text-gray text-xs px-2 py-1 bg-[#0F0F1A] rounded body-part-badge">
+                                {{ workout_exercise.exercise.get_body_part_display }}
+                            </span>
+                        </div>
+                        <p class="text-text-gray text-sm mb-2 exercise-description">{{ workout_exercise.exercise.description|truncatechars:120 }}</p>
+                        <div class="flex flex-wrap gap-3 text-xs exercise-details">
+                            <span class="text-text-gray exercise-detail"><i class="fas fa-redo-alt mr-1"></i> {{ workout_exercise.sets }} sets</span>
+                            <span class="text-text-gray exercise-detail"><i class="fas fa-list-ol mr-1"></i> {{ workout_exercise.reps }} reps</span>
+                            <span class="text-text-gray exercise-detail"><i class="fas fa-hourglass-half mr-1"></i> {{ workout_exercise.rest_seconds }}s rest</span>
+                            <span class="text-text-gray exercise-detail"><i class="fas fa-fire mr-1"></i> ~{{ workout_exercise.exercise.calories_burn }} cal</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Button -->
+                    {% if workout_exercise.exercise.video_url %}
+                    <button onclick="openVideo('{{ workout_exercise.exercise.get_youtube_embed_url }}', '{{ workout_exercise.exercise.name }}')" 
+                            class="bg-[#E94560] text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-80 transition-colors video-btn">
+                        <i class="fab fa-youtube mr-1"></i> Watch Tutorial
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <!-- Instructions -->
+                {% if workout_exercise.exercise.instructions %}
+                <div class="mt-3 p-3 bg-[#0F0F1A] rounded-lg instructions-box">
+                    <p class="text-text-gray text-sm instructions-text">
+                        <i class="fas fa-info-circle text-[#E94560] mr-1"></i>
+                        {{ workout_exercise.exercise.instructions }}
+                    </p>
+                    {% if workout_exercise.exercise.tips %}
+                    <p class="text-text-gray text-sm mt-1 instructions-text">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-1"></i>
+                        <span class="text-yellow-500">Tip:</span> {{ workout_exercise.exercise.tips }}
+                    </p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Workout Summary -->
+    <div class="mt-6 bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center summary-grid">
+            <div>
+                <p class="text-text-gray text-sm summary-label">Total Exercises</p>
+                <p class="text-white text-xl font-bold summary-value">{{ exercises|length }}</p>
+            </div>
+            <div>
+                <p class="text-text-gray text-sm summary-label">Total Sets</p>
+                <p class="text-white text-xl font-bold summary-value">{{ exercises|length }}</p>
+            </div>
+            <div>
+                <p class="text-text-gray text-sm summary-label">Est. Duration</p>
+                <p class="text-white text-xl font-bold summary-value">45 min</p>
+            </div>
+            <div>
+                <p class="text-text-gray text-sm summary-label">Est. Calories</p>
+                <p class="text-white text-xl font-bold summary-value">~300</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons - Only show when membership is active -->
+    <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center action-buttons">
+        <a href="{% url 'workouts:list' %}" class="border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg text-center hover:bg-[#E94560] hover:text-white transition-all">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to All Plans
+        </a>
+        
+        {% if user.is_authenticated and not membership_required %}
+            {% if today_workout and today_workout.status == 'completed' %}
+                <div class="bg-[#00D09C]/20 text-[#00D09C] px-6 py-2 rounded-lg text-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Completed Today! ✅
+                </div>
+            {% elif today_workout and today_workout.status == 'pending' %}
+                <a href="{% url 'workouts:track_workout' today_workout.id %}" 
+                   class="bg-[#E94560] text-white px-6 py-2 rounded-lg text-center hover:bg-opacity-80 transition-all">
+                    <i class="fas fa-play mr-2"></i>
+                    Continue Workout
+                </a>
+            {% else %}
+                <a href="{% url 'workouts:start_workout' workout_plan.id %}" 
+                   class="bg-[#00D09C] text-white px-6 py-2 rounded-lg text-center hover:bg-opacity-80 transition-all">
+                    <i class="fas fa-play mr-2"></i>
+                    Start Workout
+                </a>
+            {% endif %}
+            
+            <a href="{% url 'workouts:my_progress' %}" 
+               class="bg-[#E94560] text-white px-6 py-2 rounded-lg text-center hover:bg-opacity-80 transition-all">
+                <i class="fas fa-chart-line mr-2"></i>
+                My Progress
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Video Modal -->
+<div id="videoModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4">
+    <div class="bg-[#1A1A2E] rounded-xl max-w-4xl w-full">
+        <div class="flex justify-between items-center p-4 border-b border-[#E94560]/20">
+            <h3 id="videoTitle" class="text-white font-semibold">Exercise Tutorial</h3>
+            <button onclick="closeVideo()" class="text-text-gray hover:text-[#E94560] transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="aspect-video">
+            <iframe id="videoFrame" class="w-full h-full rounded-b-xl" src="" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openVideo(url, title) {
+        document.getElementById('videoTitle').innerText = title;
+        document.getElementById('videoFrame').src = url;
+        document.getElementById('videoModal').classList.remove('hidden');
+        document.getElementById('videoModal').classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeVideo() {
+        document.getElementById('videoFrame').src = '';
+        document.getElementById('videoModal').classList.add('hidden');
+        document.getElementById('videoModal').classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+    
+    // Close modal on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeVideo();
+        }
+    });
+    
+    // Close modal on outside click
+    document.getElementById('videoModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeVideo();
+        }
+    });
+    
+    // Add animation to exercise cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateX(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.exercise-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(-10px)';
+        card.style.transition = `opacity 0.5s ease, transform 0.5s ease`;
+        card.style.transitionDelay = `${Math.min(index * 0.05, 0.5)}s`;
+        observer.observe(card);
+    });
+</script>
+
+{% endif %}
+{% endblock %}

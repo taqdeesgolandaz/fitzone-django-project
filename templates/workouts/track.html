@@ -1,0 +1,688 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Track Workout - {{ workout_plan.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR TRACK WORKOUT PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .exercise-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .exercise-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.1);
+    }
+    
+    /* Checkbox styling */
+    input[type="checkbox"] {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    input[type="checkbox"]:checked + label {
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+    
+    /* Number input spinner styling */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 0.5;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .track-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .exercise-card {
+            padding: 1.25rem;
+        }
+        
+        .exercise-name {
+            font-size: 1.1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .track-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .track-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .est-info {
+            gap: 1rem;
+        }
+        
+        .est-info span {
+            font-size: 0.8rem;
+        }
+        
+        .exercise-card {
+            padding: 0.875rem;
+        }
+        
+        .checkbox {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .exercise-name {
+            font-size: 0.95rem;
+        }
+        
+        .exercise-details {
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .exercise-detail {
+            font-size: 0.7rem;
+        }
+        
+        .exercise-instructions {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .summary-card {
+            padding: 1rem;
+        }
+        
+        .summary-title {
+            font-size: 1rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+        }
+        
+        .form-input {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .action-buttons {
+            gap: 0.75rem;
+        }
+        
+        .btn-submit, .btn-cancel {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .track-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .est-info {
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+        
+        .exercise-card {
+            padding: 0.75rem;
+        }
+        
+        .exercise-content {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .checkbox {
+            align-self: flex-start;
+        }
+        
+        .exercise-info {
+            width: 100%;
+        }
+        
+        .exercise-details {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .exercise-detail {
+            font-size: 0.65rem;
+        }
+        
+        .exercise-instructions {
+            font-size: 0.7rem;
+        }
+        
+        .summary-card {
+            padding: 0.875rem;
+        }
+        
+        .summary-title {
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-input {
+            padding: 0.45rem;
+            font-size: 0.8rem;
+        }
+        
+        textarea {
+            font-size: 0.8rem;
+            padding: 0.45rem;
+            min-height: 80px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn-submit, .btn-cancel {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 0.75rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .track-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .est-info span {
+            font-size: 0.7rem;
+        }
+        
+        .exercise-card {
+            padding: 0.625rem;
+        }
+        
+        .exercise-name {
+            font-size: 0.85rem;
+        }
+        
+        .exercise-detail {
+            font-size: 0.6rem;
+        }
+        
+        .exercise-instructions {
+            font-size: 0.65rem;
+        }
+        
+        .form-input {
+            font-size: 0.75rem;
+            padding: 0.4rem;
+        }
+        
+        .btn-submit, .btn-cancel {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .exercise-name {
+            font-size: 0.8rem;
+        }
+        
+        .exercise-detail {
+            font-size: 0.55rem;
+        }
+        
+        .btn-submit, .btn-cancel {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .exercise-card:active {
+            transform: translateX(3px);
+        }
+        
+        .btn-submit:active, .btn-cancel:active {
+            transform: scale(0.98);
+        }
+        
+        input, textarea {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+        
+        .checkbox {
+            transform: scale(1.1);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .exercise-content {
+            flex-direction: row !important;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .btn-submit, .btn-cancel {
+            width: auto !important;
+        }
+        
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .exercise-card, .summary-card {
+            border: 2px solid #E94560;
+        }
+        
+        .btn-submit, .btn-cancel {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .exercise-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Progress indicator */
+    .progress-indicator {
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 track-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">{{ workout_plan.name }}</h1>
+        <p class="text-text-gray page-subtitle">Track your progress and complete this workout</p>
+        <div class="flex items-center justify-center gap-4 mt-3 est-info flex-wrap">
+            <span class="text-text-gray text-sm"><i class="fas fa-fire text-[#E94560] mr-1"></i> Est. Calories: {{ total_calories }}</span>
+            <span class="text-text-gray text-sm"><i class="far fa-clock text-[#E94560] mr-1"></i> Est. Duration: {{ total_duration }} min</span>
+        </div>
+    </div>
+
+    <form method="POST" id="trackWorkoutForm">
+        {% csrf_token %}
+        
+        <!-- Exercises List -->
+        <div class="space-y-4 mb-8">
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                <h2 class="text-xl font-bold text-white">Complete Each Exercise</h2>
+                <div class="text-text-gray text-sm">
+                    <i class="fas fa-check-circle mr-1"></i>
+                    <span id="completedCount">0</span> / <span id="totalCount">{{ exercises|length }}</span> completed
+                </div>
+            </div>
+            
+            {% for workout_exercise in exercises %}
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-4 exercise-card">
+                <div class="flex items-start gap-4 exercise-content">
+                    <div class="mt-1">
+                        <input type="checkbox" name="exercise_{{ workout_exercise.id }}" id="ex_{{ workout_exercise.id }}" 
+                               class="w-5 h-5 text-[#00D09C] rounded focus:ring-[#00D09C] checkbox"
+                               onchange="updateProgress()">
+                    </div>
+                    <div class="flex-1 exercise-info">
+                        <label for="ex_{{ workout_exercise.id }}" class="text-white font-semibold text-lg cursor-pointer exercise-name">
+                            {{ workout_exercise.order }}. {{ workout_exercise.exercise.name }}
+                        </label>
+                        <div class="flex flex-wrap gap-3 mt-2 text-sm exercise-details">
+                            <span class="text-text-gray exercise-detail"><i class="fas fa-redo-alt mr-1"></i> {{ workout_exercise.sets }} sets</span>
+                            <span class="text-text-gray exercise-detail"><i class="fas fa-list-ol mr-1"></i> {{ workout_exercise.reps }} reps</span>
+                            <span class="text-text-gray exercise-detail"><i class="fas fa-hourglass-half mr-1"></i> {{ workout_exercise.rest_seconds }}s rest</span>
+                        </div>
+                        <p class="text-text-gray text-sm mt-2 exercise-instructions">{{ workout_exercise.exercise.instructions|truncatechars:150 }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="mb-6">
+            <div class="w-full bg-[#0F0F1A] rounded-full h-2">
+                <div id="progressBar" class="bg-[#00D09C] rounded-full h-2 progress-indicator" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Workout Summary Form -->
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 summary-card">
+            <h2 class="text-xl font-bold text-white mb-4 summary-title">Workout Summary</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 form-grid">
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Duration (minutes) <span class="required-star">*</span>
+                    </label>
+                    <input type="number" name="duration_minutes" required 
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input"
+                           placeholder="e.g., 45"
+                           id="durationInput">
+                    <p class="input-hint">Enter actual workout duration</p>
+                </div>
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Calories Burned <span class="required-star">*</span>
+                    </label>
+                    <input type="number" name="calories_burned" required 
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input"
+                           placeholder="e.g., 300"
+                           id="caloriesInput">
+                    <p class="input-hint">Estimated calories burned</p>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    Notes (optional)
+                </label>
+                <textarea name="notes" rows="3" 
+                          class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all"
+                          placeholder="How was your workout? Any achievements?"></textarea>
+            </div>
+            
+            <div class="flex gap-4 action-buttons">
+                <button type="submit" id="submitBtn" class="flex-1 bg-[#00D09C] text-white py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all btn-submit">
+                    <span id="btnText"><i class="fas fa-check-circle mr-2"></i> Complete Workout</span>
+                    <span id="btnLoader" class="hidden">
+                        <svg class="animate-spin h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
+                <a href="{% url 'workouts:detail' workout_plan.id %}" 
+                   class="flex-1 border border-[#E94560] text-[#E94560] py-3 rounded-lg text-center hover:bg-[#E94560] hover:text-white transition-all btn-cancel">
+                    <i class="fas fa-times mr-2"></i> Cancel
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Update progress bar and count
+    function updateProgress() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="exercise_"]');
+        const total = checkboxes.length;
+        const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+        
+        const completedCount = document.getElementById('completedCount');
+        const progressBar = document.getElementById('progressBar');
+        
+        if (completedCount) completedCount.textContent = completed;
+        if (progressBar) progressBar.style.width = `${(completed / total) * 100}%`;
+        
+        // Auto-fill estimated values based on completed exercises
+        if (completed === total) {
+            const durationInput = document.getElementById('durationInput');
+            const caloriesInput = document.getElementById('caloriesInput');
+            if (durationInput && !durationInput.value) {
+                durationInput.placeholder = `Estimated: {{ total_duration }} min`;
+            }
+            if (caloriesInput && !caloriesInput.value) {
+                caloriesInput.placeholder = `Estimated: {{ total_calories }} cal`;
+            }
+        }
+    }
+    
+    // Form submission with loading state
+    const form = document.getElementById('trackWorkoutForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validation
+            const duration = document.querySelector('input[name="duration_minutes"]').value;
+            const calories = document.querySelector('input[name="calories_burned"]').value;
+            
+            if (!duration || duration <= 0) {
+                e.preventDefault();
+                showNotification('Please enter a valid duration', 'error');
+                return;
+            }
+            
+            if (duration > 480) {
+                e.preventDefault();
+                showNotification('Duration seems too long. Please check your input.', 'error');
+                return;
+            }
+            
+            if (!calories || calories <= 0) {
+                e.preventDefault();
+                showNotification('Please enter valid calories burned', 'error');
+                return;
+            }
+            
+            if (calories > 5000) {
+                e.preventDefault();
+                showNotification('Calories seem too high. Please check your input.', 'error');
+                return;
+            }
+            
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70');
+        });
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Auto-save progress to localStorage
+    function saveProgress() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="exercise_"]');
+        const states = {};
+        checkboxes.forEach((cb, index) => {
+            states[index] = cb.checked;
+        });
+        localStorage.setItem(`workout_progress_{{ workout_plan.id }}`, JSON.stringify(states));
+    }
+    
+    function loadProgress() {
+        const saved = localStorage.getItem(`workout_progress_{{ workout_plan.id }}`);
+        if (saved) {
+            const states = JSON.parse(saved);
+            const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="exercise_"]');
+            checkboxes.forEach((cb, index) => {
+                if (states[index]) {
+                    cb.checked = states[index];
+                }
+            });
+            updateProgress();
+        }
+    }
+    
+    // Auto-save on checkbox change
+    document.querySelectorAll('input[type="checkbox"][name^="exercise_"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+            saveProgress();
+            updateProgress();
+        });
+    });
+    
+    // Load saved progress on page load
+    loadProgress();
+    
+    // Clear saved progress on successful submit
+    form.addEventListener('submit', () => {
+        localStorage.removeItem(`workout_progress_{{ workout_plan.id }}`);
+    });
+    
+    // Add animation to exercise cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateX(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.exercise-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(-10px)';
+        card.style.transition = `opacity 0.5s ease, transform 0.5s ease`;
+        card.style.transitionDelay = `${Math.min(index * 0.05, 0.5)}s`;
+        observer.observe(card);
+    });
+</script>
+
+<style>
+    .required-star {
+        color: #E94560;
+        margin-left: 2px;
+    }
+    
+    .input-hint {
+        font-size: 0.7rem;
+        color: #A0A0A0;
+        margin-top: 0.25rem;
+    }
+    
+    /* Label strikethrough when checkbox checked */
+    input[type="checkbox"]:checked + label {
+        text-decoration: line-through;
+        opacity: 0.6;
+    }
+</style>
+{% endblock %}

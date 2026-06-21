@@ -1,0 +1,451 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Session Details - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR SESSION DETAILS PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .detail-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .detail-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.15);
+    }
+    
+    /* Status badge colors */
+    .status-pending { color: #fbbf24; background-color: rgba(251, 191, 36, 0.15); }
+    .status-approved { color: #60a5fa; background-color: rgba(96, 165, 250, 0.15); }
+    .status-paid { color: #a78bfa; background-color: rgba(167, 139, 250, 0.15); }
+    .status-completed { color: #4ade80; background-color: rgba(74, 222, 128, 0.15); }
+    .status-cancelled { color: #f87171; background-color: rgba(248, 113, 113, 0.15); }
+    .status-rejected { color: #f87171; background-color: rgba(248, 113, 113, 0.15); }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .session-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .session-card {
+            padding: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .detail-section {
+            padding: 1.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .session-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .session-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .session-card {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .back-link {
+            font-size: 0.85rem;
+        }
+        
+        .detail-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .detail-section {
+            padding: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+        }
+        
+        .detail-text {
+            font-size: 0.85rem;
+        }
+        
+        .status-badge {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .session-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .session-card {
+            padding: 1.25rem;
+        }
+        
+        .header {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.875rem;
+        }
+        
+        .detail-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.875rem;
+        }
+        
+        .detail-section {
+            padding: 0.875rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+        }
+        
+        .detail-text {
+            font-size: 0.8rem;
+        }
+        
+        .status-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .session-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .session-card {
+            padding: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .detail-section {
+            padding: 0.75rem;
+        }
+        
+        .section-title {
+            font-size: 0.95rem;
+        }
+        
+        .detail-text {
+            font-size: 0.75rem;
+        }
+        
+        .action-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .detail-text {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .detail-card:active {
+            transform: scale(0.98);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .detail-grid {
+            grid-template-columns: 1fr 1fr !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .detail-section {
+            border: 2px solid #E94560;
+        }
+        
+        .action-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .detail-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 px-4 lg:px-16 session-container fade-in">
+    <div class="max-w-4xl mx-auto bg-[#1A1A2E] rounded-3xl border border-[#E94560]/20 shadow-xl p-8 session-card">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 header">
+            <div>
+                <h1 class="text-3xl font-bold text-white page-title">Session Details</h1>
+                <p class="text-text-gray mt-2 page-subtitle">Review your trainer booking and complete payment if required.</p>
+            </div>
+            <a href="{% url 'trainers:my_sessions' %}" class="inline-flex items-center gap-2 rounded-full border border-[#E94560]/30 bg-[#0F0F1A] px-5 py-2 text-sm font-medium text-[#E94560] hover:bg-[#E94560]/10 transition back-link">
+                <i class="fas fa-arrow-left"></i> Back to My Sessions
+            </a>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 detail-grid">
+            <div class="space-y-4">
+                <!-- Trainer Info -->
+                <div class="p-6 rounded-3xl bg-[#14141E] border border-[#E94560]/10 detail-card detail-section">
+                    <h2 class="text-xl font-semibold text-white mb-3 section-title">
+                        <i class="fas fa-user text-[#E94560] mr-2"></i> Trainer
+                    </h2>
+                    <p class="text-text-gray detail-text"><strong>{{ session.trainer.full_name }}</strong></p>
+                    <p class="text-text-gray detail-text">{{ session.trainer.get_specialization_display }}</p>
+                    <p class="text-[#E94560] font-semibold detail-text mt-2">₹{{ session.amount }}</p>
+                </div>
+
+                <!-- Session Info -->
+                <div class="p-6 rounded-3xl bg-[#14141E] border border-[#E94560]/10 detail-card detail-section">
+                    <h2 class="text-xl font-semibold text-white mb-3 section-title">
+                        <i class="fas fa-calendar-alt text-[#E94560] mr-2"></i> Session Info
+                    </h2>
+                    <p class="text-text-gray detail-text"><strong>Date:</strong> {{ session.session_date|date:"l, F d, Y" }}</p>
+                    <p class="text-text-gray detail-text"><strong>Time:</strong> {{ session.session_time|time:"g:i A" }}</p>
+                    <p class="text-text-gray detail-text"><strong>Type:</strong> {{ session.get_session_type_display }}</p>
+                    <p class="text-text-gray detail-text"><strong>Duration:</strong> {{ session.duration_minutes }} minutes</p>
+                    <p class="text-text-gray detail-text mt-2"><strong>Status:</strong>
+                        <span class="status-badge 
+                            {% if session.status == 'pending' %}status-pending
+                            {% elif session.status == 'approved' %}status-approved
+                            {% elif session.status == 'paid' %}status-paid
+                            {% elif session.status == 'completed' %}status-completed
+                            {% elif session.status == 'cancelled' %}status-cancelled
+                            {% elif session.status == 'rejected' %}status-rejected
+                            {% else %}status-pending{% endif %}">
+                            <i class="fas 
+                                {% if session.status == 'pending' %}fa-clock
+                                {% elif session.status == 'approved' %}fa-check-circle
+                                {% elif session.status == 'paid' %}fa-credit-card
+                                {% elif session.status == 'completed' %}fa-check-double
+                                {% elif session.status == 'cancelled' %}fa-times-circle
+                                {% elif session.status == 'rejected' %}fa-times-circle
+                                {% else %}fa-circle{% endif %} mr-1"></i>
+                            {{ session.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Session Notes -->
+                <div class="p-6 rounded-3xl bg-[#14141E] border border-[#E94560]/10 detail-card detail-section">
+                    <h2 class="text-xl font-semibold text-white mb-3 section-title">
+                        <i class="fas fa-sticky-note text-[#E94560] mr-2"></i> Session Notes
+                    </h2>
+                    <p class="text-text-gray text-sm mb-1 detail-text"><strong>Your Notes:</strong></p>
+                    <p class="text-text-gray detail-text">{{ session.user_notes|default:'No notes provided.' }}</p>
+                    {% if session.trainer_notes %}
+                        <p class="text-text-gray text-sm mt-4 mb-1 detail-text"><strong>Trainer Notes:</strong></p>
+                        <p class="text-text-gray detail-text">{{ session.trainer_notes }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Action -->
+                <div class="p-6 rounded-3xl bg-[#14141E] border border-[#E94560]/10 detail-card detail-section">
+                    <h2 class="text-xl font-semibold text-white mb-3 section-title">
+                        <i class="fas fa-bolt text-[#E94560] mr-2"></i> Action
+                    </h2>
+                    {% if session.status == 'approved' %}
+                        <p class="text-text-gray mb-4 detail-text">✅ Your session has been approved by the trainer. Complete payment to reserve your slot.</p>
+                        <a href="{% url 'payments:initiate_session_payment' session.id %}" class="inline-flex items-center gap-2 rounded-2xl bg-[#E94560] px-5 py-3 text-sm font-semibold text-white hover:bg-opacity-90 transition action-btn">
+                            <i class="fas fa-credit-card"></i> Pay Now
+                        </a>
+                    {% elif session.status == 'paid' %}
+                        <p class="text-text-gray mb-4 detail-text">✅ Your session has been paid. Meeting details are available below.</p>
+                        {% if session.meeting_link %}
+                            <a href="{{ session.meeting_link }}" target="_blank" class="inline-flex items-center gap-2 rounded-2xl border border-[#E94560]/30 bg-[#0F0F1A] px-5 py-3 text-sm font-semibold text-[#E94560] hover:bg-[#E94560]/10 transition action-btn">
+                                <i class="fas fa-video"></i> Join Meeting
+                            </a>
+                        {% else %}
+                            <span class="text-text-gray detail-text">Meeting details will be shared soon.</span>
+                        {% endif %}
+                    {% elif session.status == 'pending' %}
+                        <p class="text-text-gray detail-text">⏳ Your session request is pending. You will receive a notification once it is approved.</p>
+                        <p class="text-text-gray text-sm mt-2 detail-text">You can cancel the request if needed.</p>
+                        <a href="{% url 'trainers:cancel_session' session.id %}" class="inline-flex items-center gap-2 rounded-2xl border border-red-500/30 bg-[#0F0F1A] px-5 py-3 text-sm font-semibold text-red-400 hover:bg-red-500/10 transition action-btn mt-3">
+                            <i class="fas fa-times"></i> Cancel Request
+                        </a>
+                    {% elif session.status == 'cancelled' %}
+                        <p class="text-text-gray detail-text">❌ This session has been cancelled.</p>
+                        <a href="{% url 'trainers:book_session' session.trainer.id %}" class="inline-flex items-center gap-2 rounded-2xl border border-[#E94560]/30 bg-[#0F0F1A] px-5 py-3 text-sm font-semibold text-[#E94560] hover:bg-[#E94560]/10 transition action-btn mt-3">
+                            <i class="fas fa-redo"></i> Book Another Session
+                        </a>
+                    {% elif session.status == 'rejected' %}
+                        <p class="text-text-gray detail-text">❌ This session has been rejected by the trainer.</p>
+                        <a href="{% url 'trainers:list' %}" class="inline-flex items-center gap-2 rounded-2xl border border-[#E94560]/30 bg-[#0F0F1A] px-5 py-3 text-sm font-semibold text-[#E94560] hover:bg-[#E94560]/10 transition action-btn mt-3">
+                            <i class="fas fa-search"></i> Find Another Trainer
+                        </a>
+                    {% elif session.status == 'completed' %}
+                        <p class="text-text-gray detail-text">✅ This session has been completed.</p>
+                        <a href="{% url 'trainers:add_review' session.trainer.id %}" class="inline-flex items-center gap-2 rounded-2xl border border-[#E94560]/30 bg-[#0F0F1A] px-5 py-3 text-sm font-semibold text-[#E94560] hover:bg-[#E94560]/10 transition action-btn mt-3">
+                            <i class="fas fa-star"></i> Leave a Review
+                        </a>
+                    {% else %}
+                        <p class="text-text-gray detail-text">No action is required at this time.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add animation to detail cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.detail-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity 0.5s ease, transform 0.5s ease`;
+        card.style.transitionDelay = `${Math.min(index * 0.05, 0.3)}s`;
+        observer.observe(card);
+    });
+    
+    // Show notification if payment was successful
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('paid') === '1') {
+        showNotification('Payment successful! Your session is confirmed.', 'success');
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+</script>
+{% endblock %}

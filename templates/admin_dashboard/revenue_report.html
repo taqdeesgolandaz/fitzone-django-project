@@ -1,0 +1,678 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Revenue Report - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR REVENUE REPORT PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .report-container {
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+        
+        .report-title {
+            font-size: 1.75rem;
+        }
+        
+        .summary-value {
+            font-size: 2.5rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .report-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .report-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .report-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .report-title {
+            font-size: 1.5rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .summary-card {
+            padding: 1rem;
+        }
+        
+        .summary-label {
+            font-size: 0.8rem;
+        }
+        
+        .summary-value {
+            font-size: 1.75rem;
+        }
+        
+        .payment-methods-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .payment-method-card {
+            padding: 0.75rem;
+        }
+        
+        .payment-method-icon {
+            font-size: 1.5rem;
+        }
+        
+        .payment-method-name {
+            font-size: 0.85rem;
+        }
+        
+        .payment-method-amount {
+            font-size: 0.8rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 800px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .report-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .report-header {
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .report-title {
+            font-size: 1.35rem;
+        }
+        
+        .back-link {
+            font-size: 0.85rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .summary-card {
+            padding: 0.875rem;
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 0.75rem;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+        }
+        
+        .payment-methods-section {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .payment-methods-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+        }
+        
+        .payment-method-card {
+            padding: 0.75rem;
+        }
+        
+        .payment-method-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .payment-method-name {
+            font-size: 0.8rem;
+        }
+        
+        .payment-method-amount {
+            font-size: 0.75rem;
+        }
+        
+        .payment-method-count {
+            font-size: 0.65rem;
+        }
+        
+        .table-header {
+            padding: 0.75rem;
+        }
+        
+        .table-title {
+            font-size: 1rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            min-width: 700px;
+        }
+        
+        th, td {
+            padding: 0.6rem;
+            font-size: 0.75rem;
+        }
+        
+        .invoice-number {
+            font-size: 0.7rem;
+        }
+        
+        .amount-value {
+            font-size: 0.75rem;
+        }
+        
+        .status-badge {
+            font-size: 0.7rem;
+        }
+        
+        .empty-state {
+            padding: 2rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.85rem;
+        }
+        
+        .py-8 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .report-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .report-title {
+            font-size: 1.2rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+        }
+        
+        .summary-grid {
+            gap: 0.75rem;
+        }
+        
+        .summary-card {
+            padding: 0.75rem;
+        }
+        
+        .summary-value {
+            font-size: 1.35rem;
+        }
+        
+        .payment-methods-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        
+        .payment-method-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+            gap: 1rem;
+        }
+        
+        .payment-method-icon {
+            margin-bottom: 0;
+        }
+        
+        .payment-method-info {
+            flex: 1;
+        }
+        
+        .payment-method-stats {
+            text-align: right;
+        }
+        
+        table {
+            min-width: 620px;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .invoice-number {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .report-title {
+            font-size: 1.1rem;
+        }
+        
+        .summary-value {
+            font-size: 1.2rem;
+        }
+        
+        table {
+            min-width: 550px;
+        }
+        
+        th, td {
+            padding: 0.4rem;
+            font-size: 0.65rem;
+        }
+        
+        .invoice-number {
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .report-title {
+            font-size: 1rem;
+        }
+        
+        .summary-value {
+            font-size: 1.1rem;
+        }
+        
+        th, td {
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .back-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .summary-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+        
+        .payment-methods-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .summary-card, .payment-methods-section, .transactions-table {
+            border: 2px solid #E94560;
+        }
+        
+        .back-link {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Table row hover effect */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+        transition: background-color 0.3s ease;
+    }
+    
+    /* Status badge styling */
+    .status-success {
+        color: #00D09C;
+    }
+    
+    /* Payment method card styling */
+    .payment-method-card {
+        transition: all 0.3s ease;
+    }
+    
+    .payment-method-card:hover {
+        transform: translateY(-3px);
+        background-color: rgba(233, 69, 96, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 report-container fade-in">
+    <div class="flex justify-between items-center mb-6 report-header flex-wrap gap-3">
+        <h1 class="text-2xl font-bold text-white report-title">Revenue Report</h1>
+        <a href="{% url 'admin_dashboard:dashboard' %}" class="text-[#E94560] hover:underline back-link">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 summary-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <p class="text-text-gray text-sm summary-label">Total Revenue</p>
+            <p class="text-white text-3xl font-bold summary-value">₹{{ total_revenue|floatformat:0 }}</p>
+            <p class="text-[#00D09C] text-xs mt-2">Lifetime earnings</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <p class="text-text-gray text-sm summary-label">Total Transactions</p>
+            <p class="text-white text-3xl font-bold summary-value">{{ payments|length }}</p>
+            <p class="text-text-gray text-xs mt-2">Successful payments</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <p class="text-text-gray text-sm summary-label">Payment Methods</p>
+            <p class="text-white text-3xl font-bold summary-value">{{ payment_methods|length }}</p>
+            <p class="text-text-gray text-xs mt-2">Active methods</p>
+        </div>
+    </div>
+
+    <!-- Payment Methods Breakdown -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 mb-8 payment-methods-section card-hover">
+        <h3 class="text-white font-semibold mb-4 section-title">Payment Methods Breakdown</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 payment-methods-grid">
+            {% for method in payment_methods %}
+            <div class="bg-[#0F0F1A] rounded-lg p-3 text-center payment-method-card">
+                <i class="fas 
+                    {% if method.payment_method == 'card' %}fa-credit-card
+                    {% elif method.payment_method == 'upi' %}fa-mobile-alt
+                    {% elif method.payment_method == 'netbanking' %}fa-university
+                    {% else %}fa-wallet{% endif %} 
+                    text-[#E94560] text-2xl mb-2 payment-method-icon"></i>
+                <div class="payment-method-info">
+                    <p class="text-white font-semibold payment-method-name">
+                        {% if method.payment_method %} 
+                            {{ method.payment_method|title }}
+                        {% else %}
+                            Unknown
+                        {% endif %}
+                    </p>
+                    <div class="payment-method-stats">
+                        <p class="text-[#E94560] font-bold payment-method-amount">₹{{ method.total|floatformat:0 }}</p>
+                        <p class="text-text-gray text-xs payment-method-count">{{ method.count }} transactions</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-text-gray col-span-full text-center">No payment data available</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden transactions-table card-hover">
+        <div class="px-6 py-4 border-b border-[#E94560]/20 bg-[#0F0F1A] table-header">
+            <h3 class="text-white font-semibold table-title">Transaction History</h3>
+        </div>
+        
+        {% if payments %}
+        <div class="overflow-x-auto table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="text-left p-3 text-text-gray">Invoice #</th>
+                        <th class="text-left p-3 text-text-gray">User</th>
+                        <th class="text-left p-3 text-text-gray">Amount</th>
+                        <th class="text-left p-3 text-text-gray">Payment Method</th>
+                        <th class="text-left p-3 text-text-gray">Date</th>
+                        <th class="text-left p-3 text-text-gray">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr class="border-b border-[#E94560]/10 transition-colors">
+                        <td class="p-3 text-white font-mono text-sm invoice-number">
+                            <i class="fas fa-receipt text-text-gray mr-2 text-xs"></i>
+                            {{ payment.invoice_number|default:"-" }}
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas fa-user text-text-gray mr-2 text-xs"></i>
+                            {{ payment.user.username }}
+                        </td>
+                        <td class="p-3 text-[#00D09C] font-semibold amount-value">
+                            <i class="fas fa-rupee-sign text-[#00D09C] mr-1 text-xs"></i>
+                            {{ payment.amount }}
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas 
+                                {% if payment.payment_method == 'card' %}fa-credit-card
+                                {% elif payment.payment_method == 'upi' %}fa-mobile-alt
+                                {% elif payment.payment_method == 'netbanking' %}fa-university
+                                {% else %}fa-wallet{% endif %} 
+                                text-text-gray mr-2 text-xs"></i>
+                            {{ payment.payment_method|default:"-"|title }}
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas fa-calendar-alt text-text-gray mr-2 text-xs"></i>
+                            {{ payment.created_at|date:"M d, Y H:i" }}
+                        </td>
+                        <td class="p-3">
+                            <span class="status-success status-badge">
+                                <i class="fas fa-check-circle text-[10px] mr-1"></i> Success
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 empty-state">
+            <i class="fas fa-chart-line text-5xl text-text-gray mb-3 empty-state-icon"></i>
+            <p class="text-text-gray empty-state-text">No transactions found.</p>
+            <p class="text-text-gray text-sm mt-2">When users make payments, they will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Summary Footer -->
+    {% if payments %}
+    <div class="mt-6 bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-4">
+        <div class="flex justify-between items-center flex-wrap gap-3">
+            <div>
+                <p class="text-text-gray text-sm">
+                    <i class="fas fa-chart-line mr-1"></i>
+                    Total Revenue: <span class="text-[#E94560] font-bold">₹{{ total_revenue|floatformat:0 }}</span>
+                </p>
+            </div>
+            <div>
+                <p class="text-text-gray text-sm">
+                    <i class="fas fa-exchange-alt mr-1"></i>
+                    Total Transactions: <span class="text-white font-bold">{{ payments|length }}</span>
+                </p>
+            </div>
+            <div>
+                <p class="text-text-gray text-sm">
+                    <i class="fas fa-calendar mr-1"></i>
+                    Latest Transaction: <span class="text-white">{{ payments.0.created_at|date:"M d, Y"|default:"N/A" }}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    // Animate summary cards and sections
+    document.querySelectorAll('.summary-card, .payment-methods-section, .transactions-table').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Format currency function
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    }
+    
+    // Search functionality
+    function searchTransactions() {
+        const input = document.getElementById('searchInput');
+        if (input) {
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    }
+    
+    // Add search box if there are transactions
+    const tableHeader = document.querySelector('.table-header');
+    const hasTransactions = document.querySelectorAll('tbody tr').length > 0;
+    
+    if (tableHeader && hasTransactions) {
+        const searchDiv = document.createElement('div');
+        searchDiv.className = 'mt-3 sm:mt-0';
+        searchDiv.innerHTML = `
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-gray text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Search by invoice, user, or method..." 
+                       class="pl-9 pr-3 py-1.5 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white text-sm focus:outline-none focus:border-[#E94560] w-full sm:w-72"
+                       onkeyup="searchTransactions()">
+            </div>
+        `;
+        tableHeader.appendChild(searchDiv);
+    }
+</script>
+{% endblock %}

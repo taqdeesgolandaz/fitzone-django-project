@@ -1,0 +1,637 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Set Fitness Goal - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR SET FITNESS GOAL PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .goal-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .goal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Input focus effects */
+    input:focus, select:focus {
+        outline: none;
+        border-color: #E94560;
+        box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Number input spinner styling */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 0.5;
+    }
+    
+    /* Date input styling */
+    input[type="date"] {
+        color-scheme: dark;
+    }
+    
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.7);
+        cursor: pointer;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .goal-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .goal-card {
+            padding: 2rem;
+        }
+        
+        .page-icon {
+            font-size: 3.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.95rem;
+        }
+        
+        .form-input, .form-select {
+            padding: 0.6rem;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .goal-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .goal-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .goal-card {
+            padding: 1.5rem;
+        }
+        
+        .page-icon {
+            font-size: 3rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-input, .form-select {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .space-y-4 {
+            gap: 0.75rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .goal-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .goal-card {
+            padding: 1.25rem;
+        }
+        
+        .page-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-input, .form-select {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .space-y-4 {
+            gap: 0.875rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .goal-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .goal-card {
+            padding: 1rem;
+        }
+        
+        .page-icon {
+            font-size: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+        }
+        
+        .form-input, .form-select {
+            padding: 0.45rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-primary i, .btn-secondary i {
+            font-size: 0.7rem;
+        }
+        
+        .space-y-4 {
+            gap: 0.75rem;
+        }
+        
+        .input-hint {
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .goal-card {
+            padding: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .form-label {
+            font-size: 0.7rem;
+        }
+        
+        .form-input, .form-select {
+            padding: 0.4rem;
+            font-size: 0.7rem;
+        }
+        
+        .btn-primary, .btn-secondary {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .page-title {
+            font-size: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .goal-card:active {
+            transform: scale(0.98);
+        }
+        
+        .goal-card:hover {
+            transform: none;
+        }
+        
+        .btn-primary:active, .btn-secondary:active {
+            transform: scale(0.98);
+        }
+        
+        input, select {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .space-y-4 {
+            gap: 0.5rem;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: auto !important;
+            min-width: 120px;
+        }
+        
+        .goal-card {
+            padding: 0.875rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .goal-card {
+            border: 2px solid #E94560;
+        }
+        
+        .form-input, .form-select {
+            border: 1px solid #E94560;
+        }
+        
+        .btn-primary, .btn-secondary {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .goal-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Helper classes */
+    .required-star {
+        color: #E94560;
+        margin-left: 2px;
+    }
+    
+    .input-hint {
+        font-size: 0.7rem;
+        color: #A0A0A0;
+        margin-top: 0.25rem;
+    }
+    
+    /* Goal tips section */
+    .goal-tips {
+        background: linear-gradient(135deg, rgba(233, 69, 96, 0.1), rgba(0, 208, 156, 0.05));
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    @media (max-width: 640px) {
+        .goal-tips {
+            padding: 0.75rem;
+        }
+        
+        .goal-tips p {
+            font-size: 0.7rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 goal-container fade-in">
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 goal-card">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-bullseye text-[#E94560] text-3xl page-icon"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white page-title">Set Your Fitness Goal</h2>
+            <p class="text-text-gray page-subtitle">Define what you want to achieve</p>
+        </div>
+
+        <form method="POST" id="goalForm">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Goal Type <span class="required-star">*</span>
+                    </label>
+                    <select name="goal_type" required class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-select">
+                        <option value="weight_loss" {% if goal.goal_type == 'weight_loss' %}selected{% endif %}>🏋️ Weight Loss</option>
+                        <option value="weight_gain" {% if goal.goal_type == 'weight_gain' %}selected{% endif %}>📈 Weight Gain</option>
+                        <option value="muscle_gain" {% if goal.goal_type == 'muscle_gain' %}selected{% endif %}>💪 Muscle Gain</option>
+                        <option value="maintenance" {% if goal.goal_type == 'maintenance' %}selected{% endif %}>⚖️ Maintenance</option>
+                        <option value="custom" {% if goal.goal_type == 'custom' %}selected{% endif %}>🎯 Custom</option>
+                    </select>
+                    <p class="input-hint">Choose the type of goal that matches your fitness journey</p>
+                </div>
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Target Weight (kg)
+                    </label>
+                    <input type="number" step="0.1" name="target_weight" value="{{ goal.target_weight }}"
+                           placeholder="Enter your target weight"
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                    <p class="input-hint">Your desired weight in kilograms</p>
+                </div>
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Target Body Fat (%)
+                    </label>
+                    <input type="number" step="0.1" name="target_body_fat" value="{{ goal.target_body_fat }}"
+                           placeholder="Enter target body fat percentage"
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                    <p class="input-hint">Optional - helps track body composition goals</p>
+                </div>
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Target Date
+                    </label>
+                    <input type="date" name="target_date" value="{{ goal.target_date|date:'Y-m-d' }}"
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                    <p class="input-hint">When do you want to achieve this goal?</p>
+                </div>
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Weekly Workout Goal (days/week)
+                    </label>
+                    <input type="number" name="weekly_workout_goal" value="{{ goal.weekly_workout_goal|default:3 }}" min="1" max="7"
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                    <p class="input-hint">How many days per week can you commit to working out?</p>
+                </div>
+            </div>
+            
+            <!-- Goal Tips -->
+            <div class="goal-tips">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-lightbulb text-[#E94560] text-sm"></i>
+                    <span class="text-white text-sm font-semibold">Goal Setting Tips:</span>
+                </div>
+                <ul class="text-text-gray text-xs space-y-1">
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Set SMART goals (Specific, Measurable, Achievable, Relevant, Time-bound)</li>
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Aim for 0.5-1 kg weight loss per week for sustainable results</li>
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Track your progress weekly to stay motivated</li>
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Adjust your goals as you make progress</li>
+                </ul>
+            </div>
+            
+            <div class="flex gap-4 mt-6 action-buttons">
+                <button type="submit" id="submitBtn" class="flex-1 bg-[#E94560] text-white py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all btn-primary">
+                    <span id="btnText"><i class="fas fa-save mr-2"></i> Save Goal</span>
+                    <span id="btnLoader" class="hidden">
+                        <svg class="animate-spin h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
+                <a href="{% url 'tracking:dashboard' %}" class="flex-1 text-center border border-[#E94560] text-[#E94560] py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all btn-secondary">
+                    <i class="fas fa-times mr-2"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Form submission with loading state
+    const form = document.getElementById('goalForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validation
+            const goalType = document.querySelector('select[name="goal_type"]').value;
+            const targetWeight = document.querySelector('input[name="target_weight"]').value;
+            const weeklyGoal = document.querySelector('input[name="weekly_workout_goal"]').value;
+            
+            if (!goalType) {
+                e.preventDefault();
+                showNotification('Please select a goal type', 'error');
+                return;
+            }
+            
+            if (targetWeight && targetWeight <= 0) {
+                e.preventDefault();
+                showNotification('Please enter a valid target weight', 'error');
+                return;
+            }
+            
+            if (weeklyGoal && (weeklyGoal < 1 || weeklyGoal > 7)) {
+                e.preventDefault();
+                showNotification('Weekly workout goal must be between 1 and 7 days', 'error');
+                return;
+            }
+            
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70');
+        });
+    }
+    
+    // Validate target date (cannot be in the past)
+    const targetDateInput = document.querySelector('input[name="target_date"]');
+    if (targetDateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        targetDateInput.setAttribute('min', today);
+        
+        targetDateInput.addEventListener('change', function() {
+            if (this.value && this.value < today) {
+                showNotification('Target date cannot be in the past', 'error');
+                this.value = '';
+            }
+        });
+    }
+    
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const goalCard = document.querySelector('.goal-card');
+    if (goalCard) {
+        goalCard.style.opacity = '0';
+        goalCard.style.transform = 'translateY(20px)';
+        goalCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(goalCard);
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Show success message if coming from redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('saved') === '1') {
+        showNotification('Goal saved successfully!', 'success');
+    }
+    
+    // Warn before leaving with unsaved changes
+    let formChanged = false;
+    const formInputs = document.querySelectorAll('form input, form select');
+    formInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            formChanged = true;
+        });
+    });
+    
+    window.addEventListener('beforeunload', function(e) {
+        if (formChanged) {
+            e.preventDefault();
+            e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            return e.returnValue;
+        }
+    });
+    
+    form.addEventListener('submit', function() {
+        formChanged = false;
+    });
+    
+    // Dynamic placeholder based on goal type
+    const goalTypeSelect = document.querySelector('select[name="goal_type"]');
+    const weightInput = document.querySelector('input[name="target_weight"]');
+    
+    if (goalTypeSelect && weightInput) {
+        goalTypeSelect.addEventListener('change', function() {
+            const goalType = this.value;
+            switch(goalType) {
+                case 'weight_loss':
+                    weightInput.placeholder = 'e.g., 70 kg (lower than current)';
+                    break;
+                case 'weight_gain':
+                    weightInput.placeholder = 'e.g., 75 kg (higher than current)';
+                    break;
+                case 'muscle_gain':
+                    weightInput.placeholder = 'e.g., 72 kg with muscle gain';
+                    break;
+                default:
+                    weightInput.placeholder = 'Enter your target weight';
+            }
+        });
+    }
+</script>
+{% endblock %}

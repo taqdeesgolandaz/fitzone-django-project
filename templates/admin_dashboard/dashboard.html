@@ -1,0 +1,820 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - FitZone{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR ADMIN DASHBOARD
+    ============================================ */
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(233, 69, 96, 0.1);
+    }
+    .group-hover\:translate-x-1:hover {
+        transform: translateX(4px);
+    }
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .admin-container {
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+        .dashboard-title {
+            font-size: 2rem;
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .admin-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        .kpi-value {
+            font-size: 2rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .admin-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        .dashboard-title {
+            font-size: 1.75rem;
+        }
+        .today-summary-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        .kpi-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        .charts-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+        .stats-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+        .recent-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+        .summary-card {
+            padding: 0.875rem;
+        }
+        .summary-value {
+            font-size: 2rem;
+        }
+        .kpi-card {
+            padding: 1rem;
+        }
+        .kpi-value {
+            font-size: 1.75rem;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            min-width: 500px;
+        }
+        .newsletter-card {
+            padding: 1rem;
+        }
+        .newsletter-title {
+            font-size: 1.5rem;
+        }
+        .subscriber-count {
+            font-size: 2.5rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .admin-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        .dashboard-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        .dashboard-title {
+            font-size: 1.5rem;
+        }
+        .live-badge {
+            font-size: 0.7rem;
+        }
+        .today-summary-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+        }
+        .kpi-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        .charts-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        .stats-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        .recent-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        .summary-card {
+            padding: 0.75rem;
+        }
+        .summary-icon {
+            font-size: 1.5rem;
+        }
+        .summary-value {
+            font-size: 1.5rem;
+        }
+        .summary-label {
+            font-size: 0.7rem;
+        }
+        .kpi-card {
+            padding: 0.875rem;
+        }
+        .kpi-value {
+            font-size: 1.5rem;
+        }
+        .kpi-label {
+            font-size: 0.75rem;
+        }
+        .kpi-trend {
+            font-size: 0.65rem;
+        }
+        .section-title {
+            font-size: 1rem;
+        }
+        .chart-container {
+            padding: 1rem;
+        }
+        .trainer-stats {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 0.5rem;
+        }
+        .trainer-stat-value {
+            font-size: 1.25rem;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            min-width: 450px;
+        }
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+        .newsletter-card {
+            padding: 0.875rem;
+        }
+        .newsletter-icon {
+            width: 60px;
+            height: 60px;
+        }
+        .newsletter-icon i {
+            font-size: 1.5rem;
+        }
+        .newsletter-title {
+            font-size: 1.25rem;
+        }
+        .newsletter-text {
+            font-size: 0.7rem;
+        }
+        .subscriber-count {
+            font-size: 2rem;
+        }
+        .support-card {
+            padding: 0.875rem;
+        }
+        .quick-actions {
+            gap: 0.5rem;
+        }
+        .quick-action-btn {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.7rem;
+        }
+        .py-8 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .admin-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        .dashboard-title {
+            font-size: 1.35rem;
+        }
+        .today-summary-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        .kpi-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        .summary-card {
+            padding: 0.75rem;
+        }
+        .summary-value {
+            font-size: 1.35rem;
+        }
+        .kpi-value {
+            font-size: 1.35rem;
+        }
+        .chart-container {
+            padding: 0.875rem;
+        }
+        .trainer-stats {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+        .trainer-stat-value {
+            font-size: 1rem;
+        }
+        .trainer-stat-label {
+            font-size: 0.6rem;
+        }
+        .newsletter-card {
+            padding: 0.75rem;
+        }
+        .newsletter-content {
+            flex-direction: column !important;
+            text-align: center;
+            gap: 1rem;
+        }
+        .newsletter-left {
+            flex-direction: column !important;
+            text-align: center;
+        }
+        .newsletter-icon {
+            margin-bottom: 0.5rem;
+        }
+        .newsletter-title {
+            font-size: 1.125rem;
+        }
+        .subscriber-info {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .subscriber-count {
+            font-size: 1.75rem;
+        }
+        .quick-actions {
+            justify-content: center;
+        }
+        .quick-action-btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .dashboard-title {
+            font-size: 1.2rem;
+        }
+        .summary-value {
+            font-size: 1.2rem;
+        }
+        .kpi-value {
+            font-size: 1.2rem;
+        }
+        .trainer-stat-value {
+            font-size: 0.9rem;
+        }
+        .subscriber-count {
+            font-size: 1.5rem;
+        }
+        th, td {
+            padding: 0.4rem;
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        .card-hover:hover {
+            transform: none;
+        }
+        .quick-action-btn:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .today-summary-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+        }
+        .kpi-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        .newsletter-content {
+            flex-direction: row !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .summary-card, .kpi-card, .chart-container {
+            border: 2px solid #E94560;
+        }
+        .quick-action-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Table row hover */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+    }
+    
+    /* Progress bar animation */
+    .progress-fill {
+        transition: width 0.5s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 admin-container fade-in">
+    <div class="flex justify-between items-center mb-8 dashboard-header flex-wrap gap-3">
+        <h1 class="text-3xl font-bold text-white dashboard-title">Admin Dashboard</h1>
+        <div class="flex gap-2">
+            <span class="bg-[#00D09C]/20 text-[#00D09C] px-3 py-1 rounded-full text-sm live-badge">
+                <i class="fas fa-chart-line mr-1"></i> Live Analytics
+            </span>
+        </div>
+    </div>
+
+    <!-- Today's Summary -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8 today-summary-grid">
+        <div class="bg-gradient-to-r from-[#1A1A2E] to-[#16213E] rounded-xl p-4 border border-[#E94560]/20 summary-card card-hover">
+            <i class="fas fa-user-plus text-[#E94560] text-2xl mb-2 summary-icon"></i>
+            <p class="text-text-gray text-sm summary-label">New Users Today</p>
+            <p class="text-white text-3xl font-bold summary-value">{{ today_new_users }}</p>
+        </div>
+        <div class="bg-gradient-to-r from-[#1A1A2E] to-[#16213E] rounded-xl p-4 border border-[#E94560]/20 summary-card card-hover">
+            <i class="fas fa-rupee-sign text-[#E94560] text-2xl mb-2 summary-icon"></i>
+            <p class="text-text-gray text-sm summary-label">Today's Revenue</p>
+            <p class="text-white text-3xl font-bold summary-value">₹{{ revenue_today|floatformat:0 }}</p>
+        </div>
+        <div class="bg-gradient-to-r from-[#1A1A2E] to-[#16213E] rounded-xl p-4 border border-[#E94560]/20 summary-card card-hover">
+            <i class="fas fa-dumbbell text-[#E94560] text-2xl mb-2 summary-icon"></i>
+            <p class="text-text-gray text-sm summary-label">Workouts Today</p>
+            <p class="text-white text-3xl font-bold summary-value">{{ today_workouts }}</p>
+        </div>
+        <div class="bg-gradient-to-r from-[#1A1A2E] to-[#16213E] rounded-xl p-4 border border-[#E94560]/20 summary-card card-hover">
+            <i class="fas fa-credit-card text-[#E94560] text-2xl mb-2 summary-icon"></i>
+            <p class="text-text-gray text-sm summary-label">Payments Today</p>
+            <p class="text-white text-3xl font-bold summary-value">{{ today_payments }}</p>
+        </div>
+    </div>
+
+    <!-- KPI Cards (First 4) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 kpi-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover kpi-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-text-gray text-sm kpi-label">Total Users</p>
+                    <p class="text-white text-3xl font-bold mt-1 kpi-value">{{ total_users }}</p>
+                    <p class="text-[#00D09C] text-xs mt-2 kpi-trend">+{{ new_users_this_month }} this month</p>
+                </div>
+                <i class="fas fa-users text-[#E94560] text-3xl opacity-50"></i>
+            </div>
+        </div>
+        
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover kpi-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-text-gray text-sm kpi-label">Active Memberships</p>
+                    <p class="text-white text-3xl font-bold mt-1 kpi-value">{{ active_memberships }}</p>
+                    <p class="text-text-gray text-xs mt-2 kpi-trend">Total sold: {{ total_memberships_sold }}</p>
+                </div>
+                <i class="fas fa-id-card text-[#00D09C] text-3xl opacity-50"></i>
+            </div>
+        </div>
+        
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover kpi-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-text-gray text-sm kpi-label">Total Revenue</p>
+                    <p class="text-white text-3xl font-bold mt-1 kpi-value">₹{{ total_revenue|floatformat:0 }}</p>
+                    <p class="text-[#00D09C] text-xs mt-2 kpi-trend">↑ {{ revenue_growth }}% vs last month</p>
+                </div>
+                <i class="fas fa-chart-line text-[#E94560] text-3xl opacity-50"></i>
+            </div>
+        </div>
+        
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover kpi-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-text-gray text-sm kpi-label">Workouts Completed</p>
+                    <p class="text-white text-3xl font-bold mt-1 kpi-value">{{ total_workouts_completed }}</p>
+                    <p class="text-text-gray text-xs mt-2 kpi-trend">{{ total_calories_burned|floatformat:0 }} calories burned</p>
+                </div>
+                <i class="fas fa-fire text-orange-500 text-3xl opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW 3 CARDS: Manage Bookings, Newsletter Management, Support Messages -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Manage Bookings Card -->
+        <a href="{% url 'trainers:admin_bookings' %}" 
+           class="relative group overflow-hidden bg-gradient-to-r from-[#E94560] to-[#c72a4a] rounded-xl p-6 card-hover block">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-white text-3xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white text-xl font-bold">Manage Bookings</h3>
+                        <p class="text-white/80 text-sm">View and manage all trainer bookings</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 rounded-full p-3 group-hover:translate-x-1 transition-transform">
+                    <i class="fas fa-arrow-right text-white text-xl"></i>
+                </div>
+            </div>
+            <div class="absolute inset-0 bg-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+        </a>
+
+        <!-- Newsletter Management Card -->
+        <a href="{% url 'notifications:newsletter_subscribers' %}" 
+           class="relative group overflow-hidden bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 card-hover block">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-users text-white text-3xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white text-xl font-bold">Newsletter</h3>
+                        <p class="text-white/80 text-sm">Manage subscribers & broadcasts</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="text-center">
+                        <p class="text-white/70 text-xs">Subscribers</p>
+                        <p class="text-white text-2xl font-bold">{{ total_subscribers|default:"0" }}</p>
+                    </div>
+                    <div class="bg-white/20 rounded-full p-3 group-hover:translate-x-1 transition-transform">
+                        <i class="fas fa-arrow-right text-white text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute inset-0 bg-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+        </a>
+
+        <!-- Support Messages Card -->
+        <a href="{% url 'support:admin_messages' %}" 
+           class="relative group overflow-hidden bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl p-6 card-hover block">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-envelope text-white text-3xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white text-xl font-bold">Support</h3>
+                        <p class="text-white/80 text-sm">View user inquiries & tickets</p>
+                    </div>
+                </div>
+                <div class="bg-white/20 rounded-full p-3 group-hover:translate-x-1 transition-transform">
+                    <i class="fas fa-arrow-right text-white text-xl"></i>
+                </div>
+            </div>
+            <div class="absolute inset-0 bg-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+        </a>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 charts-grid">
+        <!-- Monthly Revenue Chart -->
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 chart-container card-hover">
+            <h3 class="text-white font-semibold mb-4 section-title">Monthly Revenue</h3>
+            <canvas id="revenueChart" height="250"></canvas>
+        </div>
+        
+        <!-- Membership Distribution -->
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 chart-container card-hover">
+            <h3 class="text-white font-semibold mb-4 section-title">Membership Distribution</h3>
+            <canvas id="membershipChart" height="250"></canvas>
+        </div>
+    </div>
+
+    <!-- Popular Workouts & Trainer Stats -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 stats-grid">
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 card-hover">
+            <h3 class="text-white font-semibold mb-4 section-title">Most Popular Workouts</h3>
+            <div class="space-y-3">
+                {% for workout in popular_workouts %}
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-text-gray">{{ workout.name }}</span>
+                        <span class="text-white">{{ workout.count }} completions</span>
+                    </div>
+                    <div class="w-full bg-[#0F0F1A] rounded-full h-2">
+                        <div class="bg-[#E94560] rounded-full h-2 progress-fill" style="width: {% widthratio workout.count popular_workouts.0.count 100 %}%"></div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-text-gray">No workout data available</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 card-hover">
+            <h3 class="text-white font-semibold mb-4 section-title">Trainer Session Stats</h3>
+            <div class="grid grid-cols-3 gap-4 text-center trainer-stats">
+                <div>
+                    <p class="text-text-gray text-sm trainer-stat-label">Total</p>
+                    <p class="text-white text-2xl font-bold trainer-stat-value">{{ total_sessions }}</p>
+                </div>
+                <div>
+                    <p class="text-text-gray text-sm trainer-stat-label">Completed</p>
+                    <p class="text-[#00D09C] text-2xl font-bold trainer-stat-value">{{ completed_sessions }}</p>
+                </div>
+                <div>
+                    <p class="text-text-gray text-sm trainer-stat-label">Pending</p>
+                    <p class="text-yellow-400 text-2xl font-bold trainer-stat-value">{{ pending_sessions }}</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="flex justify-between mb-1">
+                    <span class="text-text-gray">Completion Rate</span>
+                    <span class="text-white">{{ session_completion_rate }}%</span>
+                </div>
+                <div class="w-full bg-[#0F0F1A] rounded-full h-2">
+                    <div class="bg-[#00D09C] rounded-full h-2 progress-fill" style="width: {{ session_completion_rate }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 recent-grid">
+        <!-- Recent Payments -->
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden card-hover">
+            <div class="px-6 py-4 border-b border-[#E94560]/20 bg-[#0F0F1A]">
+                <h3 class="text-white font-semibold">Recent Payments</h3>
+            </div>
+            <div class="overflow-x-auto table-container">
+                <table class="w-full">
+                    <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                        <tr>
+                            <th class="text-left p-3 text-text-gray">User</th>
+                            <th class="text-left p-3 text-text-gray">Amount</th>
+                            <th class="text-left p-3 text-text-gray">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in recent_payments %}
+                        <tr class="border-b border-[#E94560]/10 transition-colors">
+                            <td class="p-3 text-white">{{ payment.user.username }}</td>
+                            <td class="p-3 text-[#00D09C]">₹{{ payment.amount }}</td>
+                            <td class="p-3 text-text-gray">{{ payment.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="p-3 text-text-gray text-center">No payments yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-3 text-center border-t border-[#E94560]/20">
+                <a href="{% url 'admin_dashboard:revenue_report' %}" class="text-[#E94560] text-sm hover:underline">View All →</a>
+            </div>
+        </div>
+        
+        <!-- Recent Users -->
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden card-hover">
+            <div class="px-6 py-4 border-b border-[#E94560]/20 bg-[#0F0F1A]">
+                <h3 class="text-white font-semibold">New Users</h3>
+            </div>
+            <div class="overflow-x-auto table-container">
+                <table class="w-full">
+                    <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                        <tr>
+                            <th class="text-left p-3 text-text-gray">Username</th>
+                            <th class="text-left p-3 text-text-gray">Email</th>
+                            <th class="text-left p-3 text-text-gray">Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in recent_users %}
+                        <tr class="border-b border-[#E94560]/10 transition-colors">
+                            <td class="p-3 text-white">{{ user.username }}</td>
+                            <td class="p-3 text-text-gray">{{ user.email }}</td>
+                            <td class="p-3 text-text-gray">{{ user.date_joined|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="p-3 text-text-gray text-center">No users yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-3 text-center border-t border-[#E94560]/20">
+                <a href="{% url 'admin_dashboard:user_report' %}" class="text-[#E94560] text-sm hover:underline">View All →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Action Buttons -->
+    <div class="mt-8 flex flex-wrap gap-3 justify-center quick-actions">
+        <a href="{% url 'admin_dashboard:revenue_report' %}" class="bg-[#E94560] text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-80 transition-all quick-action-btn">
+            <i class="fas fa-chart-line mr-2"></i> Revenue Report
+        </a>
+        <a href="{% url 'admin_dashboard:user_report' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 text-white px-4 py-2 rounded-lg text-sm hover:border-[#E94560] transition-all quick-action-btn">
+            <i class="fas fa-users mr-2"></i> User Report
+        </a>
+        <a href="{% url 'admin_dashboard:membership_report' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 text-white px-4 py-2 rounded-lg text-sm hover:border-[#E94560] transition-all quick-action-btn">
+            <i class="fas fa-id-card mr-2"></i> Membership Report
+        </a>
+    </div>
+</div>
+
+<script>
+    // Revenue Chart
+    const revenueData = {{ monthly_revenue|safe }};
+    
+    if (document.getElementById('revenueChart')) {
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: revenueData.map(function(d) { return d.month; }),
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: revenueData.map(function(d) { return d.revenue; }),
+                    borderColor: '#E94560',
+                    backgroundColor: 'rgba(233, 69, 96, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#A0A0A0'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: '#1A1A2E'
+                        },
+                        ticks: {
+                            color: '#A0A0A0'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: '#1A1A2E'
+                        },
+                        ticks: {
+                            color: '#A0A0A0'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Membership Distribution Chart
+    const membershipData = {{ membership_distribution|safe }};
+    
+    if (document.getElementById('membershipChart')) {
+        new Chart(document.getElementById('membershipChart'), {
+            type: 'doughnut',
+            data: {
+                labels: membershipData.map(function(d) { return d.name; }),
+                datasets: [{
+                    data: membershipData.map(function(d) { return d.count; }),
+                    backgroundColor: membershipData.map(function(d) { return d.color; }),
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#A0A0A0'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Animate progress bars on load
+    window.addEventListener('load', function() {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    });
+    
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.summary-card, .kpi-card, .chart-container').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+</script>
+{% endblock %}

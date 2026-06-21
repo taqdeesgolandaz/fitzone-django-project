@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - FitZone</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0F0F1A;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1A1A2E;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #00D09C, #00a87c);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 40px 30px;
+            color: #EEEEEE;
+        }
+        
+        .content h2 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .content p {
+            color: #A0A0A0;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .details {
+            background: #16213E;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #00D09C;
+        }
+        
+        .details p {
+            margin: 10px 0;
+            color: #EEEEEE;
+        }
+        
+        .details strong {
+            color: #00D09C;
+            font-weight: 600;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #E94560;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .button:hover {
+            background: #c72a4a;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background: #16213E;
+            padding: 20px;
+            text-align: center;
+            color: #A0A0A0;
+            font-size: 12px;
+            border-top: 1px solid rgba(233, 69, 96, 0.1);
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .footer a {
+            color: #E94560;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .success-icon span {
+            font-size: 32px;
+        }
+        
+        /* ============================================
+           MEDIA QUERIES FOR ALL DEVICES
+        ============================================ */
+        
+        /* Tablets (768px to 1023px) */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                max-width: 95%;
+                border-radius: 12px;
+            }
+            
+            .header {
+                padding: 30px 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header p {
+                font-size: 14px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .content h2 {
+                font-size: 22px;
+            }
+            
+            .content p {
+                font-size: 15px;
+            }
+            
+            .details {
+                padding: 15px;
+            }
+            
+            .details p {
+                font-size: 14px;
+            }
+            
+            .button {
+                padding: 10px 25px;
+                font-size: 14px;
+            }
+            
+            .footer {
+                padding: 15px;
+            }
+            
+            .success-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .success-icon span {
+                font-size: 28px;
+            }
+        }
+        
+        /* Mobile Landscape (480px to 767px) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .header p {
+                font-size: 12px;
+            }
+            
+            .content {
+                padding: 25px 15px;
+            }
+        
+            .content h2 {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+            
+            .content p {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+            
+            .details {
+                padding: 12px;
+                margin: 15px 0;
+            }
+            
+            .details p {
+                font-size: 13px;
+                margin: 8px 0;
+            }
+            
+            .button {
+                display: block;
+                text-align: center;
+                padding: 12px 20px;
+                font-size: 14px;
+                margin: 15px 0;
+            }
+            
+            .footer {
+                padding: 12px;
+            }
+            
+            .footer p {
+                font-size: 10px;
+            }
+            
+            .success-icon {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .success-icon span {
+                font-size: 24px;
+            }
+        }
+        
+        /* Small Mobile Devices (320px to 479px) */
+        @media (max-width: 375px) {
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .content h2 {
+                font-size: 18px;
+            }
+            
+            .content p {
+                font-size: 13px;
+            }
+            
+            .details p {
+                font-size: 12px;
+            }
+            
+            .button {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+            
+            .details {
+                padding: 10px;
+            }
+        }
+        
+        /* Very Small Devices (below 320px) */
+        @media (max-width: 320px) {
+            .header h1 {
+                font-size: 16px;
+            }
+            
+            .content h2 {
+                font-size: 16px;
+            }
+            
+            .content p {
+                font-size: 12px;
+            }
+            
+            .details p {
+                font-size: 11px;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            .button {
+                display: none;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0F0F1A;
+            }
+        }
+        
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .details {
+                border: 2px solid #00D09C;
+            }
+            
+            .button {
+                border: 1px solid white;
+            }
+        }
+        
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .button {
+                transition: none;
+            }
+            
+            .button:hover {
+                transform: none;
+            }
+        }
+        
+        /* Email client specific fixes */
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+            }
+            
+            .details {
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="success-icon">
+                <span>✓</span>
+            </div>
+            <h1>Payment Successful! 💰</h1>
+            <p>Your transaction has been completed</p>
+        </div>
+        <div class="content">
+            <h2>Hello {{ username }},</h2>
+            <p>Thank you for your payment! Your transaction has been successfully processed and your membership is now active.</p>
+            
+            <div class="details">
+                <p><strong>📋 Plan:</strong> {{ plan_name }}</p>
+                <p><strong>💰 Amount:</strong> ₹{{ amount }}</p>
+                <p><strong>🧾 Invoice #:</strong> {{ invoice_number }}</p>
+                <p><strong>🆔 Transaction ID:</strong> {{ transaction_id }}</p>
+                <p><strong>📅 Date:</strong> {{ payment_date|date:"M d, Y H:i" }}</p>
+                <p><strong>⏰ Status:</strong> <span style="color: #00D09C;">Completed ✓</span></p>
+            </div>
+            
+            <p style="text-align: center;">
+                <a href="http://127.0.0.1:8000{{ dashboard_url }}" class="button">Go to Dashboard →</a>
+            </p>
+            
+            <p style="font-size: 14px; color: #A0A0A0;">
+                You can now access all premium features including personalized workouts, diet plans, and trainer sessions.
+            </p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{ year }} FitZone Fitness Platform. All rights reserved.</p>
+            <p>123 Fitness Street, Mumbai, India | support@fitzone.com</p>
+            <p>
+                <a href="http://127.0.0.1:8000/help/">Help Center</a> | 
+                <a href="http://127.0.0.1:8000/privacy/">Privacy Policy</a> | 
+                <a href="http://127.0.0.1:8000/terms/">Terms of Service</a>
+            </p>
+            <p style="margin-top: 10px;">Need help? Contact us at <a href="mailto:support@fitzone.com">support@fitzone.com</a></p>
+        </div>
+    </div>
+</body>
+</html>

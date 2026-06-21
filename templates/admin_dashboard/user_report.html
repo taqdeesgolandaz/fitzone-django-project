@@ -1,0 +1,881 @@
+{% extends 'base/base.html' %}
+
+{% block title %}User Report - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR USER REPORT PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Summary card icon pulse */
+    @keyframes iconPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .summary-icon {
+        animation: iconPulse 3s ease-in-out infinite;
+    }
+    
+    /* Table row hover effect */
+    tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.08);
+        transform: scale(1.002);
+    }
+    
+    /* Status badge styling */
+    .status-active {
+        color: #00D09C;
+        background-color: rgba(0, 208, 156, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border: 1px solid rgba(0, 208, 156, 0.2);
+    }
+    
+    .status-inactive {
+        color: #f87171;
+        background-color: rgba(248, 113, 113, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+    
+    .status-member {
+        color: #00D09C;
+        background-color: rgba(0, 208, 156, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border: 1px solid rgba(0, 208, 156, 0.2);
+    }
+    
+    .status-no-member {
+        color: #A0A0A0;
+        background-color: rgba(160, 160, 160, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border: 1px solid rgba(160, 160, 160, 0.2);
+    }
+    
+    /* Filter button styles */
+    .filter-btn {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .filter-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .filter-btn.active {
+        background-color: #E94560;
+        color: white;
+        box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    }
+    
+    /* Date input styling */
+    input[type="date"] {
+        color-scheme: dark;
+        cursor: pointer;
+    }
+    
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.7);
+        cursor: pointer;
+    }
+    
+    /* Export button */
+    .export-btn {
+        transition: all 0.3s ease;
+    }
+    
+    .export-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0, 208, 156, 0.3);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .report-container {
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+        
+        .report-title {
+            font-size: 1.75rem;
+        }
+        
+        .summary-value {
+            font-size: 2.5rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .report-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .report-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .report-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .report-title {
+            font-size: 1.5rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .summary-card {
+            padding: 1rem;
+        }
+        
+        .summary-label {
+            font-size: 0.8rem;
+        }
+        
+        .summary-value {
+            font-size: 1.75rem;
+        }
+        
+        .filter-section {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-buttons {
+            justify-content: center;
+        }
+        
+        .date-filters {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 800px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .report-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .report-header {
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .report-title {
+            font-size: 1.35rem;
+        }
+        
+        .back-link {
+            font-size: 0.85rem;
+        }
+        
+        .summary-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .summary-card {
+            padding: 0.875rem;
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 0.75rem;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+        }
+        
+        .filter-section {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .filter-buttons {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .date-filters {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .date-filter-group {
+            width: 100%;
+        }
+        
+        .table-header {
+            padding: 0.75rem;
+        }
+        
+        .table-title {
+            font-size: 1rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            min-width: 700px;
+        }
+        
+        th, td {
+            padding: 0.6rem;
+            font-size: 0.75rem;
+        }
+        
+        .username-cell {
+            font-weight: 500;
+        }
+        
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+        }
+        
+        .empty-state {
+            padding: 2rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.85rem;
+        }
+        
+        .py-8 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .report-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .report-title {
+            font-size: 1.2rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+        }
+        
+        .summary-grid {
+            gap: 0.75rem;
+        }
+        
+        .summary-card {
+            padding: 0.75rem;
+        }
+        
+        .summary-value {
+            font-size: 1.35rem;
+        }
+        
+        .filter-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.65rem;
+        }
+        
+        table {
+            min-width: 650px;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .username-cell {
+            font-size: 0.7rem;
+        }
+        
+        .email-cell {
+            font-size: 0.7rem;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .report-title {
+            font-size: 1.1rem;
+        }
+        
+        .summary-value {
+            font-size: 1.2rem;
+        }
+        
+        table {
+            min-width: 580px;
+        }
+        
+        th, td {
+            padding: 0.4rem;
+            font-size: 0.65rem;
+        }
+        
+        .email-cell {
+            max-width: 120px;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .report-title {
+            font-size: 1rem;
+        }
+        
+        .summary-value {
+            font-size: 1.1rem;
+        }
+        
+        th, td {
+            font-size: 0.6rem;
+        }
+        
+        .email-cell {
+            max-width: 100px;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .back-link:active {
+            opacity: 0.7;
+        }
+        
+        .filter-btn:active {
+            transform: scale(0.96);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .summary-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+        
+        .filter-section {
+            flex-direction: row !important;
+            flex-wrap: wrap;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .summary-card, .users-table {
+            border: 2px solid #E94560;
+        }
+        
+        .back-link {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .summary-icon {
+            animation: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 report-container fade-in">
+    <div class="flex justify-between items-center mb-6 report-header flex-wrap gap-3">
+        <div>
+            <h1 class="text-2xl font-bold text-white report-title">
+                <i class="fas fa-users mr-2 text-[#E94560]"></i>User Report
+            </h1>
+            <p class="text-text-gray text-sm mt-1">Comprehensive user analytics and management</p>
+        </div>
+        <a href="{% url 'admin_dashboard:dashboard' %}" class="text-[#E94560] hover:underline back-link">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 summary-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-text-gray text-sm summary-label">
+                        <i class="fas fa-users mr-1 text-[#E94560]"></i> Total Users
+                    </p>
+                    <p class="text-white text-3xl font-bold summary-value">{{ total_users }}</p>
+                    <p class="text-text-gray text-xs mt-2">All registered users</p>
+                </div>
+                <div class="w-12 h-12 bg-[#E94560]/20 rounded-full flex items-center justify-center summary-icon">
+                    <i class="fas fa-users text-[#E94560] text-2xl"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-text-gray text-sm summary-label">
+                        <i class="fas fa-user-check mr-1 text-[#00D09C]"></i> Active Users
+                    </p>
+                    <p class="text-white text-3xl font-bold summary-value">{{ active_users }}</p>
+                    <p class="text-[#00D09C] text-xs mt-2">
+                        {% widthratio active_users total_users 100 %}% of total
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-[#00D09C]/20 rounded-full flex items-center justify-center summary-icon">
+                    <i class="fas fa-user-check text-[#00D09C] text-2xl"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 summary-card card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-text-gray text-sm summary-label">
+                        <i class="fas fa-user-slash mr-1 text-red-400"></i> Inactive Users
+                    </p>
+                    <p class="text-white text-3xl font-bold summary-value">{{ total_users|add:"-"|add:active_users }}</p>
+                    <p class="text-red-400 text-xs mt-2">Need attention</p>
+                </div>
+                <div class="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center summary-icon">
+                    <i class="fas fa-user-slash text-red-400 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden users-table card-hover">
+        <div class="px-6 py-4 border-b border-[#E94560]/20 bg-[#0F0F1A]">
+            <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+                <div>
+                    <h3 class="text-white font-semibold table-title text-lg">
+                        <i class="fas fa-list-ul text-[#E94560] mr-2"></i>User Report
+                    </h3>
+                    <p class="text-text-gray text-sm mt-1">Showing <span class="text-white font-semibold">{{ filtered_users_count }}</span> of <span class="text-white font-semibold">{{ total_users }}</span> users</p>
+                </div>
+                
+                <form method="get" class="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full md:w-auto">
+                    <div class="flex flex-wrap gap-1 items-center bg-[#0F0F1A] border border-[#E94560]/20 rounded-full px-2 py-1">
+                        <button type="submit" name="status" value="all" class="px-3 py-1 text-xs rounded-full filter-btn {% if status_filter == 'all' %}active{% else %}bg-transparent text-text-gray hover:bg-[#E94560]/20{% endif %}">All</button>
+                        <button type="submit" name="status" value="active" class="px-3 py-1 text-xs rounded-full filter-btn {% if status_filter == 'active' %}active{% else %}bg-transparent text-text-gray hover:bg-[#E94560]/20{% endif %}">Active</button>
+                        <button type="submit" name="status" value="inactive" class="px-3 py-1 text-xs rounded-full filter-btn {% if status_filter == 'inactive' %}active{% else %}bg-transparent text-text-gray hover:bg-[#E94560]/20{% endif %}">Inactive</button>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="flex items-center gap-2 bg-[#0F0F1A] border border-[#E94560]/20 rounded-full px-3 py-1.5">
+                            <i class="fas fa-calendar-alt text-text-gray text-xs"></i>
+                            <label class="text-text-gray text-xs" for="date_from">From</label>
+                            <input type="date" id="date_from" name="date_from" value="{{ date_from }}" class="bg-transparent text-white text-sm outline-none w-28" />
+                        </div>
+                        <div class="flex items-center gap-2 bg-[#0F0F1A] border border-[#E94560]/20 rounded-full px-3 py-1.5">
+                            <i class="fas fa-calendar-alt text-text-gray text-xs"></i>
+                            <label class="text-text-gray text-xs" for="date_to">To</label>
+                            <input type="date" id="date_to" name="date_to" value="{{ date_to }}" class="bg-transparent text-white text-sm outline-none w-28" />
+                        </div>
+                        <button type="submit" class="bg-[#E94560] text-white px-4 py-1.5 rounded-full text-sm hover:bg-opacity-80 transition-all">
+                            <i class="fas fa-filter mr-1"></i> Filter
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="flex gap-2 items-center">
+                    <button type="button" onclick="setDateRange('{{ last_month_start }}', '{{ last_month_end }}')" class="px-3 py-1 text-xs rounded-full bg-[#0F0F1A] border border-[#E94560]/20 text-text-gray hover:bg-[#E94560]/10 transition-all">
+                        <i class="fas fa-calendar-week mr-1"></i> Last Month
+                    </button>
+                    <button type="button" onclick="resetFilters()" class="px-3 py-1 text-xs rounded-full bg-[#0F0F1A] border border-[#E94560]/20 text-text-gray hover:bg-[#E94560]/10 transition-all">
+                        <i class="fas fa-undo mr-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        {% if users %}
+        <div class="overflow-x-auto table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
+                            <i class="fas fa-user mr-1"></i> Username
+                        </th>
+                        <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
+                            <i class="fas fa-user-tag mr-1"></i> Full Name
+                        </th>
+                        <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
+                            <i class="fas fa-envelope mr-1"></i> Email
+                        </th>
+                        <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
+                            <i class="fas fa-calendar-alt mr-1"></i> Joined Date
+                        </th>
+                        <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
+                            <i class="fas fa-circle mr-1"></i> Status
+                        </th>
+                        <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
+                            <i class="fas fa-crown mr-1"></i> Membership
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="border-b border-[#E94560]/10 transition-colors hover:bg-[#E94560]/5">
+                        <td class="p-3 text-white username-cell">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-[#E94560]/20 flex items-center justify-center">
+                                    <span class="text-[#E94560] text-xs font-bold">{{ user.username|first|upper }}</span>
+                                </div>
+                                <span>{{ user.username }}</span>
+                            </div>
+                        </td>
+                        <td class="p-3 text-text-gray truncate-cell">
+                            {{ user.full_name|default:"-" }}
+                        </td>
+                        <td class="p-3 text-text-gray email-cell">
+                            <a href="mailto:{{ user.email }}" class="hover:text-[#E94560] transition-colors">
+                                {{ user.email }}
+                            </a>
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            {{ user.date_joined|date:"M d, Y" }}
+                        </td>
+                        <td class="p-3">
+                            {% if user.is_active %}
+                                <span class="status-active">
+                                    <i class="fas fa-circle text-[8px]"></i> Active
+                                </span>
+                            {% else %}
+                                <span class="status-inactive">
+                                    <i class="fas fa-circle text-[8px]"></i> Inactive
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="p-3">
+                            {% if user.membership_active %}
+                                <span class="status-member">
+                                    <i class="fas fa-crown text-[10px]"></i> Active
+                                </span>
+                            {% else %}
+                                <span class="status-no-member">
+                                    <i class="fas fa-times-circle text-[10px]"></i> None
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Table Footer -->
+        <div class="px-6 py-3 border-t border-[#E94560]/20 bg-[#0F0F1A] flex flex-col sm:flex-row justify-between items-center gap-3">
+            <p class="text-text-gray text-sm">
+                <i class="fas fa-chart-line mr-1"></i>
+                Showing <span class="text-white font-semibold">{{ filtered_users_count }}</span> users
+            </p>
+            <div class="flex gap-3">
+                <button onclick="exportToCSV()" class="bg-[#00D09C] text-[#031B16] px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-opacity-80 transition-all export-btn">
+                    <i class="fas fa-download mr-1"></i> Export CSV
+                </button>
+                <button onclick="window.print()" class="bg-[#1A1A2E] border border-[#E94560]/20 text-text-gray px-4 py-1.5 rounded-lg text-sm hover:border-[#E94560] transition-all">
+                    <i class="fas fa-print mr-1"></i> Print
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-12 empty-state">
+            <i class="fas fa-users-slash text-5xl text-text-gray mb-3 empty-state-icon"></i>
+            <p class="text-text-gray empty-state-text">No users found</p>
+            <p class="text-text-gray text-sm mt-2">When users register, they will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.summary-card, .users-table').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Search functionality
+    function searchUsers() {
+        const input = document.getElementById('searchInput');
+        if (input) {
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            const showingSpan = document.querySelector('.table-header .text-text-gray');
+            if (showingSpan) {
+                showingSpan.innerHTML = `<i class="fas fa-users mr-1"></i> Showing ${visibleCount} of {{ users|length }} users`;
+            }
+        }
+    }
+    
+    // Export to CSV
+    function exportToCSV() {
+        const rows = document.querySelectorAll('tbody tr');
+        const csvData = [];
+        
+        const headers = ['Username', 'Full Name', 'Email', 'Joined Date', 'Status', 'Membership'];
+        csvData.push(headers.join(','));
+        
+        rows.forEach(row => {
+            if (row.style.display !== 'none') {
+                const cells = row.querySelectorAll('td');
+                const rowData = Array.from(cells).map(cell => {
+                    let text = cell.textContent.trim();
+                    text = text.replace(/\s+/g, ' ').trim();
+                    return `"${text}"`;
+                });
+                csvData.push(rowData.join(','));
+            }
+        });
+        
+        const blob = new Blob([csvData.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `user_report_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification('Export started!', 'success');
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+    
+    function setDateRange(fromDate, toDate) {
+        const dateFromInput = document.getElementById('date_from');
+        const dateToInput = document.getElementById('date_to');
+        if (dateFromInput && dateToInput) {
+            dateFromInput.value = fromDate;
+            dateToInput.value = toDate;
+            dateToInput.form.submit();
+        }
+    }
+    
+    function resetFilters() {
+        const dateFromInput = document.getElementById('date_from');
+        const dateToInput = document.getElementById('date_to');
+        if (dateFromInput) dateFromInput.value = '';
+        if (dateToInput) dateToInput.value = '';
+        
+        // Reset status filter
+        const statusButtons = document.querySelectorAll('.filter-btn');
+        statusButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.classList.add('bg-transparent', 'text-text-gray');
+        });
+        const allBtn = document.querySelector('.filter-btn[value="all"]');
+        if (allBtn) {
+            allBtn.classList.add('active');
+            allBtn.classList.remove('bg-transparent', 'text-text-gray');
+        }
+        
+        // Submit form
+        const form = document.querySelector('form');
+        if (form) form.submit();
+    }
+    
+    // Add search input
+    const tableHeader = document.querySelector('.table-header .flex.flex-col.xl\\:flex-row');
+    const hasUsers = document.querySelectorAll('tbody tr').length > 0;
+    
+    if (tableHeader && hasUsers) {
+        const searchDiv = document.createElement('div');
+        searchDiv.className = 'w-full md:w-auto mt-2 md:mt-0';
+        searchDiv.innerHTML = `
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-gray text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Search by username, name, or email..." 
+                       class="pl-9 pr-3 py-1.5 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white text-sm focus:outline-none focus:border-[#E94560] w-full md:w-64"
+                       onkeyup="searchUsers()">
+            </div>
+        `;
+        tableHeader.appendChild(searchDiv);
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+            e.preventDefault();
+            const exportBtn = document.querySelector('.export-btn');
+            if (exportBtn) exportBtn.click();
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+            e.preventDefault();
+            const printBtn = document.querySelector('[onclick="window.print()"]');
+            if (printBtn) printBtn.click();
+        }
+    });
+</script>
+{% endblock %}

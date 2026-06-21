@@ -1,0 +1,655 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Review {{ trainer.full_name }} - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR ADD REVIEW PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .review-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .review-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Rating star hover effect */
+    .rating-star {
+        transition: all 0.2s ease;
+    }
+    
+    .rating-star:hover {
+        transform: scale(1.2);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .review-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .review-card {
+            padding: 2rem;
+        }
+        
+        .review-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 1rem;
+        }
+        
+        .rating-label {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .rating-star {
+            font-size: 2.5rem;
+        }
+        
+        .form-label {
+            font-size: 0.95rem;
+        }
+        
+        .form-textarea {
+            padding: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .btn-submit, .btn-cancel {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .review-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .review-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .review-card {
+            padding: 1.5rem;
+        }
+        
+        .review-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .rating-star {
+            font-size: 2rem;
+        }
+        
+        .form-label {
+            font-size: 0.85rem;
+        }
+        
+        .form-textarea {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .action-buttons {
+            gap: 0.75rem;
+        }
+        
+        .btn-submit, .btn-cancel {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .review-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .review-card {
+            padding: 1.25rem;
+        }
+        
+        .review-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .rating-label {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .rating-star {
+            font-size: 1.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-textarea {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            min-height: 100px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn-submit, .btn-cancel {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .review-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .review-card {
+            padding: 1rem;
+        }
+        
+        .review-icon {
+            font-size: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .rating-star {
+            font-size: 1.5rem;
+            margin: 0 0.15rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+        }
+        
+        .form-textarea {
+            padding: 0.45rem;
+            font-size: 0.75rem;
+            min-height: 90px;
+        }
+        
+        .btn-submit, .btn-cancel {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-submit i, .btn-cancel i {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .review-card {
+            padding: 0.875rem;
+        }
+        
+        .review-icon {
+            font-size: 1.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .rating-star {
+            font-size: 1.25rem;
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+        }
+        
+        .btn-submit, .btn-cancel {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .page-title {
+            font-size: 1rem;
+        }
+        
+        .rating-star {
+            font-size: 1.1rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .review-card:active {
+            transform: scale(0.98);
+        }
+        
+        .review-card:hover {
+            transform: none;
+        }
+        
+        .btn-submit:active, .btn-cancel:active {
+            transform: scale(0.98);
+        }
+        
+        .rating-star:active {
+            transform: scale(1.1);
+        }
+        
+        textarea {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .btn-submit, .btn-cancel {
+            width: auto !important;
+            min-width: 140px;
+        }
+        
+        .form-textarea {
+            min-height: 70px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .review-card {
+            border: 2px solid #E94560;
+        }
+        
+        .rating-star {
+            border: 1px solid white;
+            padding: 0.25rem;
+        }
+        
+        .btn-submit, .btn-cancel {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .rating-star:hover {
+            transform: none;
+        }
+        
+        .review-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Helper classes */
+    .required-star {
+        color: #E94560;
+        margin-left: 2px;
+    }
+    
+    .rating-container {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    @media (max-width: 480px) {
+        .rating-container {
+            gap: 0.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 review-container fade-in">
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 review-card">
+        <div class="text-center mb-6">
+            <div class="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-star text-yellow-400 text-3xl review-icon"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white page-title">Review Your Experience</h2>
+            <p class="text-text-gray page-subtitle">Share your feedback about <span class="text-[#E94560]">{{ trainer.full_name }}</span></p>
+        </div>
+
+        <form method="POST" id="reviewForm">
+            {% csrf_token %}
+            <div class="mb-6">
+                <label class="text-text-gray block mb-3 text-center rating-label">
+                    Your Rating <span class="required-star">*</span>
+                </label>
+                <div class="flex justify-center gap-2 rating-container" id="ratingStars">
+                    <i class="fas fa-star text-3xl cursor-pointer hover:scale-110 transition-all rating-star" data-value="1" style="color: #4B5563;"></i>
+                    <i class="fas fa-star text-3xl cursor-pointer hover:scale-110 transition-all rating-star" data-value="2" style="color: #4B5563;"></i>
+                    <i class="fas fa-star text-3xl cursor-pointer hover:scale-110 transition-all rating-star" data-value="3" style="color: #4B5563;"></i>
+                    <i class="fas fa-star text-3xl cursor-pointer hover:scale-110 transition-all rating-star" data-value="4" style="color: #4B5563;"></i>
+                    <i class="fas fa-star text-3xl cursor-pointer hover:scale-110 transition-all rating-star" data-value="5" style="color: #4B5563;"></i>
+                </div>
+                <input type="hidden" name="rating" id="ratingValue" required>
+                <p class="text-text-gray text-xs text-center mt-2 rating-hint">Click on the stars to rate your experience</p>
+            </div>
+            
+            <div class="mb-6">
+                <label class="text-text-gray block mb-2 form-label">
+                    Your Review <span class="required-star">*</span>
+                </label>
+                <textarea name="review" rows="5" required 
+                          placeholder="Tell us about your experience with this trainer... What did you like? Any suggestions for improvement?"
+                          class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-textarea"></textarea>
+                <p class="text-text-gray text-xs mt-1">Minimum 10 characters. Your feedback helps others make informed decisions.</p>
+            </div>
+            
+            <!-- Review Tips -->
+            <div class="mb-6 p-3 bg-[#0F0F1A] rounded-lg">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-lightbulb text-[#E94560] text-sm"></i>
+                    <span class="text-white text-sm font-semibold">💡 Writing a helpful review:</span>
+                </div>
+                <ul class="text-text-gray text-xs space-y-1">
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Be specific about your experience</li>
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Mention what you liked or what could be improved</li>
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Keep your review respectful and constructive</li>
+                </ul>
+            </div>
+            
+            <div class="flex gap-4 action-buttons">
+                <button type="submit" id="submitBtn" class="flex-1 bg-[#E94560] text-white py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all btn-submit">
+                    <span id="btnText"><i class="fas fa-paper-plane mr-2"></i> Submit Review</span>
+                    <span id="btnLoader" class="hidden">
+                        <svg class="animate-spin h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
+                <a href="{% url 'trainers:detail' trainer.id %}" 
+                   class="flex-1 text-center border border-[#E94560] text-[#E94560] py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all btn-cancel">
+                    <i class="fas fa-times mr-2"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Rating star functionality
+    const stars = document.querySelectorAll('.rating-star');
+    const ratingInput = document.getElementById('ratingValue');
+    
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = parseInt(this.dataset.value);
+            ratingInput.value = value;
+            
+            // Update star colors
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.style.color = '#FBBF24';
+                    s.classList.add('animate-pulse');
+                    setTimeout(() => {
+                        s.classList.remove('animate-pulse');
+                    }, 300);
+                } else {
+                    s.style.color = '#4B5563';
+                }
+            });
+            
+            // Show selected rating feedback
+            const ratingMessages = {
+                1: 'Poor - Needs significant improvement',
+                2: 'Fair - Some areas need improvement',
+                3: 'Good - Met expectations',
+                4: 'Very Good - Exceeded expectations',
+                5: 'Excellent - Outstanding experience'
+            };
+            
+            // Update hint text
+            const ratingHint = document.querySelector('.rating-hint');
+            if (ratingHint && ratingMessages[value]) {
+                ratingHint.textContent = ratingMessages[value];
+                ratingHint.style.color = '#FBBF24';
+            }
+        });
+        
+        // Hover effect
+        star.addEventListener('mouseenter', function() {
+            const value = parseInt(this.dataset.value);
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.style.color = '#FBBF24';
+                } else {
+                    s.style.color = '#4B5563';
+                }
+            });
+        });
+    });
+    
+    // Reset stars on mouse leave from container
+    const ratingContainer = document.getElementById('ratingStars');
+    ratingContainer.addEventListener('mouseleave', function() {
+        const currentRating = parseInt(ratingInput.value);
+        stars.forEach((s, index) => {
+            if (currentRating && index < currentRating) {
+                s.style.color = '#FBBF24';
+            } else {
+                s.style.color = '#4B5563';
+            }
+        });
+    });
+    
+    // Form submission with loading state
+    const form = document.getElementById('reviewForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validation
+            const rating = ratingInput.value;
+            const review = document.querySelector('textarea[name="review"]').value.trim();
+            
+            if (!rating) {
+                e.preventDefault();
+                showNotification('Please select a rating', 'error');
+                return;
+            }
+            
+            if (!review) {
+                e.preventDefault();
+                showNotification('Please write your review', 'error');
+                return;
+            }
+            
+            if (review.length < 10) {
+                e.preventDefault();
+                showNotification('Please write at least 10 characters', 'error');
+                return;
+            }
+            
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70');
+        });
+    }
+    
+    // Character counter for review
+    const reviewTextarea = document.querySelector('textarea[name="review"]');
+    if (reviewTextarea) {
+        const charCounter = document.createElement('div');
+        charCounter.className = 'text-text-gray text-xs mt-1 text-right';
+        charCounter.innerHTML = '0 / 500 characters';
+        reviewTextarea.parentNode.appendChild(charCounter);
+        
+        reviewTextarea.addEventListener('input', function() {
+            const length = this.value.length;
+            charCounter.innerHTML = `${length} / 500 characters`;
+            if (length > 500) {
+                this.value = this.value.substring(0, 500);
+                charCounter.innerHTML = '500 / 500 characters';
+                charCounter.style.color = '#E94560';
+            } else if (length < 10 && length > 0) {
+                charCounter.style.color = '#F5A623';
+            } else {
+                charCounter.style.color = '#A0A0A0';
+            }
+        });
+    }
+    
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const reviewCard = document.querySelector('.review-card');
+    if (reviewCard) {
+        reviewCard.style.opacity = '0';
+        reviewCard.style.transform = 'translateY(20px)';
+        reviewCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(reviewCard);
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Warn before leaving with unsaved changes
+    let formChanged = false;
+    const formInputs = document.querySelectorAll('form textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            formChanged = true;
+        });
+    });
+    
+    window.addEventListener('beforeunload', function(e) {
+        if (formChanged && !ratingInput.value) {
+            e.preventDefault();
+            e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            return e.returnValue;
+        }
+    });
+    
+    form.addEventListener('submit', function() {
+        formChanged = false;
+    });
+</script>
+{% endblock %}

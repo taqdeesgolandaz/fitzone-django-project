@@ -1,0 +1,510 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Payment Failed - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR PAYMENT FAILED PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .failed-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .failed-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+    }
+    
+    /* Icon pulse animation */
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    .failed-icon {
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .failed-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .failed-card {
+            padding: 3rem;
+        }
+        
+        .failed-icon {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .failed-icon i {
+            font-size: 3.5rem;
+        }
+        
+        .failed-title {
+            font-size: 2rem;
+        }
+        
+        .failed-message {
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary, .btn-link {
+            font-size: 1rem;
+            padding: 0.75rem 2rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .failed-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .failed-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .failed-card {
+            padding: 2rem;
+        }
+        
+        .failed-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .failed-icon i {
+            font-size: 2.5rem;
+        }
+        
+        .failed-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .failed-message {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-primary {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-link {
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .failed-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .failed-card {
+            padding: 1.5rem;
+        }
+        
+        .failed-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 1rem;
+        }
+        
+        .failed-icon i {
+            font-size: 2rem;
+        }
+        
+        .failed-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .failed-message {
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .btn-link {
+            display: block;
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .failed-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .failed-card {
+            padding: 1.25rem;
+        }
+        
+        .failed-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 0.875rem;
+        }
+        
+        .failed-icon i {
+            font-size: 1.75rem;
+        }
+        
+        .failed-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .failed-message {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-primary {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn-link {
+            font-size: 0.8rem;
+        }
+        
+        .btn-primary i, .btn-link i {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .failed-card {
+            padding: 1rem;
+        }
+        
+        .failed-icon {
+            width: 55px;
+            height: 55px;
+        }
+        
+        .failed-icon i {
+            font-size: 1.5rem;
+        }
+        
+        .failed-title {
+            font-size: 1.2rem;
+        }
+        
+        .failed-message {
+            font-size: 0.8rem;
+        }
+        
+        .btn-primary {
+            font-size: 0.8rem;
+        }
+        
+        .btn-link {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .failed-card {
+            padding: 0.875rem;
+        }
+        
+        .failed-icon {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .failed-icon i {
+            font-size: 1.35rem;
+        }
+        
+        .failed-title {
+            font-size: 1.1rem;
+        }
+        
+        .failed-message {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .failed-card:active {
+            transform: scale(0.98);
+        }
+        
+        .failed-card:hover {
+            transform: none;
+        }
+        
+        .btn-primary:active, .btn-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .failed-container {
+            max-width: 90%;
+        }
+        
+        .failed-card {
+            padding: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+            justify-content: center;
+        }
+        
+        .btn-primary, .btn-link {
+            width: auto !important;
+            min-width: 150px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .failed-card {
+            border: 2px solid #ef4444;
+        }
+        
+        .btn-primary {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .failed-icon {
+            animation: none;
+        }
+        
+        .failed-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Helper Classes */
+    .text-center {
+        text-align: center;
+    }
+    
+    .mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 failed-container fade-in">
+    <div class="bg-[#1A1A2E] rounded-2xl border border-red-500/30 p-8 text-center failed-card">
+        <!-- Failed Icon -->
+        <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6 failed-icon">
+            <i class="fas fa-times-circle text-red-500 text-4xl"></i>
+        </div>
+        
+        <h1 class="text-2xl font-bold text-white mb-2 failed-title">Payment Failed!</h1>
+        <p class="text-text-gray mb-6 failed-message">Your payment could not be processed. Please try again.</p>
+        
+        <div class="space-y-4 action-buttons">
+            <a href="{% url 'membership:plans' %}" 
+               class="inline-block bg-[#E94560] text-white px-6 py-2 rounded-lg hover:bg-opacity-80 transition-all btn-primary">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Plans
+            </a>
+            <br class="hide-on-mobile">
+            <a href="{% url 'payments:payment_history' %}" 
+               class="inline-block text-text-gray hover:text-[#E94560] transition-colors btn-link">
+                <i class="fas fa-history mr-2"></i>
+                View Payment History
+            </a>
+        </div>
+        
+        <!-- Help Text -->
+        <div class="mt-6 pt-4 border-t border-red-500/20">
+            <p class="text-text-gray text-xs">
+                <i class="fas fa-question-circle mr-1"></i>
+                Need help? Contact us at <a href="mailto:support@fitzone.com" class="text-[#E94560] hover:underline">support@fitzone.com</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const failedCard = document.querySelector('.failed-card');
+    if (failedCard) {
+        failedCard.style.opacity = '0';
+        failedCard.style.transform = 'translateY(20px)';
+        failedCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(failedCard);
+    }
+    
+    // Track failed payment event (optional analytics)
+    function trackFailedPayment() {
+        console.log('Payment failed page viewed');
+        // You can add analytics tracking here
+        // Example: ga('send', 'event', 'Payment', 'Failed', '{{ plan_name }}');
+    }
+    
+    trackFailedPayment();
+    
+    // Add retry functionality (optional)
+    const retryBtn = document.querySelector('.btn-primary');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', function(e) {
+            // Optional: Add loading state
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Redirecting...';
+            this.classList.add('opacity-70');
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.classList.remove('opacity-70');
+            }, 2000);
+        });
+    }
+    
+    // Show helpful tips for common issues
+    const commonIssues = [
+        "Insufficient funds",
+        "Incorrect card details",
+        "Network timeout",
+        "Bank declined transaction"
+    ];
+    
+    // You can show a random tip if needed
+    const randomTip = commonIssues[Math.floor(Math.random() * commonIssues.length)];
+    console.log('Common issue suggestion:', randomTip);
+</script>
+
+<style>
+    /* Additional responsive styles */
+    @media (max-width: 640px) {
+        .hide-on-mobile {
+            display: none;
+        }
+    }
+    
+    /* Button hover effects */
+    .btn-primary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(233, 69, 96, 0.3);
+    }
+    
+    .btn-link {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-link:hover {
+        transform: translateX(5px);
+    }
+    
+    /* Icon animation on load */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    
+    .failed-icon {
+        animation: pulse 2s ease-in-out infinite, shake 0.5s ease-in-out;
+    }
+</style>
+{% endblock %}

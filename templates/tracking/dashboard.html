@@ -1,0 +1,717 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Fitness Tracking - FitZone{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR FITNESS TRACKING PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .stat-card, .chart-card, .goal-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover, .chart-card:hover, .goal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .tracking-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .tracking-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .tracking-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            padding: 0.875rem;
+        }
+        
+        .stat-icon {
+            font-size: 1.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+        }
+        
+        .charts-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .chart-card {
+            padding: 1rem;
+        }
+        
+        .goal-card {
+            padding: 1rem;
+        }
+        
+        .goal-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+        }
+        
+        .quick-action-btn {
+            padding: 0.6rem;
+            font-size: 0.8rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 600px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .tracking-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            padding: 0.75rem;
+        }
+        
+        .stat-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.65rem;
+        }
+        
+        .stat-value {
+            font-size: 1.35rem;
+        }
+        
+        .charts-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .chart-card {
+            padding: 0.875rem;
+        }
+        
+        .chart-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .goal-card {
+            padding: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .goal-title {
+            font-size: 1rem;
+        }
+        
+        .goal-label {
+            font-size: 0.7rem;
+        }
+        
+        .goal-value {
+            font-size: 0.85rem;
+        }
+        
+        .goal-progress-label {
+            font-size: 0.7rem;
+        }
+        
+        .quick-actions-grid {
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-action-btn {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .quick-action-btn i {
+            font-size: 0.7rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            min-width: 550px;
+        }
+        
+        th, td {
+            padding: 0.6rem;
+            font-size: 0.75rem;
+        }
+        
+        .action-link {
+            font-size: 0.7rem;
+        }
+        
+        .empty-state {
+            padding: 1.5rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.8rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .tracking-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .stats-grid {
+            gap: 0.5rem;
+        }
+        
+        .stat-card {
+            padding: 0.625rem;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.5rem;
+        }
+        
+        .quick-action-btn {
+            width: 100%;
+        }
+        
+        .goal-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.5rem;
+            text-align: center;
+        }
+        
+        table {
+            min-width: 500px;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .stat-value {
+            font-size: 1rem;
+        }
+        
+        table {
+            min-width: 450px;
+        }
+        
+        th, td {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .stat-card:active, .chart-card:active {
+            transform: scale(0.98);
+        }
+        
+        .quick-action-btn:active {
+            transform: scale(0.98);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .stats-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+        }
+        
+        .quick-actions-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+        }
+        
+        .goal-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .stat-card, .chart-card, .goal-card {
+            border: 2px solid #E94560;
+        }
+        
+        .quick-action-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .stat-card:hover, .chart-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Table row hover */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+    }
+    
+    /* Progress bar animation */
+    .progress-fill {
+        transition: width 0.5s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 tracking-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">
+            <i class="fas fa-chart-line text-[#E94560] mr-2"></i>
+            Fitness Tracking
+        </h1>
+        <p class="text-text-gray page-subtitle">Track your progress, set goals, and see your transformation</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 stats-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 stat-card card-hover">
+            <i class="fas fa-weight-scale text-[#E94560] text-2xl mb-2 stat-icon"></i>
+            <p class="text-text-gray text-sm stat-label">Current Weight</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ latest_progress.weight|default:"--" }} kg</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 stat-card card-hover">
+            <i class="fas fa-heartbeat text-[#E94560] text-2xl mb-2 stat-icon"></i>
+            <p class="text-text-gray text-sm stat-label">Current BMI</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ latest_progress.bmi|default:"--" }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 stat-card card-hover">
+            <i class="fas fa-chart-line text-[#E94560] text-2xl mb-2 stat-icon"></i>
+            <p class="text-text-gray text-sm stat-label">Total Workouts</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.total_workouts|default:"0" }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 stat-card card-hover">
+            <i class="fas fa-fire text-[#E94560] text-2xl mb-2 stat-icon"></i>
+            <p class="text-text-gray text-sm stat-label">Calories Burned</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.total_calories|default:"0" }}</p>
+        </div>
+    </div>
+
+    <!-- Progress Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 charts-grid">
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 chart-card card-hover">
+            <h3 class="text-white font-semibold mb-4 chart-title">
+                <i class="fas fa-chart-line text-[#E94560] mr-2"></i>
+                Weight Progress
+            </h3>
+            <canvas id="weightChart" height="200"></canvas>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 chart-card card-hover">
+            <h3 class="text-white font-semibold mb-4 chart-title">
+                <i class="fas fa-chart-line text-[#00D09C] mr-2"></i>
+                BMI Progress
+            </h3>
+            <canvas id="bmiChart" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- Goal Progress -->
+    {% if goal %}
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 mb-8 goal-card card-hover">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <h3 class="text-white font-semibold goal-title">
+                <i class="fas fa-bullseye text-[#E94560] mr-2"></i>
+                Your Fitness Goal
+            </h3>
+            <a href="{% url 'tracking:set_goal' %}" class="text-[#E94560] text-sm hover:underline">
+                <i class="fas fa-edit mr-1"></i> Edit Goal
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 goal-grid">
+            <div>
+                <p class="text-text-gray text-sm goal-label">Goal Type</p>
+                <p class="text-white font-semibold goal-value">{{ goal.get_goal_type_display }}</p>
+            </div>
+            {% if goal.target_weight %}
+            <div>
+                <p class="text-text-gray text-sm goal-label">Target Weight</p>
+                <p class="text-white font-semibold goal-value">{{ goal.target_weight }} kg</p>
+            </div>
+            {% endif %}
+            {% if goal.target_date %}
+            <div>
+                <p class="text-text-gray text-sm goal-label">Target Date</p>
+                <p class="text-white font-semibold goal-value">{{ goal.target_date|date:"M d, Y" }}</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="mt-4">
+            <div class="flex justify-between mb-1">
+                <span class="text-text-gray text-sm goal-progress-label">Progress</span>
+                <span class="text-[#E94560] text-sm goal-progress-label">{{ goal.progress_percentage }}%</span>
+            </div>
+            <div class="w-full bg-[#0F0F1A] rounded-full h-2">
+                <div class="bg-[#E94560] rounded-full h-2 progress-fill" style="width: {{ goal.progress_percentage }}%"></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 quick-actions-grid">
+        <a href="{% url 'tracking:add_progress' %}" class="bg-[#E94560] text-white py-2 rounded-lg text-center hover:bg-opacity-80 transition-all quick-action-btn">
+            <i class="fas fa-plus mr-2"></i> Add Progress
+        </a>
+        <a href="{% url 'tracking:bmi_calculator' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 text-white py-2 rounded-lg text-center hover:border-[#E94560] transition-all quick-action-btn">
+            <i class="fas fa-calculator mr-2"></i> BMI Calculator
+        </a>
+        <a href="{% url 'tracking:workout_log' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 text-white py-2 rounded-lg text-center hover:border-[#E94560] transition-all quick-action-btn">
+            <i class="fas fa-dumbbell mr-2"></i> Log Workout
+        </a>
+        <a href="{% url 'tracking:set_goal' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 text-white py-2 rounded-lg text-center hover:border-[#E94560] transition-all quick-action-btn">
+            <i class="fas fa-bullseye mr-2"></i> Set Goal
+        </a>
+    </div>
+
+    <!-- Progress History Table -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#E94560]/20 bg-[#0F0F1A]">
+            <h3 class="text-white font-semibold">
+                <i class="fas fa-history text-[#E94560] mr-2"></i>
+                Progress History
+            </h3>
+        </div>
+        
+        {% if progress_records %}
+        <div class="overflow-x-auto table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="text-left p-3 text-text-gray">Date</th>
+                        <th class="text-left p-3 text-text-gray">Weight (kg)</th>
+                        <th class="text-left p-3 text-text-gray">BMI</th>
+                        <th class="text-left p-3 text-text-gray">Body Fat %</th>
+                        <th class="text-left p-3 text-text-gray">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in progress_records %}
+                    <tr class="border-b border-[#E94560]/10 transition-colors">
+                        <td class="p-3 text-white">
+                            <i class="fas fa-calendar-alt text-text-gray mr-2 text-xs"></i>
+                            {{ record.date_recorded|date:"M d, Y" }}
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas fa-weight-scale text-text-gray mr-2 text-xs"></i>
+                            {{ record.weight }}
+                        </td>
+                        <td class="p-3 text-text-gray">{{ record.bmi|default:"-" }}</td>
+                        <td class="p-3 text-text-gray">{{ record.body_fat_percentage|default:"-" }}</td>
+                        <td class="p-3">
+                            <a href="{% url 'tracking:edit_progress' record.id %}" class="text-[#E94560] hover:underline mr-2 action-link">
+                                <i class="fas fa-edit mr-1"></i>Edit
+                            </a>
+                            <a href="{% url 'tracking:delete_progress' record.id %}" class="text-red-400 hover:underline action-link" onclick="return confirm('Delete this entry?')">
+                                <i class="fas fa-trash-alt mr-1"></i>Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 empty-state">
+            <i class="fas fa-chart-line text-4xl text-text-gray mb-3 empty-state-icon"></i>
+            <p class="text-text-gray empty-state-text">No progress records yet.</p>
+            <a href="{% url 'tracking:add_progress' %}" class="inline-block mt-3 text-[#E94560] hover:underline">
+                Add your first progress entry →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Weight Chart
+    const chartData = {{ chart_data|safe }};
+    
+    if (document.getElementById('weightChart') && chartData.dates && chartData.dates.length > 0) {
+        new Chart(document.getElementById('weightChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.dates,
+                datasets: [{
+                    label: 'Weight (kg)',
+                    data: chartData.weights,
+                    borderColor: '#E94560',
+                    backgroundColor: 'rgba(233, 69, 96, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: '#E94560',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { 
+                        labels: { 
+                            color: '#A0A0A0',
+                            font: { size: 11 }
+                        } 
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#1A1A2E',
+                        titleColor: '#fff',
+                        bodyColor: '#A0A0A0',
+                        borderColor: '#E94560',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: { 
+                        grid: { color: '#1A1A2E' }, 
+                        ticks: { color: '#A0A0A0', font: { size: 10 } }
+                    },
+                    x: { 
+                        grid: { color: '#1A1A2E' }, 
+                        ticks: { color: '#A0A0A0', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    }
+    
+    // BMI Chart
+    if (document.getElementById('bmiChart') && chartData.dates && chartData.dates.length > 0) {
+        new Chart(document.getElementById('bmiChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.dates,
+                datasets: [{
+                    label: 'BMI',
+                    data: chartData.bmis,
+                    borderColor: '#00D09C',
+                    backgroundColor: 'rgba(0, 208, 156, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: '#00D09C',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { 
+                        labels: { 
+                            color: '#A0A0A0',
+                            font: { size: 11 }
+                        } 
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#1A1A2E',
+                        titleColor: '#fff',
+                        bodyColor: '#A0A0A0',
+                        borderColor: '#00D09C',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: { 
+                        grid: { color: '#1A1A2E' }, 
+                        ticks: { color: '#A0A0A0', font: { size: 10 } }
+                    },
+                    x: { 
+                        grid: { color: '#1A1A2E' }, 
+                        ticks: { color: '#A0A0A0', font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.stat-card, .chart-card, .goal-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Progress bar animation on load
+    window.addEventListener('load', function() {
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    });
+</script>
+{% endblock %}

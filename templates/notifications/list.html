@@ -1,0 +1,528 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Notifications - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR NOTIFICATIONS PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Notification card */
+    .notification-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        background: #1A1A2E;
+        border: 1px solid rgba(233, 69, 96, 0.15);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .notification-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.1);
+    }
+    
+    .notification-card.unread {
+        border-color: rgba(233, 69, 96, 0.45);
+        background: rgba(233, 69, 96, 0.03);
+    }
+    
+    /* Notification content - flex row layout */
+    .notification-content {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: nowrap;
+    }
+    
+    .notification-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .notification-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+    
+    .notification-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.25rem;
+    }
+    
+    .notification-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.875rem;
+    }
+    
+    .notification-icon.payment { background: rgba(0, 208, 156, 0.15); color: #00D09C; }
+    .notification-icon.membership { background: rgba(233, 69, 96, 0.15); color: #E94560; }
+    .notification-icon.workout { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+    .notification-icon.trainer { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+    .notification-icon.default { background: rgba(160, 160, 160, 0.15); color: #A0A0A0; }
+    
+    .notification-title {
+        font-weight: 600;
+        color: white;
+        font-size: 1rem;
+    }
+    
+    .notification-message {
+        color: #A0A0A0;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.5;
+    }
+    
+    .notification-time {
+        color: rgba(160, 160, 160, 0.6);
+        font-size: 0.7rem;
+    }
+    
+    .new-badge {
+        background: #E94560;
+        color: white;
+        font-size: 0.6rem;
+        padding: 0.15rem 0.6rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .action-btn {
+        padding: 0.4rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: #0F0F1A;
+        color: #A0A0A0;
+        border: 1px solid rgba(233, 69, 96, 0.15);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .action-btn.primary:hover { color: #E94560; border-color: #E94560; }
+    .action-btn.success:hover { color: #00D09C; border-color: #00D09C; }
+    .action-btn.danger:hover { color: #f87171; border-color: #f87171; }
+    
+    /* Header section */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .header-left h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: white;
+    }
+    
+    .header-left p {
+        color: #A0A0A0;
+        font-size: 0.875rem;
+    }
+    
+    .unread-count {
+        color: #E94560;
+        font-weight: 600;
+    }
+    
+    .btn-mark-all {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.25rem;
+        background: #E94560;
+        color: white;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-mark-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    }
+    
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: #1A1A2E;
+        border-radius: 1rem;
+        border: 1px solid rgba(233, 69, 96, 0.15);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: #A0A0A0;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h2 {
+        color: white;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-state p {
+        color: #A0A0A0;
+        font-size: 0.875rem;
+    }
+    
+    .empty-state a {
+        display: inline-block;
+        margin-top: 1rem;
+        color: #E94560;
+        text-decoration: none;
+    }
+    
+    .empty-state a:hover {
+        text-decoration: underline;
+    }
+    
+    /* ============================================
+       RESPONSIVE MEDIA QUERIES
+    ============================================ */
+    
+    /* Large Desktops */
+    @media (min-width: 1400px) {
+        .notifications-container { max-width: 1200px; margin: 0 auto; }
+        .header-left h1 { font-size: 2rem; }
+    }
+    
+    /* Desktops */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .notifications-container { padding: 0 1.5rem; }
+    }
+    
+    /* Tablets Landscape */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .notifications-container { padding: 0 1rem; }
+        .header-left h1 { font-size: 1.5rem; }
+        .notification-card { padding: 1rem; }
+        .notification-title { font-size: 0.95rem; }
+        .notification-message { font-size: 0.8rem; }
+        .action-btn { padding: 0.35rem 0.6rem; font-size: 0.65rem; }
+        .btn-mark-all { padding: 0.4rem 1rem; font-size: 0.8rem; }
+    }
+    
+    /* Tablets Portrait & Mobile */
+    @media (max-width: 767px) {
+        .notifications-container { padding: 0 0.75rem; }
+        
+        .header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.75rem;
+        }
+        
+        .header-left h1 { font-size: 1.35rem; }
+        .header-left p { font-size: 0.8rem; }
+        
+        .btn-mark-all {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Stack notification content vertically on mobile */
+        .notification-content {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .notification-card { padding: 0.875rem; }
+        .notification-title { font-size: 0.9rem; }
+        .notification-message { font-size: 0.75rem; }
+        
+        .notification-actions {
+            flex-wrap: wrap;
+            width: 100%;
+            gap: 0.4rem;
+        }
+        
+        .action-btn {
+            padding: 0.35rem 0.6rem;
+            font-size: 0.65rem;
+        }
+        
+        .empty-state { padding: 2rem 1.25rem; }
+        .empty-state i { font-size: 2.5rem; }
+        .empty-state h2 { font-size: 1.1rem; }
+        .empty-state p { font-size: 0.8rem; }
+    }
+    
+    /* Small Mobile */
+    @media (max-width: 480px) {
+        .notifications-container { padding: 0 0.5rem; }
+        .header-left h1 { font-size: 1.2rem; }
+        .notification-card { padding: 0.75rem; }
+        .notification-title { font-size: 0.85rem; }
+        .notification-message { font-size: 0.7rem; }
+        .action-btn { font-size: 0.6rem; padding: 0.25rem 0.5rem; }
+        .new-badge { font-size: 0.5rem; padding: 0.1rem 0.4rem; }
+    }
+    
+    /* Scrollbar */
+    .notifications-list {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding-right: 0.25rem;
+    }
+    
+    .notifications-list::-webkit-scrollbar { width: 6px; }
+    .notifications-list::-webkit-scrollbar-track { background: #0F0F1A; border-radius: 3px; }
+    .notifications-list::-webkit-scrollbar-thumb { background: #E94560; border-radius: 3px; }
+    .notifications-list::-webkit-scrollbar-thumb:hover { background: #c72a4a; }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 0.4rem 0.875rem;
+        border-radius: 0.5rem;
+        background: #1A1A2E;
+        border: 1px solid rgba(233, 69, 96, 0.15);
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination a:hover {
+        border-color: #E94560;
+    }
+    
+    .pagination .current {
+        background: #E94560;
+        border-color: #E94560;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto py-8 notifications-container fade-in">
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <h1>
+                <i class="fas fa-bell mr-2 text-[#E94560]"></i>
+                Notifications
+            </h1>
+            <p>
+                You have <span class="unread-count">{{ unread_count }}</span> unread notification{{ unread_count|pluralize }}.
+            </p>
+        </div>
+        {% if notifications %}
+        <a href="?mark_all_read=1" class="btn-mark-all" onclick="return confirm('Mark all notifications as read?')">
+            <i class="fas fa-check-double"></i>
+            Mark All as Read
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Notifications List -->
+    {% if notifications %}
+        <div class="notifications-list">
+            {% for notification in notifications %}
+                <div class="notification-card {% if not notification.is_read %}unread{% endif %}">
+                    <div class="notification-content">
+                        <!-- Left: Icon, Title, Message -->
+                        <div class="notification-info">
+                            <div class="notification-header">
+                                <div class="notification-icon 
+                                    {% if notification.notification_type == 'payment' %}payment
+                                    {% elif notification.notification_type == 'membership' %}membership
+                                    {% elif notification.notification_type == 'workout' %}workout
+                                    {% elif notification.notification_type == 'trainer' %}trainer
+                                    {% else %}default{% endif %}">
+                                    <i class="fas 
+                                        {% if notification.notification_type == 'payment' %}fa-credit-card
+                                        {% elif notification.notification_type == 'membership' %}fa-id-card
+                                        {% elif notification.notification_type == 'workout' %}fa-dumbbell
+                                        {% elif notification.notification_type == 'trainer' %}fa-chalkboard-user
+                                        {% else %}fa-bell{% endif %}">
+                                    </i>
+                                </div>
+                                <span class="notification-title">{{ notification.title }}</span>
+                                {% if not notification.is_read %}
+                                    <span class="new-badge">New</span>
+                                {% endif %}
+                            </div>
+                            <p class="notification-message">{{ notification.message }}</p>
+                            <p class="notification-time">
+                                <i class="far fa-clock mr-1"></i> 
+                                {{ notification.created_at|date:"M d, Y - h:i A" }}
+                            </p>
+                        </div>
+
+                        <!-- Right: Action Buttons -->
+                        <div class="notification-actions">
+                            {% if notification.link %}
+                                <a href="{{ notification.link }}" class="action-btn primary">
+                                    <i class="fas fa-eye"></i> Open
+                                </a>
+                            {% endif %}
+                            {% if not notification.is_read %}
+                                <a href="{% url 'notifications:mark_read' notification.id %}" class="action-btn success">
+                                    <i class="fas fa-check"></i> Mark Read
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'notifications:delete' notification.id %}" class="action-btn danger" 
+                               onclick="return confirm('Delete this notification?')">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"><i class="fas fa-chevron-left"></i></a>
+            {% endif %}
+            <span class="current">{{ page_obj.number }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"><i class="fas fa-chevron-right"></i></a>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <i class="fas fa-bell-slash"></i>
+            <h2>No notifications yet</h2>
+            <p>When there is activity on your account, updates will show up here.</p>
+            <a href="{% url 'dashboard' %}">Go to Dashboard <i class="fas fa-arrow-right ml-1"></i></a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // Staggered animation for notification cards
+    document.querySelectorAll('.notification-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity 0.3s ease, transform 0.3s ease`;
+        card.style.transitionDelay = `${Math.min(index * 0.05, 0.5)}s`;
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        observer.observe(card);
+    });
+
+    // Auto-refresh unread count
+    function updateUnreadCount() {
+        fetch('/notifications/unread-count/')
+            .then(response => response.json())
+            .then(data => {
+                const countSpan = document.querySelector('.unread-count');
+                const textEl = document.querySelector('.header-left p');
+                if (countSpan && data.count !== undefined) {
+                    countSpan.textContent = data.count;
+                    if (textEl) {
+                        textEl.innerHTML = `You have <span class="unread-count">${data.count}</span> unread notification${data.count === 1 ? '' : 's'}.`;
+                    }
+                }
+            })
+            .catch(error => console.error('Error fetching unread count:', error));
+    }
+
+    if (window.location.pathname === '/notifications/') {
+        setInterval(updateUnreadCount, 30000);
+    }
+
+    // Toast notifications for actions
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('deleted') === '1') {
+        showToast('Notification deleted successfully', 'success');
+    } else if (urlParams.get('marked') === '1') {
+        showToast('Notification marked as read', 'success');
+    } else if (urlParams.get('all_read') === '1') {
+        showToast('All notifications marked as read', 'success');
+    }
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        
+        toast.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : 'bg-[#E94560]'
+        } text-white`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+</script>
+{% endblock %}

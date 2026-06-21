@@ -1,0 +1,557 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Shopping List - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR SHOPPING LIST PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Custom checkbox styling */
+    .shopping-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #E94560;
+        transition: all 0.2s ease;
+    }
+    
+    .shopping-checkbox:checked + span {
+        text-decoration: line-through;
+        opacity: 0.6;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .shopping-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .shopping-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .shopping-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .shopping-card {
+            margin: 0;
+        }
+        
+        .ingredient-item {
+            padding: 0.75rem;
+        }
+        
+        .ingredient-text {
+            font-size: 0.85rem;
+        }
+        
+        .empty-state {
+            padding: 1.5rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .shopping-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .shopping-card {
+            border-radius: 1rem;
+        }
+        
+        .card-header {
+            padding: 0.75rem;
+        }
+        
+        .card-header h3 {
+            font-size: 1rem;
+        }
+        
+        .card-header i {
+            font-size: 0.9rem;
+        }
+        
+        .ingredient-item {
+            padding: 0.625rem 0.75rem;
+        }
+        
+        .shopping-checkbox {
+            width: 16px;
+            height: 16px;
+            margin-right: 0.75rem;
+        }
+        
+        .ingredient-text {
+            font-size: 0.8rem;
+        }
+        
+        .print-btn {
+            padding: 0.625rem;
+            font-size: 0.8rem;
+        }
+        
+        .empty-state {
+            padding: 1.25rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.8rem;
+        }
+        
+        .back-link {
+            font-size: 0.85rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+        
+        .mt-6 {
+            margin-top: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .shopping-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .card-header {
+            padding: 0.625rem;
+        }
+        
+        .card-header h3 {
+            font-size: 0.9rem;
+        }
+        
+        .ingredient-item {
+            padding: 0.5rem 0.625rem;
+        }
+        
+        .shopping-checkbox {
+            width: 14px;
+            height: 14px;
+            margin-right: 0.625rem;
+        }
+        
+        .ingredient-text {
+            font-size: 0.75rem;
+        }
+        
+        .print-btn {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.75rem;
+        }
+        
+        .empty-state-subtext {
+            font-size: 0.7rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .ingredient-text {
+            font-size: 0.7rem;
+        }
+        
+        .print-btn {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .ingredient-text {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .shopping-checkbox {
+            transform: scale(1.1);
+        }
+        
+        .print-btn:active,
+        .back-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .shopping-container {
+            max-width: 90%;
+        }
+        
+        .ingredient-list {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .shopping-card {
+            border: 2px solid #E94560;
+        }
+        
+        .print-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Print styles */
+    @media print {
+        .back-link,
+        .print-btn,
+        .shopping-checkbox {
+            display: none;
+        }
+        
+        .shopping-card {
+            border: 1px solid #ddd;
+            box-shadow: none;
+        }
+        
+        .ingredient-text {
+            color: black;
+        }
+        
+        body {
+            background: white;
+        }
+    }
+    
+    /* Hover effect for ingredient items */
+    .ingredient-item {
+        transition: background-color 0.3s ease;
+    }
+    
+    .ingredient-item:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 shopping-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">
+            <i class="fas fa-shopping-cart text-[#E94560] mr-2"></i>
+            Shopping List
+        </h1>
+        <p class="text-text-gray page-subtitle">Here's what you need for today's meals</p>
+    </div>
+
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden shopping-card card-hover">
+        <div class="px-4 py-3 border-b border-[#E94560]/20 card-header">
+            <h3 class="text-white font-semibold">
+                <i class="fas fa-clipboard-list text-[#E94560] mr-2"></i>
+                {% if diet_plan %}
+                    Ingredients for {{ diet_plan.name }}
+                {% else %}
+                    No plan scheduled for today
+                {% endif %}
+            </h3>
+        </div>
+
+        {% if ingredients %}
+        <ul class="divide-y divide-[#E94560]/10 ingredient-list">
+            {% for ingredient in ingredients %}
+            <li class="px-4 py-3 flex items-center ingredient-item">
+                <input type="checkbox" class="shopping-checkbox mr-3" onclick="toggleIngredient(this)">
+                <span class="text-text-gray ingredient-text">{{ ingredient }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="px-4 py-3 border-t border-[#E94560]/20 bg-[#0F0F1A] flex justify-between items-center flex-wrap gap-3">
+            <div>
+                <button onclick="uncheckAll()" class="text-text-gray hover:text-[#E94560] text-sm transition-colors">
+                    <i class="fas fa-undo-alt mr-1"></i> Reset All
+                </button>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="window.print()" class="text-[#E94560] hover:underline text-sm print-btn">
+                    <i class="fas fa-print mr-1"></i> Print List
+                </button>
+                <button onclick="copyToList()" class="text-[#00D09C] hover:underline text-sm">
+                    <i class="fas fa-copy mr-1"></i> Copy List
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-8 empty-state">
+            <i class="fas fa-shopping-basket text-4xl text-text-gray mb-3 empty-state-icon"></i>
+            <p class="text-text-gray empty-state-text">No ingredients found for today's meals.</p>
+            <p class="text-text-gray text-sm mt-2 empty-state-subtext">Please check your diet plan for today.</p>
+            <a href="{% url 'diet:list' %}" class="inline-block mt-4 text-[#E94560] hover:underline text-sm">
+                Browse Diet Plans →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="text-center mt-6">
+        <a href="{% url 'diet:list' %}" class="text-[#E94560] hover:underline back-link">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Diet Plans
+        </a>
+    </div>
+</div>
+
+<script>
+    // Toggle ingredient strikethrough
+    function toggleIngredient(checkbox) {
+        const label = checkbox.nextElementSibling;
+        if (checkbox.checked) {
+            label.style.textDecoration = 'line-through';
+            label.style.opacity = '0.6';
+        } else {
+            label.style.textDecoration = 'none';
+            label.style.opacity = '1';
+        }
+        
+        // Save to localStorage
+        saveCheckboxStates();
+    }
+    
+    // Uncheck all ingredients
+    function uncheckAll() {
+        const checkboxes = document.querySelectorAll('.shopping-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            const label = checkbox.nextElementSibling;
+            label.style.textDecoration = 'none';
+            label.style.opacity = '1';
+        });
+        saveCheckboxStates();
+        showNotification('All items unchecked', 'info');
+    }
+    
+    // Copy shopping list to clipboard
+    function copyToList() {
+        const items = document.querySelectorAll('.ingredient-text');
+        let listText = 'Shopping List:\n\n';
+        items.forEach((item, index) => {
+            listText += `${index + 1}. ${item.textContent}\n`;
+        });
+        
+        navigator.clipboard.writeText(listText).then(() => {
+            showNotification('List copied to clipboard!', 'success');
+        }).catch(() => {
+            showNotification('Failed to copy list', 'error');
+        });
+    }
+    
+    // Save checkbox states to localStorage
+    function saveCheckboxStates() {
+        const checkboxes = document.querySelectorAll('.shopping-checkbox');
+        const states = {};
+        checkboxes.forEach((checkbox, index) => {
+            states[index] = checkbox.checked;
+        });
+        localStorage.setItem('shoppingListStates', JSON.stringify(states));
+    }
+    
+    // Load checkbox states from localStorage
+    function loadCheckboxStates() {
+        const savedStates = localStorage.getItem('shoppingListStates');
+        if (savedStates) {
+            const states = JSON.parse(savedStates);
+            const checkboxes = document.querySelectorAll('.shopping-checkbox');
+            checkboxes.forEach((checkbox, index) => {
+                if (states[index]) {
+                    checkbox.checked = states[index];
+                    const label = checkbox.nextElementSibling;
+                    label.style.textDecoration = 'line-through';
+                    label.style.opacity = '0.6';
+                }
+            });
+        }
+    }
+    
+    // Show notification
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+    
+    // Auto-save on page unload
+    window.addEventListener('beforeunload', () => {
+        saveCheckboxStates();
+    });
+    
+    // Load saved states on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCheckboxStates();
+    });
+    
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const shoppingCard = document.querySelector('.shopping-card');
+    if (shoppingCard) {
+        shoppingCard.style.opacity = '0';
+        shoppingCard.style.transform = 'translateY(20px)';
+        shoppingCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(shoppingCard);
+    }
+</script>
+{% endblock %}

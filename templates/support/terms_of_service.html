@@ -1,0 +1,611 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Terms of Service - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR TERMS OF SERVICE PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .terms-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .terms-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Section hover effect */
+    .terms-section {
+        transition: all 0.3s ease;
+    }
+    
+    .terms-section:hover {
+        padding-left: 0.75rem;
+        border-left-color: #E94560;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .terms-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .terms-card {
+            padding: 2rem;
+        }
+        
+        .terms-title {
+            font-size: 2rem;
+        }
+        
+        .terms-date {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .section-text {
+            font-size: 0.95rem;
+        }
+        
+        .list-item {
+            font-size: 0.9rem;
+        }
+        
+        .footer-link {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .terms-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .terms-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .terms-card {
+            padding: 1.5rem;
+        }
+        
+        .terms-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .terms-date {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-text {
+            font-size: 0.85rem;
+        }
+        
+        .list-item {
+            font-size: 0.8rem;
+        }
+        
+        .footer-link {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .terms-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.5rem;
+        }
+        
+        .terms-card {
+            padding: 1.25rem;
+        }
+        
+        .terms-title {
+            font-size: 1.5rem;
+        }
+        
+        .terms-date {
+            font-size: 0.8rem;
+            margin-bottom: 0.875rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-text {
+            font-size: 0.8rem;
+        }
+        
+        .list-item {
+            font-size: 0.75rem;
+            margin-left: 1rem;
+        }
+        
+        .space-y-6 {
+            gap: 1rem;
+        }
+        
+        .footer-link {
+            margin-top: 1rem;
+            padding-top: 0.875rem;
+        }
+        
+        .footer-link a {
+            font-size: 0.85rem;
+        }
+        
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .terms-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .terms-card {
+            padding: 1rem;
+        }
+        
+        .terms-title {
+            font-size: 1.35rem;
+        }
+        
+        .terms-date {
+            font-size: 0.7rem;
+        }
+        
+        .section-title {
+            font-size: 0.95rem;
+        }
+        
+        .section-text {
+            font-size: 0.75rem;
+        }
+        
+        .list-item {
+            font-size: 0.7rem;
+        }
+        
+        .footer-link a {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .terms-title {
+            font-size: 1.2rem;
+        }
+        
+        .section-title {
+            font-size: 0.9rem;
+        }
+        
+        .section-text {
+            font-size: 0.7rem;
+        }
+        
+        .list-item {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .terms-title {
+            font-size: 1.1rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .terms-card:active {
+            transform: scale(0.98);
+        }
+        
+        .terms-card:hover {
+            transform: none;
+        }
+        
+        .footer-link a:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .space-y-6 {
+            gap: 0.75rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .terms-card {
+            border: 2px solid #E94560;
+        }
+        
+        .footer-link a {
+            border: 1px solid #E94560;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .terms-section:hover {
+            padding-left: 0;
+        }
+        
+        .terms-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Print styles */
+    @media print {
+        .back-link, .footer-link {
+            display: none;
+        }
+        
+        .terms-card {
+            border: 1px solid #ddd;
+            box-shadow: none;
+        }
+        
+        body {
+            background: white;
+            color: black;
+        }
+        
+        .terms-title, .section-title {
+            color: black;
+        }
+        
+        .section-text, .list-item {
+            color: #333;
+        }
+    }
+    
+    /* Table of contents */
+    .toc {
+        background-color: rgba(233, 69, 96, 0.1);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .toc-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .toc-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .toc-link {
+        font-size: 0.75rem;
+        color: #E94560;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .toc-link:hover {
+        text-decoration: underline;
+        transform: translateX(2px);
+    }
+    
+    @media (max-width: 640px) {
+        .toc-links {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    }
+    
+    /* Custom list styling */
+    .custom-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    
+    .custom-list li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .custom-list li:before {
+        content: "▹";
+        position: absolute;
+        left: 0;
+        color: #E94560;
+    }
+    
+    @media (max-width: 640px) {
+        .custom-list li {
+            padding-left: 1.25rem;
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Important notice box */
+    .notice-box {
+        background: linear-gradient(135deg, rgba(233, 69, 96, 0.1), rgba(255, 255, 255, 0.02));
+        border-left: 4px solid #E94560;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+    }
+    
+    @media (max-width: 640px) {
+        .notice-box {
+            padding: 0.75rem;
+        }
+        
+        .notice-box p {
+            font-size: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4 terms-container fade-in">
+    <!-- Back Button -->
+    <div class="mb-6 back-link">
+        <a href="javascript:history.back()" class="inline-flex items-center text-text-gray hover:text-[#E94560] transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-8 terms-card">
+        <h1 class="text-3xl font-bold text-white mb-4 terms-title">Terms of Service</h1>
+        <p class="text-text-gray mb-6 terms-date">Last updated: {% now "F d, Y" %}</p>
+        
+        <!-- Important Notice -->
+        <div class="notice-box mb-6">
+            <p class="text-text-gray text-sm">
+                <i class="fas fa-info-circle text-[#E94560] mr-2"></i>
+                <strong>Please read these terms carefully before using FitZone.</strong> By using our services, you agree to be bound by these terms.
+            </p>
+        </div>
+        
+        <!-- Table of Contents -->
+        <div class="toc mb-6">
+            <p class="text-white text-sm font-semibold toc-title">📑 Quick Navigation</p>
+            <div class="toc-links">
+                <a href="#section1" class="toc-link">1. Acceptance of Terms</a>
+                <a href="#section2" class="toc-link">2. Account Registration</a>
+                <a href="#section3" class="toc-link">3. Membership Plans</a>
+                <a href="#section4" class="toc-link">4. Payments and Billing</a>
+                <a href="#section5" class="toc-link">5. User Conduct</a>
+                <a href="#section6" class="toc-link">6. Content Ownership</a>
+                <a href="#section7" class="toc-link">7. Disclaimer of Warranties</a>
+                <a href="#section8" class="toc-link">8. Limitation of Liability</a>
+                <a href="#section9" class="toc-link">9. Changes to Terms</a>
+                <a href="#section10" class="toc-link">10. Contact Information</a>
+            </div>
+        </div>
+        
+        <div class="space-y-6">
+            <div id="section1" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">1. Acceptance of Terms</h2>
+                <p class="text-text-gray section-text">By accessing or using FitZone, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.</p>
+            </div>
+            
+            <div id="section2" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">2. Account Registration</h2>
+                <p class="text-text-gray section-text">You must be at least 18 years old to create an account. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.</p>
+                <p class="text-text-gray text-sm mt-2">🔐 Two-factor authentication is recommended for added security.</p>
+            </div>
+            
+            <div id="section3" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">3. Membership Plans</h2>
+                <p class="text-text-gray section-text">Membership plans are billed on a monthly basis. You can cancel your membership at any time from your account settings. No refunds for partial months are provided.</p>
+                <p class="text-text-gray text-sm mt-2">💡 Free trial available for new users - cancel anytime before trial ends.</p>
+            </div>
+            
+            <div id="section4" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">4. Payments and Billing</h2>
+                <p class="text-text-gray section-text">All payments are processed securely through Razorpay. By providing payment information, you authorize us to charge the applicable fees to your selected payment method.</p>
+                <p class="text-text-gray text-sm mt-2">💳 We accept Credit/Debit Cards, UPI, Net Banking, and major wallets.</p>
+            </div>
+            
+            <div id="section5" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">5. User Conduct</h2>
+                <p class="text-text-gray section-text">You agree not to:</p>
+                <ul class="custom-list mt-2 space-y-1">
+                    <li class="text-text-gray list-item">Use the service for any illegal purpose</li>
+                    <li class="text-text-gray list-item">Harass, abuse, or harm other users</li>
+                    <li class="text-text-gray list-item">Impersonate any person or entity</li>
+                    <li class="text-text-gray list-item">Interfere with or disrupt the service</li>
+                </ul>
+            </div>
+            
+            <div id="section6" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">6. Content Ownership</h2>
+                <p class="text-text-gray section-text">All workout plans, diet plans, and other content provided on FitZone are owned by FitZone and are protected by copyright laws.</p>
+                <p class="text-text-gray text-sm mt-2">© All content is for personal use only. Redistribution is prohibited.</p>
+            </div>
+            
+            <div id="section7" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">7. Disclaimer of Warranties</h2>
+                <p class="text-text-gray section-text">FitZone provides its services "as is" without any warranties. Consult with a physician before starting any exercise or diet program.</p>
+                <p class="text-text-gray text-sm mt-2">⚠️ Individual results may vary. Always listen to your body.</p>
+            </div>
+            
+            <div id="section8" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">8. Limitation of Liability</h2>
+                <p class="text-text-gray section-text">FitZone shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of our services.</p>
+            </div>
+            
+            <div id="section9" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">9. Changes to Terms</h2>
+                <p class="text-text-gray section-text">We reserve the right to modify these terms at any time. We will notify users of any material changes via email or through the platform.</p>
+            </div>
+            
+            <div id="section10" class="terms-section" style="border-left: 3px solid transparent; padding-left: 0.5rem;">
+                <h2 class="text-xl font-bold text-white mb-3 section-title">10. Contact Information</h2>
+                <p class="text-text-gray section-text">For questions about these Terms, please contact us at <a href="mailto:legal@fitzone.com" class="text-[#E94560] hover:underline">legal@fitzone.com</a></p>
+            </div>
+        </div>
+        
+        <div class="mt-8 pt-6 border-t border-[#E94560]/20 footer-link">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <a href="{% url 'contact' %}" class="text-[#E94560] hover:underline">
+                    Contact Us →
+                </a>
+                <p class="text-text-gray text-xs text-center sm:text-right">
+                    Version 2.0 | Effective from {% now "F d, Y" %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Smooth scroll for table of contents links
+    document.querySelectorAll('.toc-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Add highlight effect when section is in view
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute('id');
+                // Remove active class from all toc links
+                document.querySelectorAll('.toc-link').forEach(link => {
+                    link.style.fontWeight = 'normal';
+                });
+                // Add active class to corresponding toc link
+                const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+                if (activeLink) {
+                    activeLink.style.fontWeight = 'bold';
+                }
+                // Add highlight to section
+                entry.target.style.borderLeftColor = '#E94560';
+                setTimeout(() => {
+                    entry.target.style.borderLeftColor = 'transparent';
+                }, 1500);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.terms-section').forEach(section => {
+        observer.observe(section);
+    });
+    
+    // Add animation to card on scroll
+    const cardObserverOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const cardObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                cardObserver.unobserve(entry.target);
+            }
+        });
+    }, cardObserverOptions);
+    
+    const termsCard = document.querySelector('.terms-card');
+    if (termsCard) {
+        termsCard.style.opacity = '0';
+        termsCard.style.transform = 'translateY(20px)';
+        termsCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        cardObserver.observe(termsCard);
+    }
+</script>
+{% endblock %}

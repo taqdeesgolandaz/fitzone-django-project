@@ -1,0 +1,133 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Pay for Session - FitZone{% endblock %}
+
+{% block extra_css %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2">Complete Payment</h1>
+        <p class="text-text-gray">Pay securely for your trainer session</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Session Details -->
+        <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Session Details</h3>
+            
+            <div class="space-y-3 mb-6">
+                <div class="flex justify-between pb-2 border-b border-[#E94560]/20">
+                    <span class="text-text-gray">Trainer:</span>
+                    <span class="text-white font-semibold">{{ session.trainer.full_name }}</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-[#E94560]/20">
+                    <span class="text-text-gray">Date:</span>
+                    <span class="text-white">{{ session.session_date|date:"l, F d, Y" }}</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-[#E94560]/20">
+                    <span class="text-text-gray">Time:</span>
+                    <span class="text-white">{{ session.session_time|time:"g:i A" }}</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-[#E94560]/20">
+                    <span class="text-text-gray">Duration:</span>
+                    <span class="text-white">{{ session.duration_minutes }} minutes</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-[#E94560]/20">
+                    <span class="text-text-gray">Session Type:</span>
+                    <span class="text-white">{{ session.get_session_type_display }}</span>
+                </div>
+                <div class="flex justify-between pt-2">
+                    <span class="text-text-gray font-bold">Amount:</span>
+                    <span class="text-[#E94560] font-bold text-2xl">₹{{ session.amount }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-6">
+            <h3 class="text-xl font-bold text-white mb-4">Payment Method</h3>
+            
+            <!-- Pay Button -->
+            <button type="button" id="pay-button" 
+                    class="w-full bg-[#E94560] text-white py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all transform hover:scale-[1.02]">
+                <i class="fas fa-rupee-sign mr-2"></i>
+                Pay ₹{{ session.amount }}
+            </button>
+
+            <p class="text-text-gray text-xs text-center mt-4">
+                <i class="fas fa-shield-alt mr-1"></i>
+                Secure payment powered by Razorpay
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('pay-button').onclick = function(e){
+        var options = {
+            "key": "{{ razorpay_key }}",
+            "amount": "{{ razorpay_order.amount }}",
+            "currency": "INR",
+            "name": "FitZone",
+            "description": "Trainer Session with {{ session.trainer.full_name }}",
+            "order_id": "{{ razorpay_order.id }}",
+            "handler": function(response){
+                console.log("Payment success:", response);
+                
+                // Create a form to submit the payment details
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = "{% url 'payments:payment_success' %}";
+                
+                // Add CSRF token
+                var csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = '{{ csrf_token }}';
+                form.appendChild(csrfInput);
+                
+                // Add payment details
+                var paymentInput = document.createElement('input');
+                paymentInput.type = 'hidden';
+                paymentInput.name = 'razorpay_payment_id';
+                paymentInput.value = response.razorpay_payment_id;
+                form.appendChild(paymentInput);
+                
+                var orderInput = document.createElement('input');
+                orderInput.type = 'hidden';
+                orderInput.name = 'razorpay_order_id';
+                orderInput.value = response.razorpay_order_id;
+                form.appendChild(orderInput);
+                
+                var signatureInput = document.createElement('input');
+                signatureInput.type = 'hidden';
+                signatureInput.name = 'razorpay_signature';
+                signatureInput.value = response.razorpay_signature;
+                form.appendChild(signatureInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            },
+            "prefill": {
+                "name": "{{ user.full_name|default:user.username }}",
+                "email": "{{ user.email }}",
+                "contact": "{{ user.mobile_number|default:'9876543210' }}"
+            },
+            "theme": {
+                "color": "#E94560"
+            },
+            "modal": {
+                "ondismiss": function() {
+                    window.location.href = "{% url 'trainers:my_sessions' %}";
+                }
+            }
+        };
+        
+        var rzp = new Razorpay(options);
+        rzp.open();
+    };
+</script>
+{% endblock %}

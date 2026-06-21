@@ -1,0 +1,633 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Report a Problem - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR REPORT PROBLEM PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .report-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Form focus effects */
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #E94560;
+        box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* File input styling */
+    input[type="file"] {
+        cursor: pointer;
+    }
+    
+    input[type="file"]::-webkit-file-upload-button {
+        background-color: #E94560;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    input[type="file"]::-webkit-file-upload-button:hover {
+        background-color: #c72a4a;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .report-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .report-card {
+            padding: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.95rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .submit-btn {
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .report-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .report-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .report-card {
+            padding: 1.5rem;
+        }
+        
+        .form-label {
+            font-size: 0.85rem;
+            margin-bottom: 0.35rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .submit-btn {
+            padding: 0.7rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .report-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .report-card {
+            padding: 1.25rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 0.55rem;
+            font-size: 0.8rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.875rem;
+        }
+        
+        .submit-btn {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .report-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .report-card {
+            padding: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+        }
+        
+        .submit-btn {
+            padding: 0.55rem;
+            font-size: 0.8rem;
+        }
+        
+        .file-hint {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .form-label {
+            font-size: 0.7rem;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 0.45rem;
+            font-size: 0.7rem;
+        }
+        
+        .submit-btn {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .report-card:active {
+            transform: scale(0.98);
+        }
+        
+        .report-card:hover {
+            transform: none;
+        }
+        
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        
+        input, select, textarea {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        
+        .form-textarea {
+            min-height: 70px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .report-card {
+            border: 2px solid #E94560;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            border: 1px solid #E94560;
+        }
+        
+        .submit-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .report-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Required field star */
+    .required-star {
+        color: #E94560;
+        margin-left: 2px;
+    }
+    
+    /* Tips box */
+    .tips-box {
+        background: linear-gradient(135deg, rgba(233, 69, 96, 0.08), rgba(255, 255, 255, 0.02));
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    @media (max-width: 640px) {
+        .tips-box {
+            padding: 0.75rem;
+        }
+        
+        .tips-box p {
+            font-size: 0.7rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4 report-container fade-in mb-0 mt-0">
+    <!-- Back Button -->
+    <div class="mb-6 back-link">
+        <a href="javascript:history.back()" class="inline-flex items-center text-text-gray hover:text-[#E94560] transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">Report a <span class="text-[#E94560]">Problem</span></h1>
+        <p class="text-text-gray page-subtitle">Help us improve by reporting any issues you encounter</p>
+    </div>
+
+    <!-- Display Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'report' in message.tags or message.level == 40 %}
+            <div class="mb-4 p-3 rounded-lg {% if message.tags == 'success' %}bg-green-500/20 text-green-400 border border-green-500/50{% else %}bg-red-500/20 text-red-400 border border-red-500/50{% endif %} fade-in">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-2"></i>
+                {{ message }}
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-6 report-card">
+        <form method="POST" enctype="multipart/form-data" id="reportForm" action="{% url 'support:report_problem' %}">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    Your Name <span class="required-star">*</span>
+                </label>
+                <input type="text" name="name" required
+                       placeholder="Enter your full name"
+                       value="{{ user.get_full_name|default:'' }}"
+                       class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+            </div>
+            
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    Your Email <span class="required-star">*</span>
+                </label>
+                <input type="email" name="email" required
+                       placeholder="Enter your email address"
+                       value="{{ user.email|default:'' }}"
+                       class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+            </div>
+            
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    Problem Type <span class="required-star">*</span>
+                </label>
+                <select name="problem_type" required class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-select">
+                    <option value="">Select problem type</option>
+                    <option value="bug">🐛 Bug / Technical Glitch</option>
+                    <option value="payment">💰 Payment Issue</option>
+                    <option value="login">🔐 Login / Account Issue</option>
+                    <option value="workout">💪 Workout Plan Issue</option>
+                    <option value="diet">🥗 Diet Plan Issue</option>
+                    <option value="trainer">👨‍🏫 Trainer Booking Issue</option>
+                    <option value="ui">🎨 UI / Display Issue</option>
+                    <option value="other">❓ Other</option>
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    Describe the Problem <span class="required-star">*</span>
+                </label>
+                <textarea name="description" rows="4" required
+                          class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-textarea"
+                          placeholder="Please describe what happened in detail..."></textarea>
+                <p class="text-text-gray text-xs mt-1">Be as specific as possible to help us identify the issue.</p>
+            </div>
+            
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    Steps to Reproduce
+                </label>
+                <textarea name="steps" rows="3"
+                          class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-textarea"
+                          placeholder="List the steps that lead to this problem (if applicable)..."></textarea>
+                <p class="text-text-gray text-xs mt-1">1. First step... 2. Second step... 3. Third step...</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 form-grid">
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Urgency Level
+                    </label>
+                    <select name="urgency" class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-select">
+                        <option value="low">🟢 Low - Can work around</option>
+                        <option value="medium" selected>🟡 Medium - Annoying but can continue</option>
+                        <option value="high">🟠 High - Blocking my work</option>
+                        <option value="critical">🔴 Critical - Cannot use the platform</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="text-text-gray block mb-2 form-label">
+                        Browser / Device
+                    </label>
+                    <input type="text" name="device" placeholder="e.g., Chrome on Windows, Safari on iPhone"
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                    <p class="text-text-gray text-xs mt-1">Helps us replicate the issue</p>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    Screenshots / Attachments
+                </label>
+                <input type="file" name="attachment" accept="image/*,.pdf"
+                       class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                <p class="text-text-gray text-xs mt-1 file-hint">📎 Upload screenshots to help us understand the issue (max 5MB, supports JPG, PNG, PDF)</p>
+            </div>
+            
+            <!-- Tips Box -->
+            <div class="tips-box">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-lightbulb text-[#E94560] text-sm"></i>
+                    <span class="text-white text-sm font-semibold">💡 Tips for a better report:</span>
+                </div>
+                <ul class="text-text-gray text-xs space-y-1">
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Include error messages if any</li>
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Mention when the problem started occurring</li>
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Attach screenshots for visual issues</li>
+                    <li><i class="fas fa-check-circle text-[#00D09C] text-xs mr-1"></i> Share any workarounds you've found</li>
+                </ul>
+            </div>
+            
+            <button type="submit" id="submitBtn" class="w-full bg-[#E94560] text-white py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all submit-btn">
+                <span id="btnText"><i class="fas fa-paper-plane mr-2"></i> Submit Report</span>
+                <span id="btnLoader" class="hidden">
+                    <svg class="animate-spin h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Form submission with loading state
+    const form = document.getElementById('reportForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validation
+            const name = document.querySelector('input[name="name"]').value.trim();
+            const email = document.querySelector('input[name="email"]').value.trim();
+            const problemType = document.querySelector('select[name="problem_type"]').value;
+            const description = document.querySelector('textarea[name="description"]').value.trim();
+            
+            if (!name) {
+                e.preventDefault();
+                showNotification('Please enter your name', 'error');
+                return;
+            }
+            
+            if (!email) {
+                e.preventDefault();
+                showNotification('Please enter your email', 'error');
+                return;
+            }
+            
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                e.preventDefault();
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (!problemType) {
+                e.preventDefault();
+                showNotification('Please select a problem type', 'error');
+                return;
+            }
+            
+            if (!description) {
+                e.preventDefault();
+                showNotification('Please describe the problem', 'error');
+                return;
+            }
+            
+            if (description.length < 10) {
+                e.preventDefault();
+                showNotification('Please provide more details (at least 10 characters)', 'error');
+                return;
+            }
+            
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70');
+        });
+    }
+    
+    // Show notification function
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Auto-fill user data if logged in
+    window.addEventListener('load', function() {
+        {% if user.is_authenticated %}
+        const nameInput = document.querySelector('input[name="name"]');
+        const emailInput = document.querySelector('input[name="email"]');
+        if (nameInput && !nameInput.value) {
+            nameInput.value = "{{ user.get_full_name|default:user.username }}";
+        }
+        if (emailInput && !emailInput.value) {
+            emailInput.value = "{{ user.email }}";
+        }
+        {% endif %}
+        
+        // Auto-detect browser/device
+        const deviceInput = document.querySelector('input[name="device"]');
+        if (deviceInput && !deviceInput.value) {
+            const userAgent = navigator.userAgent;
+            let deviceInfo = '';
+            if (userAgent.indexOf('Chrome') > -1) deviceInfo = 'Chrome';
+            else if (userAgent.indexOf('Firefox') > -1) deviceInfo = 'Firefox';
+            else if (userAgent.indexOf('Safari') > -1) deviceInfo = 'Safari';
+            else if (userAgent.indexOf('Edge') > -1) deviceInfo = 'Edge';
+            else deviceInfo = 'Unknown';
+            
+            if (userAgent.indexOf('Windows') > -1) deviceInfo += ' on Windows';
+            else if (userAgent.indexOf('Mac') > -1) deviceInfo += ' on Mac';
+            else if (userAgent.indexOf('iPhone') > -1) deviceInfo += ' on iPhone';
+            else if (userAgent.indexOf('Android') > -1) deviceInfo += ' on Android';
+            
+            deviceInput.placeholder = `e.g., ${deviceInfo}`;
+        }
+    });
+    
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const reportCard = document.querySelector('.report-card');
+    if (reportCard) {
+        reportCard.style.opacity = '0';
+        reportCard.style.transform = 'translateY(20px)';
+        reportCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(reportCard);
+    }
+</script>
+{% endblock %}

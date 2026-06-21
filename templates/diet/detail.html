@@ -1,0 +1,525 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ diet_plan.name }} - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR DIET PLAN DETAILS PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .diet-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .diet-title {
+            font-size: 2rem;
+        }
+        
+        .nutrition-value {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .diet-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .diet-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .diet-title {
+            font-size: 1.75rem;
+        }
+        
+        .diet-description {
+            font-size: 0.9rem;
+            padding: 0 1rem;
+        }
+        
+        .diet-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+        }
+        
+        .nutrition-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 0.75rem;
+        }
+        
+        .nutrition-card {
+            padding: 0.875rem;
+        }
+        
+        .nutrition-icon {
+            font-size: 1.5rem;
+        }
+        
+        .nutrition-label {
+            font-size: 0.7rem;
+        }
+        
+        .nutrition-value {
+            font-size: 1.25rem;
+        }
+        
+        .meals-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .meal-card {
+            margin-bottom: 0;
+        }
+        
+        .meal-title {
+            font-size: 1rem;
+        }
+        
+        .meal-description {
+            font-size: 0.8rem;
+        }
+        
+        .meal-nutrition {
+            font-size: 0.7rem;
+            gap: 0.75rem;
+        }
+        
+        .back-link {
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .diet-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .diet-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .diet-description {
+            font-size: 0.85rem;
+        }
+        
+        .nutrition-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .nutrition-card {
+            padding: 0.75rem;
+        }
+        
+        .nutrition-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .nutrition-value {
+            font-size: 1.125rem;
+        }
+        
+        .meals-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .meal-header {
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .meal-header i {
+            font-size: 0.8rem;
+        }
+        
+        .meal-header span {
+            font-size: 0.85rem;
+        }
+        
+        .meal-body {
+            padding: 0.875rem;
+        }
+        
+        .meal-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meal-description {
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .meal-nutrition {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .meal-nutrition span {
+            font-size: 0.7rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .diet-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .diet-title {
+            font-size: 1.35rem;
+        }
+        
+        .diet-description {
+            font-size: 0.8rem;
+        }
+        
+        .diet-badge {
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
+        }
+        
+        .nutrition-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.5rem;
+        }
+        
+        .nutrition-card {
+            padding: 0.625rem;
+        }
+        
+        .nutrition-icon {
+            font-size: 1rem;
+        }
+        
+        .nutrition-label {
+            font-size: 0.65rem;
+        }
+        
+        .nutrition-value {
+            font-size: 1rem;
+        }
+        
+        .meals-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        
+        .meal-body {
+            padding: 0.75rem;
+        }
+        
+        .meal-title {
+            font-size: 0.9rem;
+        }
+        
+        .meal-description {
+            font-size: 0.7rem;
+        }
+        
+        .meal-nutrition span {
+            font-size: 0.65rem;
+        }
+        
+        .back-link {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .diet-title {
+            font-size: 1.2rem;
+        }
+        
+        .nutrition-value {
+            font-size: 0.9rem;
+        }
+        
+        .meal-title {
+            font-size: 0.85rem;
+        }
+        
+        .meal-description {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .meals-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        
+        .nutrition-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .nutrition-card, .meal-card {
+            border: 2px solid #E94560;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Meal card hover effect */
+    .meal-card {
+        transition: all 0.3s ease;
+    }
+    
+    .meal-card:hover {
+        border-color: #E94560;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 diet-container fade-in">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 diet-title">{{ diet_plan.name }}</h1>
+        <p class="text-text-gray diet-description">{{ diet_plan.description }}</p>
+        <div class="inline-block mt-4 bg-[#E94560]/20 text-[#E94560] px-4 py-1 rounded-full text-sm diet-badge">
+            {{ diet_plan.get_diet_goal_display }} | {{ diet_plan.get_day_of_week_display }}
+        </div>
+    </div>
+
+    <!-- Nutrition Summary -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 nutrition-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 nutrition-card card-hover">
+            <i class="fas fa-fire text-[#E94560] text-2xl mb-2 nutrition-icon"></i>
+            <p class="text-text-gray text-sm nutrition-label">Calories</p>
+            <p class="text-white text-xl font-bold nutrition-value">{{ nutrition.calories }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 nutrition-card card-hover">
+            <i class="fas fa-dumbbell text-[#E94560] text-2xl mb-2 nutrition-icon"></i>
+            <p class="text-text-gray text-sm nutrition-label">Protein</p>
+            <p class="text-white text-xl font-bold nutrition-value">{{ nutrition.protein }}g</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 nutrition-card card-hover">
+            <i class="fas fa-bread-slice text-[#E94560] text-2xl mb-2 nutrition-icon"></i>
+            <p class="text-text-gray text-sm nutrition-label">Carbs</p>
+            <p class="text-white text-xl font-bold nutrition-value">{{ nutrition.carbs }}g</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 nutrition-card card-hover">
+            <i class="fas fa-oil-can text-[#E94560] text-2xl mb-2 nutrition-icon"></i>
+            <p class="text-text-gray text-sm nutrition-label">Fats</p>
+            <p class="text-white text-xl font-bold nutrition-value">{{ nutrition.fats }}g</p>
+        </div>
+    </div>
+
+    <!-- Meals Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 meals-grid">
+        
+        <!-- Breakfast -->
+        {% if diet_plan.breakfast %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden meal-card card-hover">
+            <div class="bg-[#E94560]/20 px-4 py-2 border-b border-[#E94560]/20 meal-header">
+                <i class="fas fa-sun text-[#E94560] mr-2"></i>
+                <span class="text-white font-semibold">Breakfast</span>
+            </div>
+            <div class="p-4 meal-body">
+                <h3 class="text-white font-bold text-lg mb-2 meal-title">{{ diet_plan.breakfast.name }}</h3>
+                <p class="text-text-gray text-sm mb-3 meal-description">{{ diet_plan.breakfast.description }}</p>
+                <div class="flex flex-wrap gap-3 text-xs meal-nutrition">
+                    <span class="text-text-gray"><i class="fas fa-fire mr-1"></i> {{ diet_plan.breakfast.calories }} cal</span>
+                    <span class="text-text-gray"><i class="fas fa-dumbbell mr-1"></i> {{ diet_plan.breakfast.protein }}g protein</span>
+                    <span class="text-text-gray"><i class="fas fa-bread-slice mr-1"></i> {{ diet_plan.breakfast.carbohydrates }}g carbs</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Lunch -->
+        {% if diet_plan.lunch %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden meal-card card-hover">
+            <div class="bg-[#E94560]/20 px-4 py-2 border-b border-[#E94560]/20 meal-header">
+                <i class="fas fa-utensils text-[#E94560] mr-2"></i>
+                <span class="text-white font-semibold">Lunch</span>
+            </div>
+            <div class="p-4 meal-body">
+                <h3 class="text-white font-bold text-lg mb-2 meal-title">{{ diet_plan.lunch.name }}</h3>
+                <p class="text-text-gray text-sm mb-3 meal-description">{{ diet_plan.lunch.description }}</p>
+                <div class="flex flex-wrap gap-3 text-xs meal-nutrition">
+                    <span class="text-text-gray"><i class="fas fa-fire mr-1"></i> {{ diet_plan.lunch.calories }} cal</span>
+                    <span class="text-text-gray"><i class="fas fa-dumbbell mr-1"></i> {{ diet_plan.lunch.protein }}g protein</span>
+                    <span class="text-text-gray"><i class="fas fa-bread-slice mr-1"></i> {{ diet_plan.lunch.carbohydrates }}g carbs</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Dinner -->
+        {% if diet_plan.dinner %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden meal-card card-hover">
+            <div class="bg-[#E94560]/20 px-4 py-2 border-b border-[#E94560]/20 meal-header">
+                <i class="fas fa-moon text-[#E94560] mr-2"></i>
+                <span class="text-white font-semibold">Dinner</span>
+            </div>
+            <div class="p-4 meal-body">
+                <h3 class="text-white font-bold text-lg mb-2 meal-title">{{ diet_plan.dinner.name }}</h3>
+                <p class="text-text-gray text-sm mb-3 meal-description">{{ diet_plan.dinner.description }}</p>
+                <div class="flex flex-wrap gap-3 text-xs meal-nutrition">
+                    <span class="text-text-gray"><i class="fas fa-fire mr-1"></i> {{ diet_plan.dinner.calories }} cal</span>
+                    <span class="text-text-gray"><i class="fas fa-dumbbell mr-1"></i> {{ diet_plan.dinner.protein }}g protein</span>
+                    <span class="text-text-gray"><i class="fas fa-bread-slice mr-1"></i> {{ diet_plan.dinner.carbohydrates }}g carbs</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Snack 1 -->
+        {% if diet_plan.snack1 %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden meal-card card-hover">
+            <div class="bg-[#E94560]/20 px-4 py-2 border-b border-[#E94560]/20 meal-header">
+                <i class="fas fa-apple-alt text-[#E94560] mr-2"></i>
+                <span class="text-white font-semibold">Morning Snack</span>
+            </div>
+            <div class="p-4 meal-body">
+                <h3 class="text-white font-bold text-lg mb-2 meal-title">{{ diet_plan.snack1.name }}</h3>
+                <p class="text-text-gray text-sm mb-3 meal-description">{{ diet_plan.snack1.description }}</p>
+                <div class="flex flex-wrap gap-3 text-xs meal-nutrition">
+                    <span class="text-text-gray"><i class="fas fa-fire mr-1"></i> {{ diet_plan.snack1.calories }} cal</span>
+                    <span class="text-text-gray"><i class="fas fa-dumbbell mr-1"></i> {{ diet_plan.snack1.protein }}g protein</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Snack 2 -->
+        {% if diet_plan.snack2 %}
+        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden meal-card card-hover">
+            <div class="bg-[#E94560]/20 px-4 py-2 border-b border-[#E94560]/20 meal-header">
+                <i class="fas fa-moon text-[#E94560] mr-2"></i>
+                <span class="text-white font-semibold">Evening Snack</span>
+            </div>
+            <div class="p-4 meal-body">
+                <h3 class="text-white font-bold text-lg mb-2 meal-title">{{ diet_plan.snack2.name }}</h3>
+                <p class="text-text-gray text-sm mb-3 meal-description">{{ diet_plan.snack2.description }}</p>
+                <div class="flex flex-wrap gap-3 text-xs meal-nutrition">
+                    <span class="text-text-gray"><i class="fas fa-fire mr-1"></i> {{ diet_plan.snack2.calories }} cal</span>
+                    <span class="text-text-gray"><i class="fas fa-dumbbell mr-1"></i> {{ diet_plan.snack2.protein }}g protein</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center mt-8">
+        <a href="{% url 'diet:list' %}" class="text-[#E94560] hover:underline back-link">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to All Diet Plans
+        </a>
+    </div>
+</div>
+
+<script>
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    // Animate nutrition cards and meal cards
+    document.querySelectorAll('.nutrition-card, .meal-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+</script>
+{% endblock %}

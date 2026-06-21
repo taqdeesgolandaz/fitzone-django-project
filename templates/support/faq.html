@@ -1,0 +1,621 @@
+{% extends 'base/base.html' %}
+
+{% block title %}FAQ - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR FAQ PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* FAQ item hover effect */
+    .faq-item {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .faq-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.1);
+    }
+    
+    /* Category button transition */
+    .category-btn {
+        transition: all 0.3s ease;
+    }
+    
+    .category-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .faq-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .faq-question span {
+            font-size: 1.1rem;
+        }
+        
+        .faq-answer p {
+            font-size: 0.95rem;
+        }
+        
+        .contact-card {
+            padding: 2rem;
+        }
+        
+        .contact-title {
+            font-size: 1.35rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .faq-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .faq-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.95rem;
+        }
+        
+        .category-buttons {
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-btn {
+            padding: 0.35rem 0.875rem;
+            font-size: 0.8rem;
+        }
+        
+        .faq-question {
+            padding: 1rem;
+        }
+        
+        .faq-question span {
+            font-size: 0.95rem;
+        }
+        
+        .faq-answer {
+            padding: 0 1rem 1rem 1rem;
+        }
+        
+        .faq-answer p {
+            font-size: 0.85rem;
+        }
+        
+        .contact-card {
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+        
+        .contact-title {
+            font-size: 1.1rem;
+        }
+        
+        .contact-text {
+            font-size: 0.85rem;
+        }
+        
+        .contact-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .faq-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .category-buttons {
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+        
+        .category-btn {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.75rem;
+        }
+        
+        .faq-question {
+            padding: 0.875rem;
+        }
+        
+        .faq-question span {
+            font-size: 0.9rem;
+        }
+        
+        .faq-question i {
+            font-size: 0.8rem;
+        }
+        
+        .faq-answer {
+            padding: 0 0.875rem 0.875rem 0.875rem;
+        }
+        
+        .faq-answer p {
+            font-size: 0.8rem;
+        }
+        
+        .contact-card {
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .contact-title {
+            font-size: 1rem;
+        }
+        
+        .contact-text {
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .contact-btn {
+            padding: 0.45rem 0.875rem;
+            font-size: 0.8rem;
+        }
+        
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .faq-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .category-buttons {
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            padding: 0.25rem 0.625rem;
+            font-size: 0.7rem;
+        }
+        
+        .faq-question {
+            padding: 0.75rem;
+        }
+        
+        .faq-question span {
+            font-size: 0.85rem;
+        }
+        
+        .faq-answer p {
+            font-size: 0.75rem;
+        }
+        
+        .contact-card {
+            padding: 0.875rem;
+        }
+        
+        .contact-title {
+            font-size: 0.95rem;
+        }
+        
+        .contact-text {
+            font-size: 0.75rem;
+        }
+        
+        .contact-btn {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .faq-question span {
+            font-size: 0.8rem;
+        }
+        
+        .faq-answer p {
+            font-size: 0.7rem;
+        }
+        
+        .category-btn {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .faq-item:active {
+            transform: translateX(3px);
+        }
+        
+        .faq-item:hover {
+            transform: none;
+        }
+        
+        .category-btn:active {
+            transform: scale(0.96);
+        }
+        
+        .contact-btn:active {
+            transform: scale(0.98);
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .category-buttons {
+            gap: 0.4rem;
+        }
+        
+        .faq-question {
+            padding: 0.625rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .faq-item {
+            border: 2px solid #E94560;
+        }
+        
+        .category-btn.active {
+            border: 1px solid white;
+        }
+        
+        .contact-card {
+            border: 2px solid #E94560;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .faq-item:hover {
+            transform: none;
+        }
+        
+        .faq-question i {
+            transition: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Active category button styling */
+    .category-btn.active {
+        background-color: #E94560 !important;
+        color: white !important;
+    }
+    
+    /* FAQ answer animation */
+    .faq-answer {
+        transition: all 0.3s ease;
+    }
+    
+    /* Scroll to top button (optional) */
+    .scroll-top-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #E94560;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 100;
+    }
+    
+    .scroll-top-btn.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    @media (max-width: 640px) {
+        .scroll-top-btn {
+            width: 35px;
+            height: 35px;
+            bottom: 15px;
+            right: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4 faq-container fade-in">
+    <!-- Back Button -->
+    <div class="mb-6 back-link">
+        <a href="javascript:history.back()" class="inline-flex items-center text-text-gray hover:text-[#E94560] transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="text-center mb-4">
+        <h1 class="text-4xl font-bold text-white mb-4 page-title">Frequently Asked <span class="text-[#E94560]">Questions</span></h1>
+        <p class="text-text-gray text-lg page-subtitle">Find answers to common questions about FitZone</p>
+    </div>
+
+    <!-- Categories -->
+    <div class="flex flex-wrap gap-2 justify-center mb-8 category-buttons">
+        <button onclick="filterFaqs('all')" class="category-btn active px-4 py-2 rounded-full bg-[#E94560] text-white text-sm">All</button>
+        <button onclick="filterFaqs('General')" class="category-btn px-4 py-2 rounded-full bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20 transition-all text-sm">General</button>
+        <button onclick="filterFaqs('Getting Started')" class="category-btn px-4 py-2 rounded-full bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20 transition-all text-sm">Getting Started</button>
+        <button onclick="filterFaqs('Membership')" class="category-btn px-4 py-2 rounded-full bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20 transition-all text-sm">Membership</button>
+        <button onclick="filterFaqs('Workouts')" class="category-btn px-4 py-2 rounded-full bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20 transition-all text-sm">Workouts</button>
+        <button onclick="filterFaqs('Tracking')" class="category-btn px-4 py-2 rounded-full bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20 transition-all text-sm">Tracking</button>
+        <button onclick="filterFaqs('Trainers')" class="category-btn px-4 py-2 rounded-full bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20 transition-all text-sm">Trainers</button>
+        <button onclick="filterFaqs('Payments')" class="category-btn px-4 py-2 rounded-full bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20 transition-all text-sm">Payments</button>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="space-y-4" id="faqContainer">
+        {% for faq in faqs %}
+        <div class="faq-item bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden" data-category="{{ faq.category }}">
+            <button class="faq-question w-full text-left p-5 flex justify-between items-center hover:bg-[#E94560]/5 transition-colors">
+                <span class="text-white font-semibold text-lg">{{ faq.question }}</span>
+                <i class="fas fa-chevron-down text-[#E94560] transition-transform duration-300"></i>
+            </button>
+            <div class="faq-answer hidden px-5 pb-5">
+                <p class="text-text-gray leading-relaxed">{{ faq.answer }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Still Have Questions -->
+    <div class="mt-12 text-center bg-gradient-to-r from-[#E94560]/20 to-[#16213E] rounded-2xl p-8 contact-card">
+        <h3 class="text-xl font-bold text-white mb-2 contact-title">Still Have Questions?</h3>
+        <p class="text-text-gray mb-4 contact-text">Can't find what you're looking for? Contact our support team</p>
+        <a href="{% url 'contact' %}" class="inline-block bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all contact-btn">
+            Contact Us
+            <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Scroll to Top Button -->
+<button onclick="scrollToTop()" class="scroll-top-btn" id="scrollTopBtn">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<script>
+    // Filter FAQs by category
+    function filterFaqs(category) {
+        const items = document.querySelectorAll('.faq-item');
+        const buttons = document.querySelectorAll('.category-btn');
+        
+        buttons.forEach(btn => {
+            btn.classList.remove('active', 'bg-[#E94560]', 'text-white');
+            btn.classList.add('bg-[#1A1A2E]', 'text-text-gray');
+            if (btn.textContent === category || (category === 'all' && btn.textContent === 'All')) {
+                btn.classList.add('active', 'bg-[#E94560]', 'text-white');
+                btn.classList.remove('bg-[#1A1A2E]', 'text-text-gray');
+            }
+        });
+        
+        items.forEach(item => {
+            if (category === 'all' || item.dataset.category === category) {
+                item.style.display = 'block';
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 10);
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    // Accordion functionality
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            // Close all other open answers
+            document.querySelectorAll('.faq-answer').forEach(otherAnswer => {
+                if (otherAnswer !== answer && !otherAnswer.classList.contains('hidden')) {
+                    otherAnswer.classList.add('hidden');
+                    const otherIcon = otherAnswer.previousElementSibling.querySelector('i');
+                    if (otherIcon) {
+                        otherIcon.style.transform = 'rotate(0deg)';
+                    }
+                }
+            });
+            
+            // Toggle current answer
+            answer.classList.toggle('hidden');
+            icon.style.transform = answer.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        });
+    });
+    
+    // Scroll to top functionality
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+    
+    // Show/hide scroll to top button
+    window.addEventListener('scroll', () => {
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        if (window.scrollY > 300) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    });
+    
+    // Add search functionality (optional)
+    function searchFAQs() {
+        const searchTerm = document.getElementById('searchFAQs')?.value.toLowerCase();
+        if (!searchTerm) {
+            filterFaqs('all');
+            return;
+        }
+        
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+            const answer = item.querySelector('.faq-answer p').textContent.toLowerCase();
+            
+            if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    // Add search box (optional - uncomment to enable)
+    const categoryContainer = document.querySelector('.category-buttons');
+    if (categoryContainer) {
+        const searchDiv = document.createElement('div');
+        searchDiv.className = 'w-full mt-4 mb-2';
+        searchDiv.innerHTML = `
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-text-gray text-sm"></i>
+                <input type="text" id="searchFAQs" placeholder="Search FAQs..." 
+                       class="w-full pl-9 pr-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white text-sm focus:outline-none focus:border-[#E94560]"
+                       onkeyup="searchFAQs()">
+            </div>
+        `;
+        categoryContainer.parentNode.insertBefore(searchDiv, categoryContainer.nextSibling);
+    }
+    
+    // Add animation to FAQ items on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.faq-item').forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        item.style.transition = `opacity 0.5s ease, transform 0.5s ease`;
+        item.style.transitionDelay = `${Math.min(index * 0.05, 0.5)}s`;
+        observer.observe(item);
+    });
+    
+    // Open FAQ from hash link (e.g., #faq-1)
+    if (window.location.hash) {
+        const hash = window.location.hash;
+        const targetId = hash.replace('#', '');
+        const targetFaq = document.getElementById(targetId);
+        if (targetFaq) {
+            setTimeout(() => {
+                const button = targetFaq.querySelector('.faq-question');
+                if (button) button.click();
+                targetFaq.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        }
+    }
+</script>
+{% endblock %}

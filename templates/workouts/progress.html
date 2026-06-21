@@ -1,0 +1,619 @@
+{% extends 'base/base.html' %}
+
+{% block title %}My Workout Progress - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR MY WORKOUT PROGRESS PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Table row hover */
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+        transition: background-color 0.3s ease;
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .progress-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .progress-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .progress-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            padding: 0.875rem;
+        }
+        
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            min-width: 550px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .empty-state {
+            padding: 1.5rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.85rem;
+        }
+        
+        .restricted-card {
+            padding: 1.5rem;
+        }
+        
+        .restricted-icon {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .restricted-icon i {
+            font-size: 1.75rem;
+        }
+        
+        .restricted-title {
+            font-size: 1.35rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .progress-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            padding: 0.75rem;
+        }
+        
+        .stat-icon {
+            font-size: 1.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.65rem;
+        }
+        
+        .stat-value {
+            font-size: 1.35rem;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        table {
+            min-width: 500px;
+        }
+        
+        th, td {
+            padding: 0.6rem;
+            font-size: 0.75rem;
+        }
+        
+        .status-badge {
+            font-size: 0.7rem;
+        }
+        
+        .status-badge i {
+            font-size: 0.6rem;
+        }
+        
+        .empty-state {
+            padding: 1.25rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.8rem;
+        }
+        
+        .restricted-card {
+            padding: 1.25rem;
+            margin: 0 1rem;
+        }
+        
+        .restricted-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+        
+        .restricted-icon i {
+            font-size: 1.5rem;
+        }
+        
+        .restricted-title {
+            font-size: 1.2rem;
+        }
+        
+        .restricted-text {
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .action-buttons a {
+            width: 100%;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .progress-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .stats-grid {
+            gap: 0.5rem;
+        }
+        
+        .stat-card {
+            padding: 0.625rem;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+        }
+        
+        table {
+            min-width: 450px;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2rem;
+        }
+        
+        .empty-state-text {
+            font-size: 0.75rem;
+        }
+        
+        .restricted-card {
+            padding: 1rem;
+        }
+        
+        .restricted-title {
+            font-size: 1.1rem;
+        }
+        
+        .restricted-text {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .stat-value {
+            font-size: 1rem;
+        }
+        
+        table {
+            min-width: 400px;
+        }
+        
+        th, td {
+            font-size: 0.65rem;
+        }
+        
+        .restricted-title {
+            font-size: 1rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+        
+        .stat-card:hover {
+            transform: none;
+        }
+        
+        .action-buttons a:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .stats-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+        }
+        
+        .action-buttons {
+            flex-direction: row !important;
+        }
+        
+        .action-buttons a {
+            width: auto !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .stat-card, .restricted-card, .progress-table {
+            border: 2px solid #E94560;
+        }
+        
+        .action-buttons a {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .stat-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Status colors */
+    .status-completed {
+        color: #00D09C;
+    }
+    
+    .status-skipped {
+        color: #fbbf24;
+    }
+    
+    .status-pending {
+        color: #A0A0A0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if membership_required and not user.is_staff %}
+<div class="py-12 progress-container">
+    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-12 text-center max-w-2xl mx-auto restricted-card fade-in">
+        <div class="w-20 h-20 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-6 restricted-icon">
+            <i class="fas fa-lock text-[#E94560] text-4xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-4 restricted-title">Membership Required</h2>
+        <p class="text-text-gray mb-6 restricted-text">
+            You need an active membership to view your workout progress. Choose a plan that best suits your fitness goals!
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center action-buttons">
+            <a href="{% url 'membership:plans' %}" class="bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all">
+                <i class="fas fa-crown mr-2"></i> View Membership Plans
+            </a>
+            <a href="{% url 'dashboard' %}" class="border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="py-12 progress-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 page-title">
+            <i class="fas fa-chart-line text-[#E94560] mr-2"></i>
+            My Workout Progress
+        </h1>
+        <p class="text-text-gray page-subtitle">Track your workout journey</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 stats-grid">
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 stat-card">
+            <i class="fas fa-calendar-check text-[#00D09C] text-2xl mb-2 stat-icon"></i>
+            <p class="text-text-gray text-sm stat-label">Total Workouts</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.total_workouts }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 stat-card">
+            <i class="fas fa-check-circle text-[#E94560] text-2xl mb-2 stat-icon"></i>
+            <p class="text-text-gray text-sm stat-label">Completed</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.completed_workouts }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 stat-card">
+            <i class="fas fa-fire text-orange-500 text-2xl mb-2 stat-icon"></i>
+            <p class="text-text-gray text-sm stat-label">Total Calories</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.total_calories }}</p>
+        </div>
+        <div class="bg-[#1A1A2E] rounded-xl p-4 text-center border border-[#E94560]/20 stat-card">
+            <i class="fas fa-chart-line text-[#E94560] text-2xl mb-2 stat-icon"></i>
+            <p class="text-text-gray text-sm stat-label">Current Streak</p>
+            <p class="text-white text-2xl font-bold stat-value">{{ stats.streak }} days</p>
+        </div>
+    </div>
+
+    <!-- Progress Records -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden progress-table">
+        <div class="px-4 py-3 border-b border-[#E94560]/20 bg-[#0F0F1A]">
+            <h3 class="text-white font-semibold">
+                <i class="fas fa-history text-[#E94560] mr-2"></i> Recent Workouts
+            </h3>
+        </div>
+        
+        {% if progress_records %}
+        <div class="overflow-x-auto table-container">
+            <table class="w-full">
+                <thead class="bg-[#0F0F1A] border-b border-[#E94560]/20">
+                    <tr>
+                        <th class="text-left p-3 text-text-gray">Date</th>
+                        <th class="text-left p-3 text-text-gray">Workout Plan</th>
+                        <th class="text-left p-3 text-text-gray">Duration</th>
+                        <th class="text-left p-3 text-text-gray">Calories</th>
+                        <th class="text-left p-3 text-text-gray">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for progress in progress_records %}
+                    <tr class="border-b border-[#E94560]/10 transition-colors">
+                        <td class="p-3 text-white">
+                            <i class="fas fa-calendar-alt text-text-gray mr-2 text-xs"></i>
+                            {{ progress.scheduled_date|date:"M d, Y" }}
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas fa-dumbbell text-text-gray mr-2 text-xs"></i>
+                            {{ progress.workout_plan.name }}
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas fa-hourglass-half text-text-gray mr-2 text-xs"></i>
+                            {{ progress.duration_minutes }} min
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            <i class="fas fa-fire text-orange-500 mr-2 text-xs"></i>
+                            {{ progress.calories_burned }}
+                        </td>
+                        <td class="p-3">
+                            {% if progress.status == 'completed' %}
+                                <span class="status-completed status-badge">
+                                    <i class="fas fa-check-circle mr-1"></i> Completed
+                                </span>
+                            {% elif progress.status == 'skipped' %}
+                                <span class="status-skipped status-badge">
+                                    <i class="fas fa-skip mr-1"></i> Skipped
+                                </span>
+                            {% else %}
+                                <span class="status-pending status-badge">
+                                    <i class="fas fa-clock mr-1"></i> Pending
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Summary Footer -->
+        <div class="px-4 py-3 border-t border-[#E94560]/20 bg-[#0F0F1A]">
+            <div class="flex justify-between items-center flex-wrap gap-2">
+                <p class="text-text-gray text-sm">
+                    <i class="fas fa-chart-line mr-1"></i>
+                    Showing last {{ progress_records|length }} records
+                </p>
+                <a href="{% url 'workouts:list' %}" class="text-[#E94560] text-sm hover:underline">
+                    Browse More Workouts <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+        
+        {% else %}
+        <div class="text-center py-8 empty-state">
+            <i class="fas fa-dumbbell text-5xl text-text-gray mb-4 empty-state-icon"></i>
+            <p class="text-text-gray empty-state-text">No workout records yet.</p>
+            <p class="text-text-gray text-sm mt-1">Start working out to see your progress!</p>
+            <a href="{% url 'workouts:list' %}" class="inline-block mt-4 text-[#E94560] hover:underline">
+                Start your first workout →
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Motivation Section -->
+    <div class="mt-8 bg-gradient-to-r from-[#E94560]/10 to-[#16213E] rounded-xl p-6">
+        <div class="flex items-center gap-3 mb-3">
+            <i class="fas fa-quote-left text-[#E94560] text-xl"></i>
+            <h3 class="text-white font-semibold">Keep Going! 💪</h3>
+        </div>
+        <p class="text-text-gray text-sm">
+            Consistency is key to achieving your fitness goals. Every workout brings you one step closer!
+        </p>
+        {% if stats.streak > 0 %}
+        <div class="mt-3 flex items-center gap-2">
+            <i class="fas fa-fire text-orange-500"></i>
+            <span class="text-text-gray text-sm">You're on a <span class="text-orange-500 font-semibold">{{ stats.streak }} day streak</span>! Keep it up!</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.stat-card, .progress-table').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Animate stats numbers (optional)
+    function animateNumbers() {
+        const statValues = document.querySelectorAll('.stat-value');
+        statValues.forEach(stat => {
+            const finalValue = parseInt(stat.textContent);
+            if (!isNaN(finalValue)) {
+                let currentValue = 0;
+                const increment = finalValue / 50;
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= finalValue) {
+                        stat.textContent = finalValue;
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(currentValue);
+                    }
+                }, 20);
+            }
+        });
+    }
+    
+    // Run animation on load
+    window.addEventListener('load', animateNumbers);
+</script>
+{% endif %}
+{% endblock %}

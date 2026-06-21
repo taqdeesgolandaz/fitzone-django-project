@@ -1,0 +1,654 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Message Details - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR MESSAGE DETAILS PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .detail-card, .actions-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .detail-card:hover, .actions-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.15);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .message-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .detail-card, .actions-card {
+            padding: 1.5rem;
+        }
+        
+        .message-subject {
+            font-size: 1.25rem;
+        }
+        
+        .message-content {
+            padding: 1rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .message-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .message-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start !important;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .message-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+        
+        .detail-card, .actions-card {
+            padding: 1.25rem;
+        }
+        
+        .badge-container {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+        }
+        
+        .message-subject {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .message-content {
+            padding: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .message-content p {
+            font-size: 0.85rem;
+        }
+        
+        .info-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+        }
+        
+        .info-section p {
+            font-size: 0.8rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+        }
+        
+        .form-select, .form-textarea {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .update-btn {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .quick-reply-box {
+            padding: 0.75rem;
+        }
+        
+        .quick-reply-text {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .message-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .header {
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+        }
+        
+        .message-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .detail-card, .actions-card {
+            padding: 1rem;
+        }
+        
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+        }
+        
+        .badge i {
+            font-size: 0.6rem;
+        }
+        
+        .message-subject {
+            font-size: 0.9rem;
+        }
+        
+        .message-content {
+            padding: 0.75rem;
+            margin-bottom: 0.875rem;
+        }
+        
+        .message-content p {
+            font-size: 0.8rem;
+        }
+        
+        .report-section {
+            margin-top: 0.875rem;
+        }
+        
+        .report-title {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .report-box {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .report-box p {
+            font-size: 0.75rem;
+        }
+        
+        .info-section {
+            margin-top: 0.875rem;
+            padding-top: 0.875rem;
+        }
+        
+        .info-section p {
+            font-size: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-select, .form-textarea {
+            padding: 0.45rem;
+            font-size: 0.8rem;
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+        }
+        
+        .update-btn {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .delete-link {
+            font-size: 0.8rem;
+        }
+        
+        .quick-reply-box {
+            padding: 0.625rem;
+            margin-top: 0.875rem;
+        }
+        
+        .quick-reply-text {
+            font-size: 0.7rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .message-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .message-subject {
+            font-size: 0.85rem;
+        }
+        
+        .message-content p {
+            font-size: 0.75rem;
+        }
+        
+        .report-box p {
+            font-size: 0.7rem;
+        }
+        
+        .info-section p {
+            font-size: 0.7rem;
+        }
+        
+        .form-select, .form-textarea {
+            font-size: 0.75rem;
+        }
+        
+        .update-btn {
+            font-size: 0.75rem;
+        }
+        
+        .delete-link {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .message-subject {
+            font-size: 0.8rem;
+        }
+        
+        .message-content p {
+            font-size: 0.7rem;
+        }
+        
+        .report-box p {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .detail-card:active, .actions-card:active {
+            transform: scale(0.99);
+        }
+        
+        .update-btn:active, .delete-link:active, .back-link:active {
+            opacity: 0.7;
+        }
+        
+        select, textarea {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .message-grid {
+            grid-template-columns: 1fr 1fr !important;
+        }
+        
+        .header {
+            flex-direction: row !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .detail-card, .actions-card {
+            border: 2px solid #E94560;
+        }
+        
+        .update-btn, .delete-link {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .detail-card:hover, .actions-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Status colors */
+    .status-pending { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .status-read { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .status-replied { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    .status-resolved { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    
+    /* Type colors */
+    .type-contact { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .type-support { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .type-report { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+    
+    /* Urgency colors */
+    .urgency-low { color: #4ade80; }
+    .urgency-medium { color: #fbbf24; }
+    .urgency-high { color: #f87171; }
+    .urgency-critical { color: #ef4444; font-weight: bold; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 message-container fade-in">
+    <div class="flex justify-between items-center mb-6 header flex-wrap gap-3">
+        <h1 class="text-2xl font-bold text-white page-title">
+            <i class="fas fa-envelope text-[#E94560] mr-2"></i>
+            Message #{{ message.id }}
+        </h1>
+        <div class="flex gap-3">
+            <a href="{% url 'support:admin_messages' %}" class="text-[#E94560] hover:underline back-link">
+                <i class="fas fa-arrow-left mr-1"></i> Back to Messages
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 message-grid">
+        <!-- Message Details -->
+        <div class="lg:col-span-2">
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 detail-card">
+                <div class="mb-4 badge-container flex gap-2">
+                    <span class="px-2 py-1 rounded text-xs
+                        {% if message.message_type == 'contact' %}type-contact
+                        {% elif message.message_type == 'support' %}type-support
+                        {% else %}type-report{% endif %}">
+                        <i class="fas 
+                            {% if message.message_type == 'contact' %}fa-envelope
+                            {% elif message.message_type == 'support' %}fa-headset
+                            {% else %}fa-exclamation-triangle{% endif %} mr-1"></i>
+                        {{ message.get_message_type_display }}
+                    </span>
+                    <span class="px-2 py-1 rounded text-xs
+                        {% if message.status == 'pending' %}status-pending
+                        {% elif message.status == 'read' %}status-read
+                        {% elif message.status == 'replied' %}status-replied
+                        {% else %}status-resolved{% endif %}">
+                        <i class="fas 
+                            {% if message.status == 'pending' %}fa-clock
+                            {% elif message.status == 'read' %}fa-eye
+                            {% elif message.status == 'replied' %}fa-reply
+                            {% else %}fa-check-circle{% endif %} mr-1"></i>
+                        {{ message.get_status_display }}
+                    </span>
+                </div>
+                
+                <h2 class="text-xl font-bold text-white mb-2 message-subject">{{ message.subject }}</h2>
+                
+                <div class="bg-[#0F0F1A] rounded-lg p-4 mb-4 message-content">
+                    <p class="text-text-gray whitespace-pre-wrap">{{ message.message }}</p>
+                </div>
+                
+                <!-- Report Specific Fields -->
+                {% if message.message_type == 'report' %}
+                <div class="space-y-4 report-section">
+                    {% if message.problem_type %}
+                    <div>
+                        <h3 class="text-white font-semibold mb-2 report-title">
+                            <i class="fas fa-bug text-[#E94560] mr-1"></i> Problem Type
+                        </h3>
+                        <div class="bg-[#0F0F1A] rounded-lg p-3 report-box">
+                            <p class="text-text-gray">{{ message.problem_type|title }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if message.steps_to_reproduce %}
+                    <div>
+                        <h3 class="text-white font-semibold mb-2 report-title">
+                            <i class="fas fa-list-ol text-[#E94560] mr-1"></i> Steps to Reproduce
+                        </h3>
+                        <div class="bg-[#0F0F1A] rounded-lg p-3 report-box">
+                            <p class="text-text-gray whitespace-pre-wrap">{{ message.steps_to_reproduce }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if message.urgency %}
+                    <div>
+                        <h3 class="text-white font-semibold mb-2 report-title">
+                            <i class="fas fa-chart-line text-[#E94560] mr-1"></i> Urgency Level
+                        </h3>
+                        <div class="bg-[#0F0F1A] rounded-lg p-3 report-box">
+                            <p class="text-text-gray capitalize urgency-{{ message.urgency|lower }}">
+                                <i class="fas 
+                                    {% if message.urgency == 'low' %}fa-thermometer-low
+                                    {% elif message.urgency == 'medium' %}fa-thermometer-half
+                                    {% elif message.urgency == 'high' %}fa-thermometer-high
+                                    {% else %}fa-exclamation{% endif %} mr-1"></i>
+                                {{ message.urgency|title }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if message.device_info %}
+                    <div>
+                        <h3 class="text-white font-semibold mb-2 report-title">
+                            <i class="fas fa-mobile-alt text-[#E94560] mr-1"></i> Device Info
+                        </h3>
+                        <div class="bg-[#0F0F1A] rounded-lg p-3 report-box">
+                            <p class="text-text-gray">{{ message.device_info }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if message.attachment %}
+                    <div>
+                        <h3 class="text-white font-semibold mb-2 report-title">
+                            <i class="fas fa-paperclip text-[#E94560] mr-1"></i> Attachment
+                        </h3>
+                        <div class="bg-[#0F0F1A] rounded-lg p-3 report-box">
+                            <a href="{{ message.attachment.url }}" target="_blank" class="text-[#E94560] hover:underline">
+                                <i class="fas fa-download mr-1"></i> Download Attachment
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="text-text-gray text-sm mt-4 pt-4 border-t border-[#E94560]/20 info-section">
+                    <p><i class="fas fa-user mr-1"></i> <strong>From:</strong> {{ message.name }} ({{ message.email }})</p>
+                    <p><i class="fas fa-calendar-alt mr-1"></i> <strong>Received:</strong> {{ message.created_at|date:"F d, Y g:i A" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div>
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 actions-card">
+                <h3 class="text-white font-semibold mb-4">
+                    <i class="fas fa-cog text-[#E94560] mr-2"></i> Admin Actions
+                </h3>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="text-text-gray block mb-2 form-label">Update Status</label>
+                        <select name="status" class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] form-select">
+                            <option value="pending" {% if message.status == 'pending' %}selected{% endif %}>🕐 Pending</option>
+                            <option value="read" {% if message.status == 'read' %}selected{% endif %}>👁️ Read</option>
+                            <option value="replied" {% if message.status == 'replied' %}selected{% endif %}>💬 Replied</option>
+                            <option value="resolved" {% if message.status == 'resolved' %}selected{% endif %}>✅ Resolved</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="text-text-gray block mb-2 form-label">Admin Notes</label>
+                        <textarea name="admin_notes" rows="4" 
+                                  class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] form-textarea"
+                                  placeholder="Add private notes about this message...">{{ message.admin_notes }}</textarea>
+                        <p class="text-text-gray text-xs mt-1">These notes are only visible to admins</p>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-[#E94560] text-white py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all update-btn">
+                        <i class="fas fa-save mr-2"></i> Update Message
+                    </button>
+                </form>
+                
+                <hr class="border-[#E94560]/20 my-4">
+                
+                <a href="{% url 'support:admin_message_delete' message.id %}" 
+                   class="block w-full text-center text-red-400 hover:text-red-300 transition-colors delete-link"
+                   onclick="return confirm('Are you sure you want to delete this message? This action cannot be undone.')">
+                    <i class="fas fa-trash-alt mr-1"></i> Delete Message
+                </a>
+                
+                <div class="mt-4 p-3 bg-[#0F0F1A] rounded-lg quick-reply-box">
+                    <p class="text-text-gray text-sm quick-reply-text">
+                        <i class="fas fa-envelope mr-1"></i> 
+                        <strong>Quick Reply:</strong><br>
+                        <span class="break-all">{{ message.email }}</span>
+                    </p>
+                    <button onclick="copyToClipboard('{{ message.email }}')" class="mt-2 text-[#E94560] text-xs hover:underline">
+                        <i class="fas fa-copy mr-1"></i> Copy Email
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Copy email to clipboard
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('Email copied to clipboard!', 'success');
+        }).catch(() => {
+            showNotification('Failed to copy email', 'error');
+        });
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.detail-card, .actions-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Auto-save admin notes (optional)
+    let notesTimeout;
+    const notesTextarea = document.querySelector('textarea[name="admin_notes"]');
+    if (notesTextarea) {
+        notesTextarea.addEventListener('input', function() {
+            clearTimeout(notesTimeout);
+            notesTimeout = setTimeout(() => {
+                // Auto-save logic can be added here
+                console.log('Auto-saving notes...');
+            }, 2000);
+        });
+    }
+</script>
+
+<style>
+    .break-all {
+        word-break: break-all;
+    }
+</style>
+{% endblock %}

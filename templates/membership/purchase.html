@@ -1,0 +1,537 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Confirm Purchase - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR PURCHASE CONFIRMATION PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .purchase-container {
+            max-width: 1200px;
+        }
+        
+        .purchase-title {
+            font-size: 2rem;
+        }
+        
+        .plan-details-card, .payment-summary-card {
+            padding: 2rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .purchase-container {
+            max-width: 960px;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .purchase-container {
+            max-width: 720px;
+        }
+        
+        .purchase-title {
+            font-size: 1.75rem;
+        }
+        
+        .plan-name {
+            font-size: 1.25rem;
+        }
+        
+        .price-amount {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .purchase-container {
+            max-width: 540px;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .purchase-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .purchase-subtitle {
+            font-size: 0.875rem;
+        }
+        
+        .grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+        
+        .plan-details-card, .payment-summary-card {
+            padding: 1.25rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .price-amount {
+            font-size: 1.5rem;
+        }
+        
+        .btn-proceed {
+            padding: 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .feature-item {
+            font-size: 0.8rem;
+        }
+        
+        .payment-icons i {
+            font-size: 1.5rem;
+        }
+        
+        .py-12 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1.5rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .purchase-container {
+            max-width: 95%;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .purchase-title {
+            font-size: 1.35rem;
+        }
+        
+        .purchase-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .plan-details-card, .payment-summary-card {
+            padding: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .plan-name {
+            font-size: 1rem;
+        }
+        
+        .price-amount {
+            font-size: 1.25rem;
+        }
+        
+        .detail-item {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-label {
+            font-size: 0.75rem;
+        }
+        
+        .detail-value {
+            font-size: 0.8rem;
+        }
+        
+        .feature-item {
+            font-size: 0.75rem;
+        }
+        
+        .feature-icon {
+            font-size: 0.7rem;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-proceed {
+            padding: 0.6rem;
+            font-size: 0.8rem;
+        }
+        
+        .payment-icons {
+            gap: 0.75rem;
+        }
+        
+        .payment-icons i {
+            font-size: 1.25rem;
+        }
+        
+        .secure-text {
+            font-size: 0.65rem;
+        }
+        
+        .back-link {
+            font-size: 0.8rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-8 {
+            margin-bottom: 1rem;
+        }
+        
+        .mt-8 {
+            margin-top: 1rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .purchase-container {
+            max-width: 98%;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        
+        .purchase-title {
+            font-size: 1.2rem;
+        }
+        
+        .purchase-subtitle {
+            font-size: 0.7rem;
+        }
+        
+        .plan-details-card, .payment-summary-card {
+            padding: 0.875rem;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+        }
+        
+        .detail-item {
+            font-size: 0.7rem;
+        }
+        
+        .price-amount {
+            font-size: 1.125rem;
+        }
+        
+        .feature-item {
+            font-size: 0.7rem;
+        }
+        
+        .btn-proceed {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .payment-icons i {
+            font-size: 1.125rem;
+        }
+        
+        .secure-text {
+            font-size: 0.6rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .purchase-title {
+            font-size: 1.125rem;
+        }
+        
+        .plan-details-card, .payment-summary-card {
+            padding: 0.75rem;
+        }
+        
+        .detail-item {
+            font-size: 0.65rem;
+        }
+        
+        .feature-item {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .btn-proceed:active {
+            transform: scale(0.98);
+        }
+        
+        .back-link:active {
+            opacity: 0.7;
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .py-12 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .grid {
+            gap: 1rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .plan-details-card, .payment-summary-card {
+            border: 2px solid #E94560;
+        }
+        
+        .btn-proceed {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .btn-proceed:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 purchase-container fade-in">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2 purchase-title">Confirm Your Purchase</h1>
+        <p class="text-text-gray purchase-subtitle">Review your plan details before proceeding</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Plan Details -->
+        <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-6 card-hover plan-details-card">
+            <h3 class="text-xl font-bold text-white mb-4 section-title">Plan Details</h3>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center detail-item">
+                    <span class="text-text-gray detail-label">Plan Name:</span>
+                    <span class="text-white font-semibold plan-name">{{ plan.name }}</span>
+                </div>
+                <div class="flex justify-between items-center detail-item">
+                    <span class="text-text-gray detail-label">Duration:</span>
+                    <span class="text-white">{{ plan.duration|title }}</span>
+                </div>
+                <div class="flex justify-between items-center detail-item">
+                    <span class="text-text-gray detail-label">Price:</span>
+                    <span class="text-[#E94560] font-bold text-xl price-amount">₹{{ plan.price }}</span>
+                </div>
+                <div class="flex justify-between items-center detail-item">
+                    <span class="text-text-gray detail-label">Valid for:</span>
+                    <span class="text-white">{{ duration_days }} days</span>
+                </div>
+            </div>
+            
+            <hr class="border-[#E94560]/20 my-4">
+            
+            <h4 class="text-white font-semibold mb-3 section-title">Features Included:</h4>
+            <div class="space-y-2">
+                {% for feature in plan.features %}
+                <div class="flex items-start feature-item">
+                    <i class="fas fa-check-circle text-[#00D09C] mr-2 text-xs mt-0.5 feature-icon"></i>
+                    <span class="text-text-gray text-sm">{{ feature }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Payment Summary -->
+        <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-6 card-hover payment-summary-card">
+            <h3 class="text-xl font-bold text-white mb-4 section-title">Payment Summary</h3>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center detail-item">
+                    <span class="text-text-gray detail-label">Subtotal:</span>
+                    <span class="text-white">₹{{ plan.price }}</span>
+                </div>
+                <div class="border-t border-[#E94560]/20 my-2"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-white font-bold">Total:</span>
+                    <span class="text-[#E94560] font-bold text-2xl price-amount">₹{{ plan.price }}</span>
+                </div>
+            </div>
+
+            <hr class="border-[#E94560]/20 my-4">
+
+            <!-- Payment Methods Preview -->
+            <div class="mb-6">
+                <p class="text-text-gray text-sm mb-3">We accept:</p>
+                <div class="flex flex-wrap gap-3 payment-icons">
+                    <i class="fab fa-google-pay text-2xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                    <i class="fab fa-amazon-pay text-2xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                    <i class="fab fa-cc-visa text-2xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                    <i class="fab fa-cc-mastercard text-2xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                    <i class="fas fa-mobile-alt text-2xl text-text-gray hover:text-[#E94560] transition-colors"></i>
+                </div>
+            </div>
+
+            <!-- Confirm Button -->
+            <button id="upiPayButton" type="button"
+               class="block w-full bg-[#E94560] text-white py-3 rounded-lg font-semibold text-center hover:bg-opacity-80 transition-all transform hover:scale-[1.02] btn-proceed">
+                <i class="fas fa-credit-card mr-2"></i>
+                Pay ₹{{ plan.price }} via UPI
+            </button>
+
+            <p class="text-text-gray text-xs text-center mt-4 secure-text">
+                <i class="fas fa-shield-alt mr-1"></i>
+                Secure payment. Your information is protected.
+            </p>
+        </div>
+    </div>
+
+    <div class="text-center mt-8">
+        <a href="{% url 'membership:plans' %}" class="text-[#E94560] hover:underline back-link">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Plans
+        </a>
+    </div>
+</div>
+
+<!-- DEBUG: Plan ID is {{ plan.id }} -->
+
+<script>
+    const upiId = '{{ upi_id|escapejs }}';
+    const payeeName = '{{ payee_name|escapejs }}';
+    const amount = '{{ plan.price }}';
+
+    function openUpiPayment() {
+        if (!upiId) {
+            alert('UPI payment is not available at the moment.');
+            return;
+        }
+
+        const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${encodeURIComponent(amount)}&cu=INR`;
+        window.location.href = upiUrl;
+    }
+
+    const proceedBtn = document.querySelector('.btn-proceed');
+    if (proceedBtn) {
+        proceedBtn.addEventListener('click', function(e) {
+            const originalHtml = this.innerHTML;
+            if (!this.hasAttribute('data-original-html')) {
+                this.setAttribute('data-original-html', originalHtml);
+            }
+
+            if (typeof showButtonSpinner === 'function') {
+                showButtonSpinner(this);
+            } else {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+                this.classList.add('btn-loading');
+            }
+
+            this.classList.add('opacity-70');
+            openUpiPayment();
+        });
+    }
+    
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.plan-details-card, .payment-summary-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+</script>
+
+<style>
+    /* Additional responsive fixes */
+    @media (max-width: 640px) {
+        .price-amount {
+            font-size: 1.25rem;
+        }
+        
+        .plan-name {
+            font-size: 0.9rem;
+        }
+        
+        .detail-label, .detail-value {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Smooth transitions */
+    .btn-proceed, .back-link, .payment-icons i {
+        transition: all 0.3s ease;
+    }
+    
+    /* Card styles */
+    .plan-details-card, .payment-summary-card {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}

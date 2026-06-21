@@ -1,0 +1,700 @@
+{% extends 'base/base.html' %}
+
+{% block title %}BMI Calculator - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR BMI CALCULATOR PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .bmi-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .bmi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Result card animation */
+    .result-card {
+        animation: slideIn 0.5s ease-out;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Input focus effects */
+    input:focus {
+        outline: none;
+        border-color: #E94560;
+        box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Number input spinner styling */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 0.5;
+    }
+    
+    /* Category colors */
+    .category-underweight { color: #fbbf24; }
+    .category-normal { color: #00D09C; }
+    .category-overweight { color: #f97316; }
+    .category-obese { color: #f87171; }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .bmi-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .bmi-card {
+            padding: 2rem;
+        }
+        
+        .page-icon {
+            font-size: 3.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.95rem;
+        }
+        
+        .form-input {
+            padding: 0.6rem;
+            font-size: 0.95rem;
+        }
+        
+        .result-bmi {
+            font-size: 3rem;
+        }
+        
+        .result-category {
+            font-size: 1.25rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .bmi-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .bmi-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .bmi-card {
+            padding: 1.5rem;
+        }
+        
+        .page-icon {
+            font-size: 3rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .form-grid {
+            gap: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-input {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .calculate-btn {
+            padding: 0.6rem;
+            font-size: 0.9rem;
+        }
+        
+        .result-bmi {
+            font-size: 2.5rem;
+        }
+        
+        .result-category {
+            font-size: 1rem;
+        }
+        
+        .category-list {
+            margin-top: 1rem;
+        }
+        
+        .category-item {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .bmi-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .bmi-card {
+            padding: 1.25rem;
+        }
+        
+        .page-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .form-grid {
+            flex-direction: column;
+            gap: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-input {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .calculate-btn {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .result-section {
+            margin-top: 1rem;
+            padding: 1rem;
+        }
+        
+        .result-bmi {
+            font-size: 2rem;
+        }
+        
+        .result-category {
+            font-size: 0.9rem;
+        }
+        
+        .result-advice {
+            font-size: 0.8rem;
+        }
+        
+        .info-section {
+            margin-top: 1rem;
+            padding: 1rem;
+        }
+        
+        .info-title {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .category-list {
+            gap: 0.5rem;
+        }
+        
+        .category-item {
+            font-size: 0.75rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .bmi-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .bmi-card {
+            padding: 1rem;
+        }
+        
+        .page-icon {
+            font-size: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+        }
+        
+        .form-input {
+            padding: 0.45rem;
+            font-size: 0.75rem;
+        }
+        
+        .calculate-btn {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .result-bmi {
+            font-size: 1.75rem;
+        }
+        
+        .result-category {
+            font-size: 0.85rem;
+        }
+        
+        .result-advice {
+            font-size: 0.75rem;
+        }
+        
+        .category-item {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .bmi-card {
+            padding: 0.875rem;
+        }
+        
+        .page-title {
+            font-size: 1.1rem;
+        }
+        
+        .result-bmi {
+            font-size: 1.5rem;
+        }
+        
+        .category-item {
+            font-size: 0.65rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .page-title {
+            font-size: 1rem;
+        }
+        
+        .result-bmi {
+            font-size: 1.35rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .bmi-card:active {
+            transform: scale(0.98);
+        }
+        
+        .bmi-card:hover {
+            transform: none;
+        }
+        
+        .calculate-btn:active {
+            transform: scale(0.98);
+        }
+        
+        input {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .form-grid {
+            flex-direction: row !important;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .bmi-card {
+            padding: 0.875rem;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .bmi-card {
+            border: 2px solid #E94560;
+        }
+        
+        .form-input {
+            border: 1px solid #E94560;
+        }
+        
+        .calculate-btn {
+            border: 1px solid white;
+        }
+        
+        .info-section {
+            border: 1px solid #E94560;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in, .result-card {
+            animation: none;
+        }
+        
+        .bmi-card:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Print styles */
+    @media print {
+        .calculate-btn, .form-group {
+            display: none;
+        }
+        
+        .bmi-card {
+            border: 1px solid #ddd;
+        }
+    }
+    
+    /* Helper classes */
+    .required-star {
+        color: #E94560;
+        margin-left: 2px;
+    }
+    
+    .input-hint {
+        font-size: 0.7rem;
+        color: #A0A0A0;
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 bmi-container fade-in">
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 bmi-card">
+        <div class="text-center mb-6">
+            <i class="fas fa-calculator text-[#E94560] text-4xl mb-2 page-icon"></i>
+            <h2 class="text-2xl font-bold text-white page-title">BMI Calculator</h2>
+            <p class="text-text-gray page-subtitle">Calculate your Body Mass Index</p>
+        </div>
+
+        <form method="POST" id="bmiForm">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 form-grid">
+                <div class="form-group">
+                    <label class="text-text-gray block mb-2 form-label">
+                        Height (cm) <span class="required-star">*</span>
+                    </label>
+                    <input type="number" step="0.1" name="height" required
+                           placeholder="Enter your height"
+                           value="{{ request.POST.height|default:user.height }}"
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                    <p class="input-hint">Enter height in centimeters</p>
+                </div>
+                <div class="form-group">
+                    <label class="text-text-gray block mb-2 form-label">
+                        Weight (kg) <span class="required-star">*</span>
+                    </label>
+                    <input type="number" step="0.1" name="weight" required
+                           placeholder="Enter your weight"
+                           value="{{ request.POST.weight|default:user.weight }}"
+                           class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                    <p class="input-hint">Enter weight in kilograms</p>
+                </div>
+            </div>
+            <button type="submit" id="calculateBtn" class="w-full bg-[#E94560] text-white py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all calculate-btn">
+                <span id="btnText"><i class="fas fa-calculator mr-2"></i> Calculate BMI</span>
+                <span id="btnLoader" class="hidden">
+                    <svg class="animate-spin h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
+            </button>
+        </form>
+
+        {% if bmi %}
+        <div class="mt-6 p-4 bg-[#0F0F1A] rounded-lg text-center result-card result-section">
+            <p class="text-text-gray">Your BMI is</p>
+            <p class="text-4xl font-bold text-[#E94560] result-bmi">{{ bmi }}</p>
+            <p class="text-lg mt-2 result-category" style="color: 
+                {% if color == 'green' %}#00D09C
+                {% elif color == 'yellow' %}#F5A623
+                {% elif color == 'orange' %}#FF9800
+                {% else %}#E94560{% endif %}">
+                <i class="fas 
+                    {% if category == 'Normal weight' %}fa-smile
+                    {% elif category == 'Underweight' %}fa-frown
+                    {% elif category == 'Overweight' %}fa-meh
+                    {% else %}fa-exclamation-triangle{% endif %} mr-2"></i>
+                {{ category }}
+            </p>
+            {% if advice %}
+            <p class="text-text-gray text-sm mt-3 result-advice">
+                <i class="fas fa-lightbulb mr-1"></i> {{ advice }}
+            </p>
+            {% endif %}
+            
+            <!-- Action buttons after result -->
+            <div class="flex gap-3 mt-4 justify-center">
+                <a href="{% url 'tracking:add_progress' %}" class="text-[#E94560] hover:underline text-sm">
+                    <i class="fas fa-chart-line mr-1"></i> Track Progress
+                </a>
+                <span class="text-text-gray">|</span>
+                <a href="#" onclick="resetForm()" class="text-[#E94560] hover:underline text-sm">
+                    <i class="fas fa-redo mr-1"></i> Calculate Again
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-6 p-4 bg-[#0F0F1A] rounded-lg info-section">
+            <h3 class="text-white font-semibold mb-2 info-title">
+                <i class="fas fa-info-circle text-[#E94560] mr-2"></i>
+                BMI Categories
+            </h3>
+            <div class="space-y-1 text-sm category-list">
+                <p class="text-text-gray category-item">
+                    <span class="category-underweight font-semibold">Underweight:</span> 
+                    <span class="category-underweight">&lt; 18.5</span>
+                </p>
+                <p class="text-text-gray category-item">
+                    <span class="category-normal font-semibold">Normal weight:</span> 
+                    <span class="category-normal">18.5 - 24.9</span>
+                </p>
+                <p class="text-text-gray category-item">
+                    <span class="category-overweight font-semibold">Overweight:</span> 
+                    <span class="category-overweight">25 - 29.9</span>
+                </p>
+                <p class="text-text-gray category-item">
+                    <span class="category-obese font-semibold">Obese:</span> 
+                    <span class="category-obese">≥ 30</span>
+                </p>
+            </div>
+            <div class="mt-3 pt-2 border-t border-[#E94560]/20">
+                <p class="text-text-gray text-xs">
+                    <i class="fas fa-heartbeat text-[#E94560] mr-1"></i>
+                    BMI is a measure of body fat based on height and weight. It's a useful tool to assess if you're at a healthy weight.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form submission with loading state
+    const form = document.getElementById('bmiForm');
+    const calculateBtn = document.getElementById('calculateBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validation
+            const height = document.querySelector('input[name="height"]').value;
+            const weight = document.querySelector('input[name="weight"]').value;
+            
+            if (!height || height <= 0) {
+                e.preventDefault();
+                showNotification('Please enter a valid height', 'error');
+                return;
+            }
+            
+            if (!weight || weight <= 0) {
+                e.preventDefault();
+                showNotification('Please enter a valid weight', 'error');
+                return;
+            }
+            
+            if (height > 300) {
+                e.preventDefault();
+                showNotification('Height seems too high. Please check your input.', 'error');
+                return;
+            }
+            
+            if (weight > 500) {
+                e.preventDefault();
+                showNotification('Weight seems too high. Please check your input.', 'error');
+                return;
+            }
+            
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            calculateBtn.disabled = true;
+            calculateBtn.classList.add('opacity-70');
+        });
+    }
+    
+    // Reset form function
+    function resetForm() {
+        document.querySelector('input[name="height"]').value = '';
+        document.querySelector('input[name="weight"]').value = '';
+        document.querySelector('input[name="height"]').focus();
+        
+        // Optional: remove result section
+        const resultSection = document.querySelector('.result-section');
+        if (resultSection) {
+            resultSection.style.opacity = '0';
+            setTimeout(() => {
+                resultSection.remove();
+            }, 300);
+        }
+    }
+    
+    // Real-time BMI calculation preview (optional)
+    const heightInput = document.querySelector('input[name="height"]');
+    const weightInput = document.querySelector('input[name="weight"]');
+    
+    function previewBMI() {
+        if (heightInput && weightInput && heightInput.value && weightInput.value) {
+            const height = parseFloat(heightInput.value) / 100;
+            const weight = parseFloat(weightInput.value);
+            const bmi = (weight / (height * height)).toFixed(1);
+            
+            if (!isNaN(bmi) && isFinite(bmi)) {
+                console.log(`Live BMI preview: ${bmi}`);
+                // You can display a live preview if desired
+            }
+        }
+    }
+    
+    if (heightInput && weightInput) {
+        heightInput.addEventListener('input', previewBMI);
+        weightInput.addEventListener('input', previewBMI);
+    }
+    
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const bmiCard = document.querySelector('.bmi-card');
+    if (bmiCard) {
+        bmiCard.style.opacity = '0';
+        bmiCard.style.transform = 'translateY(20px)';
+        bmiCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(bmiCard);
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+    
+    // Add keyboard support (Enter key)
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.querySelector('#calculateBtn').click();
+            }
+        });
+    });
+    
+ window.addEventListener('load', function() {
+    // Check if user data is available
+    const heightInput = document.querySelector('input[name="height"]');
+    const weightInput = document.querySelector('input[name="weight"]');
+    
+    if (heightInput && heightInput.value && !{{ request.POST|yesno:"true,false" }}) {
+        console.log('User data pre-filled');
+    }
+});
+</script>
+{% endblock %}

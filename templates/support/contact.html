@@ -1,0 +1,658 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Contact Us - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR CONTACT US PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .contact-card, .form-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .contact-card:hover, .form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Icon circle animation */
+    .icon-circle {
+        transition: transform 0.3s ease;
+    }
+    
+    .contact-card:hover .icon-circle {
+        transform: scale(1.1);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .contact-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .contact-card {
+            padding: 1.5rem;
+        }
+        
+        .form-card {
+            padding: 2rem;
+        }
+        
+        .form-input, .form-textarea {
+            padding: 0.75rem;
+            font-size: 0.95rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .contact-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .contact-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.95rem;
+            padding: 0 1rem;
+        }
+        
+        .contact-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem;
+        }
+        
+        .contact-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        .contact-card {
+            padding: 1rem;
+        }
+        
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .icon-circle i {
+            font-size: 1.5rem;
+        }
+        
+        .contact-title {
+            font-size: 1rem;
+        }
+        
+        .contact-text {
+            font-size: 0.8rem;
+        }
+        
+        .form-card {
+            padding: 1.25rem;
+        }
+        
+        .form-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .form-input, .form-textarea {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+        }
+        
+        .submit-btn {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .contact-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .back-link {
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .contact-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem;
+        }
+        
+        .contact-info-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+        }
+        
+        .contact-card {
+            padding: 0.875rem;
+        }
+        
+        .icon-circle {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .icon-circle i {
+            font-size: 1.25rem;
+        }
+        
+        .contact-title {
+            font-size: 0.9rem;
+        }
+        
+        .contact-text {
+            font-size: 0.75rem;
+        }
+        
+        .form-card {
+            padding: 1rem;
+        }
+        
+        .form-title {
+            font-size: 1rem;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+        }
+        
+        .form-input, .form-textarea {
+            padding: 0.45rem;
+            font-size: 0.8rem;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+        }
+        
+        .submit-btn {
+            padding: 0.55rem;
+            font-size: 0.8rem;
+        }
+        
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .mb-12 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .contact-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.85rem;
+        }
+        
+        .contact-card {
+            padding: 0.75rem;
+        }
+        
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .icon-circle i {
+            font-size: 1.1rem;
+        }
+        
+        .contact-title {
+            font-size: 0.85rem;
+        }
+        
+        .contact-text {
+            font-size: 0.7rem;
+        }
+        
+        .form-card {
+            padding: 0.875rem;
+        }
+        
+        .form-title {
+            font-size: 0.95rem;
+        }
+        
+        .form-label {
+            font-size: 0.7rem;
+        }
+        
+        .form-input, .form-textarea {
+            padding: 0.4rem;
+            font-size: 0.75rem;
+        }
+        
+        .submit-btn {
+            font-size: 0.75rem;
+            padding: 0.5rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .page-title {
+            font-size: 1.35rem;
+        }
+        
+        .page-subtitle {
+            font-size: 0.8rem;
+        }
+        
+        .form-title {
+            font-size: 0.9rem;
+        }
+        
+        .form-input, .form-textarea {
+            font-size: 0.7rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .contact-card:active, .form-card:active {
+            transform: scale(0.98);
+        }
+        
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        
+        input, textarea {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .contact-grid {
+            grid-template-columns: 1fr !important;
+        }
+        
+        .contact-info-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+        
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .contact-card, .form-card {
+            border: 2px solid #E94560;
+        }
+        
+        .submit-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .contact-card:hover, .form-card:hover {
+            transform: none;
+        }
+        
+        .contact-card:hover .icon-circle {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Form focus effects */
+    .form-input:focus, .form-textarea:focus {
+        outline: none;
+        border-color: #E94560;
+        box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Required field star */
+    .required-star {
+        color: #E94560;
+        margin-left: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4 contact-container fade-in">
+    <!-- Back Button -->
+    <div class="mb-4 back-link">
+        <a href="javascript:history.back()" class="inline-flex items-center text-text-gray hover:text-[#E94560] transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-white mb-4 page-title">Contact <span class="text-[#E94560]">Us</span></h1>
+        <p class="text-text-gray text-lg page-subtitle">We'd love to hear from you! Get in touch with our support team</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 contact-grid">
+        <!-- Contact Info Cards -->
+        <div class="lg:col-span-1 space-y-6 contact-info-grid">
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 text-center contact-card">
+                <div class="w-16 h-16 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-4 icon-circle">
+                    <i class="fas fa-map-marker-alt text-[#E94560] text-2xl"></i>
+                </div>
+                <h3 class="text-white font-semibold mb-2 contact-title">Visit Us</h3>
+                <p class="text-text-gray text-sm contact-text">123 Fitness Street, Andheri East,<br> Mumbai - 400069, India</p>
+            </div>
+            
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 text-center contact-card">
+                <div class="w-16 h-16 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-4 icon-circle">
+                    <i class="fas fa-phone text-[#E94560] text-2xl"></i>
+                </div>
+                <h3 class="text-white font-semibold mb-2 contact-title">Call Us</h3>
+                <p class="text-text-gray text-sm contact-text">+91 98765 43210</p>
+                <p class="text-text-gray text-sm contact-text">Mon-Sun, 6AM - 10PM</p>
+            </div>
+            
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 text-center contact-card">
+                <div class="w-16 h-16 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-4 icon-circle">
+                    <i class="fas fa-envelope text-[#E94560] text-2xl"></i>
+                </div>
+                <h3 class="text-white font-semibold mb-2 contact-title">Email Us</h3>
+                <p class="text-text-gray text-sm contact-text">support@fitzone.com</p>
+                <p class="text-text-gray text-sm contact-text">sales@fitzone.com</p>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="lg:col-span-2">
+            <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 form-card">
+                <h2 class="text-xl font-bold text-white mb-4 form-title">
+                    <i class="fas fa-paper-plane text-[#E94560] mr-2"></i>
+                    Send us a Message
+                </h2>
+                
+                <form method="POST" action="{% url 'support:contact' %}" id="contactForm">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 form-grid">
+                        <div>
+                            <label class="text-text-gray block mb-2 form-label">
+                                Your Name <span class="required-star">*</span>
+                            </label>
+                            <input type="text" name="name" required
+                                   placeholder="Enter your full name"
+                                   value="{{ user.get_full_name|default:'' }}"
+                                   class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                        </div>
+                        <div>
+                            <label class="text-text-gray block mb-2 form-label">
+                                Your Email <span class="required-star">*</span>
+                            </label>
+                            <input type="email" name="email" required
+                                   placeholder="Enter your email address"
+                                   value="{{ user.email|default:'' }}"
+                                   class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="text-text-gray block mb-2 form-label">
+                            Subject <span class="required-star">*</span>
+                        </label>
+                        <input type="text" name="subject" required
+                               placeholder="Brief summary of your message"
+                               class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-input">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="text-text-gray block mb-2 form-label">
+                            Message <span class="required-star">*</span>
+                        </label>
+                        <textarea name="message" rows="6" required
+                                  class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all form-textarea"
+                                  placeholder="Tell us how we can help you..."></textarea>
+                        <p class="text-text-gray text-xs mt-1">Please provide as much detail as possible.</p>
+                    </div>
+                    
+                    <button type="submit" id="submitBtn" class="w-full bg-[#E94560] text-white py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all submit-btn">
+                        <span id="btnText"><i class="fas fa-paper-plane mr-2"></i> Send Message</span>
+                        <span id="btnLoader" class="hidden">
+                            <svg class="animate-spin h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </form>
+                
+                <!-- Response Time Note -->
+                <div class="mt-4 p-3 bg-[#0F0F1A] rounded-lg">
+                    <p class="text-text-gray text-xs text-center">
+                        <i class="fas fa-clock mr-1"></i>
+                        We typically respond within 24 hours on business days.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form submission with loading state
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Validation
+            const name = document.querySelector('input[name="name"]').value.trim();
+            const email = document.querySelector('input[name="email"]').value.trim();
+            const subject = document.querySelector('input[name="subject"]').value.trim();
+            const message = document.querySelector('textarea[name="message"]').value.trim();
+            
+            if (!name) {
+                e.preventDefault();
+                showNotification('Please enter your name', 'error');
+                return;
+            }
+            
+            if (!email) {
+                e.preventDefault();
+                showNotification('Please enter your email', 'error');
+                return;
+            }
+            
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                e.preventDefault();
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (!subject) {
+                e.preventDefault();
+                showNotification('Please enter a subject', 'error');
+                return;
+            }
+            
+            if (subject.length < 3) {
+                e.preventDefault();
+                showNotification('Subject should be at least 3 characters', 'error');
+                return;
+            }
+            
+            if (!message) {
+                e.preventDefault();
+                showNotification('Please enter your message', 'error');
+                return;
+            }
+            
+            if (message.length < 10) {
+                e.preventDefault();
+                showNotification('Message should be at least 10 characters', 'error');
+                return;
+            }
+            
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70');
+        });
+    }
+    
+    // Show notification
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        const typeClass = type === 'success' ? 'bg-[#00D09C]' : type === 'error' ? 'bg-red-500' : 'bg-[#E94560]';
+        const iconClass = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+        notification.className = 'fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ' + typeClass + ' text-white';
+        notification.innerHTML = '<i class="fas ' + iconClass + ' mr-2"></i>' + message;
+        document.body.appendChild(notification);
+        
+        setTimeout(function() {
+            notification.style.opacity = '0';
+            setTimeout(function() {
+                if (notification.parentNode) notification.remove();
+            }, 500);
+        }, 3000);
+    }
+    
+    // Add animation to cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.contact-card, .form-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(card);
+    });
+    
+    // Auto-fill user data if logged in
+    window.addEventListener('load', function() {
+        const userIsAuthenticated = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+        if (userIsAuthenticated) {
+            const nameInput = document.querySelector('input[name="name"]');
+            const emailInput = document.querySelector('input[name="email"]');
+            const userName = "{{ user.get_full_name|default:user.username|escapejs }}";
+            const userEmail = "{{ user.email|escapejs }}";
+            if (nameInput && !nameInput.value) {
+                nameInput.value = userName;
+            }
+            if (emailInput && !emailInput.value) {
+                emailInput.value = userEmail;
+            }
+        }
+    });
+</script>
+{% endblock %}

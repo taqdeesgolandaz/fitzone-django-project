@@ -1,0 +1,542 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Track Meal - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       MEDIA QUERIES FOR TRACK MEAL PAGE
+    ============================================ */
+    
+    /* Animation for fade-in */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Very Large Desktops (1400px and above) */
+    @media (min-width: 1400px) {
+        .track-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .meal-title {
+            font-size: 1.75rem;
+        }
+    }
+    
+    /* Desktops (992px to 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .track-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* Tablets Landscape (768px to 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .track-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        .track-card {
+            padding: 1.5rem;
+        }
+        
+        .meal-icon {
+            font-size: 3rem;
+        }
+        
+        .meal-title {
+            font-size: 1.5rem;
+        }
+        
+        .meal-date {
+            font-size: 0.85rem;
+        }
+        
+        .meal-details {
+            padding: 0.875rem;
+        }
+        
+        .meal-name {
+            font-size: 1.125rem;
+        }
+        
+        .meal-description {
+            font-size: 0.85rem;
+        }
+        
+        .meal-nutrition {
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .meal-nutrition span {
+            font-size: 0.7rem;
+        }
+        
+        .form-label {
+            font-size: 0.85rem;
+        }
+        
+        textarea {
+            font-size: 0.85rem;
+            padding: 0.5rem;
+        }
+        
+        .submit-btn {
+            padding: 0.625rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Tablets Portrait (576px to 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .track-container {
+            padding-left: 0.875rem;
+            padding-right: 0.875rem;
+        }
+        
+        .track-card {
+            padding: 1.25rem;
+        }
+        
+        .meal-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meal-title {
+            font-size: 1.35rem;
+        }
+        
+        .meal-date {
+            font-size: 0.8rem;
+        }
+        
+        .meal-details {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .meal-name {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meal-description {
+            font-size: 0.8rem;
+        }
+        
+        .meal-nutrition {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .meal-nutrition span {
+            font-size: 0.7rem;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        textarea {
+            font-size: 0.8rem;
+            padding: 0.5rem;
+            min-height: 80px;
+        }
+        
+        .submit-btn {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .py-12 {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Mobile Landscape (375px to 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .track-container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        
+        .track-card {
+            padding: 1rem;
+        }
+        
+        .meal-icon {
+            font-size: 2rem;
+        }
+        
+        .meal-title {
+            font-size: 1.2rem;
+        }
+        
+        .meal-date {
+            font-size: 0.75rem;
+        }
+        
+        .meal-details {
+            padding: 0.625rem;
+        }
+        
+        .meal-name {
+            font-size: 0.9rem;
+        }
+        
+        .meal-description {
+            font-size: 0.7rem;
+        }
+        
+        .meal-nutrition {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .meal-nutrition span {
+            font-size: 0.65rem;
+        }
+        
+        .form-label {
+            font-size: 0.75rem;
+        }
+        
+        textarea {
+            font-size: 0.75rem;
+            padding: 0.4rem;
+            min-height: 70px;
+        }
+        
+        .submit-btn {
+            padding: 0.45rem;
+            font-size: 0.8rem;
+        }
+        
+        .submit-btn i {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* Small Mobile Devices (320px to 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .track-card {
+            padding: 0.875rem;
+        }
+        
+        .meal-title {
+            font-size: 1.1rem;
+        }
+        
+        .meal-date {
+            font-size: 0.7rem;
+        }
+        
+        .meal-name {
+            font-size: 0.85rem;
+        }
+        
+        .meal-description {
+            font-size: 0.65rem;
+        }
+        
+        .meal-nutrition span {
+            font-size: 0.6rem;
+        }
+        
+        .submit-btn {
+            font-size: 0.75rem;
+        }
+    }
+    
+    /* iPhone SE and very small devices (320px and below) */
+    @media (max-width: 320px) {
+        .meal-title {
+            font-size: 1rem;
+        }
+        
+        .meal-name {
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+        
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        
+        textarea {
+            font-size: 16px !important; /* Prevents zoom on iOS */
+        }
+    }
+    
+    /* Landscape mode for mobile devices */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .track-container {
+            max-width: 90%;
+        }
+        
+        .meal-details {
+            margin-bottom: 0.75rem;
+        }
+        
+        textarea {
+            min-height: 60px;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .track-card {
+            border: 2px solid #E94560;
+        }
+        
+        .meal-details {
+            border: 1px solid #E94560;
+        }
+        
+        .submit-btn {
+            border: 1px solid white;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in {
+            animation: none;
+        }
+        
+        .card-hover:hover {
+            transform: none;
+        }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background-color: #0F0F1A;
+        }
+    }
+    
+    /* Focus styles for better accessibility */
+    textarea:focus {
+        outline: none;
+        border-color: #E94560;
+        box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+    }
+    
+    button:focus {
+        outline: none;
+        ring: 2px solid #E94560;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 track-container fade-in">
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 track-card card-hover">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-utensils text-[#E94560] text-3xl meal-icon"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white meal-title">Track Your Meal</h2>
+            <p class="text-text-gray meal-date">{{ progress.get_meal_type_display }} - {{ progress.scheduled_date|date:"M d, Y" }}</p>
+        </div>
+
+        <div class="bg-[#0F0F1A] rounded-lg p-4 mb-6 meal-details">
+            <h3 class="text-white font-semibold mb-2 meal-name">{{ progress.meal.name }}</h3>
+            <p class="text-text-gray text-sm meal-description">{{ progress.meal.description }}</p>
+            <div class="flex flex-wrap gap-3 mt-3 text-xs meal-nutrition">
+                <span class="text-text-gray">
+                    <i class="fas fa-fire text-[#E94560] mr-1"></i> {{ progress.meal.calories }} cal
+                </span>
+                <span class="text-text-gray">
+                    <i class="fas fa-dumbbell text-[#00D09C] mr-1"></i> {{ progress.meal.protein }}g protein
+                </span>
+                <span class="text-text-gray">
+                    <i class="fas fa-bread-slice text-yellow-400 mr-1"></i> {{ progress.meal.carbohydrates }}g carbs
+                </span>
+                {% if progress.meal.fats %}
+                <span class="text-text-gray">
+                    <i class="fas fa-oil-can text-orange-400 mr-1"></i> {{ progress.meal.fats }}g fats
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="POST" id="trackMealForm">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="text-text-gray block mb-2 form-label">
+                    <i class="fas fa-pencil-alt mr-1"></i> Notes (optional)
+                </label>
+                <textarea name="notes" rows="3" 
+                    class="w-full px-3 py-2 bg-[#0F0F1A] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] transition-all"
+                    placeholder="How was your meal? Any changes or suggestions?"></textarea>
+            </div>
+            
+            <div class="mb-4">
+                <label class="flex items-center cursor-pointer">
+                    <input type="checkbox" name="enjoyed" class="w-4 h-4 text-[#E94560] bg-[#0F0F1A] border-[#E94560]/30 rounded focus:ring-[#E94560] mr-2">
+                    <span class="text-text-gray text-sm">I enjoyed this meal</span>
+                </label>
+            </div>
+            
+            <button type="submit" id="submitBtn" class="w-full bg-[#00D09C] text-white py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all submit-btn">
+                <span id="btnText"><i class="fas fa-check-circle mr-2"></i> Mark as Completed</span>
+                <span id="btnLoader" class="hidden">
+                    <svg class="animate-spin h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
+            </button>
+        </form>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'diet:progress' %}" class="text-text-gray hover:text-[#E94560] text-sm transition-colors">
+                <i class="fas fa-chart-line mr-1"></i> View My Progress
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form submission with loading state
+    const form = document.getElementById('trackMealForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnLoader = document.getElementById('btnLoader');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70');
+        });
+    }
+    
+    // Auto-save notes to localStorage
+    const notesTextarea = document.querySelector('textarea[name="notes"]');
+    const enjoyedCheckbox = document.querySelector('input[name="enjoyed"]');
+    const mealId = '{{ progress.id }}';
+    
+    if (notesTextarea) {
+        // Load saved notes
+        const savedNotes = localStorage.getItem(`meal_notes_${mealId}`);
+        if (savedNotes) {
+            notesTextarea.value = savedNotes;
+        }
+        
+        // Save notes on input
+        notesTextarea.addEventListener('input', function() {
+            localStorage.setItem(`meal_notes_${mealId}`, this.value);
+        });
+        
+        // Clear saved notes on successful submit
+        form.addEventListener('submit', function() {
+            localStorage.removeItem(`meal_notes_${mealId}`);
+        });
+    }
+    
+    if (enjoyedCheckbox) {
+        // Load saved checkbox state
+        const savedEnjoyed = localStorage.getItem(`meal_enjoyed_${mealId}`);
+        if (savedEnjoyed === 'true') {
+            enjoyedCheckbox.checked = true;
+        }
+        
+        // Save checkbox state
+        enjoyedCheckbox.addEventListener('change', function() {
+            localStorage.setItem(`meal_enjoyed_${mealId}`, this.checked);
+        });
+    }
+    
+    // Show notification on successful completion (if coming from redirect with message)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === '1') {
+        showNotification('Meal tracked successfully! Great job! 🎉', 'success');
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 z-50 px-4 py-2 rounded-lg shadow-lg fade-in ${
+            type === 'success' ? 'bg-[#00D09C]' : 'bg-[#E94560]'
+        } text-white`;
+        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 500);
+        }, 4000);
+    }
+    
+    // Add animation to card on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    const trackCard = document.querySelector('.track-card');
+    if (trackCard) {
+        trackCard.style.opacity = '0';
+        trackCard.style.transform = 'translateY(20px)';
+        trackCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(trackCard);
+    }
+</script>
+{% endblock %}
