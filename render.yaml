@@ -5,7 +5,7 @@ services:
     buildCommand: |
       apt-get update
       apt-get install -y --no-install-recommends \
-        libjpeg-dev libpng-dev libtiff-dev libfreetype6-dev liblcms2-dev libwebp-dev libopenjp2-7-dev libharfbuzz-dev libfribidi-dev libxcb1-dev pkg-config build-essential
+        build-essential python3-dev libjpeg-dev libjpeg62-turbo-dev libpng-dev libtiff-dev libfreetype6-dev liblcms2-dev libwebp-dev libopenjp2-7-dev libharfbuzz-dev libfribidi-dev libxcb1-dev pkg-config
       pip install --upgrade pip setuptools wheel
       pip install --prefer-binary -r requirements.txt
       python manage.py collectstatic --no-input

@@ -7,7 +7,9 @@ pip install --upgrade pip setuptools wheel
 if command -v apt-get >/dev/null 2>&1; then
 	apt-get update && apt-get install -y --no-install-recommends \
 		build-essential \
+		python3-dev \
 		libjpeg-dev \
+		libjpeg62-turbo-dev \
 		zlib1g-dev \
 		libfreetype6-dev \
 		liblcms2-dev \
