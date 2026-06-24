@@ -3,7 +3,7 @@ services:
     name: fitzone
     env: docker
     dockerfilePath: Dockerfile
-    startCommand: "gunicorn fitzone.wsgi:application --bind 0.0.0.0:$PORT"
+    dockerContext: .
     autoDeploy: true
     region: oregon
     plan: standard
