@@ -1,7 +1,7 @@
 services:
   - type: web
     name: fitzone
-    env: python
+    env: docker
     dockerfilePath: Dockerfile
     startCommand: "gunicorn fitzone.wsgi:application --bind 0.0.0.0:$PORT"
     autoDeploy: true
