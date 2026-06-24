@@ -26,7 +26,7 @@ ALLOWED_HOSTS = [
     '0.0.0.0',
     '10.96.118.210',
     '10.15.136.210',
-    '*.onrender.com',  # Render deployment
+    '.onrender.com',  # Render deployment
     'fitzone.onrender.com',  # Your specific Render domain
 ]
 
