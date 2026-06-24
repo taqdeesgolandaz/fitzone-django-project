@@ -10,13 +10,17 @@ services:
     
     envVars:
       - key: PYTHON_VERSION
-        value: "3.11"
+        value: "3.11.0"
       - key: PORT
         value: "8000"
       - key: DJANGO_SETTINGS_MODULE
         value: fitzone.settings
       - key: DEBUG
         value: "false"
+      - key: RENDER
+        value: "true"
+      - key: DISABLE_COLLECTSTATIC
+        value: "0"
       
       # Database (auto-provisioned PostgreSQL)
       - key: DATABASE_URL
@@ -47,6 +51,10 @@ services:
       # SITE_URL for email links (reset password, contact support, etc.)
       - key: SITE_URL
         value: "https://fitzone.onrender.com"
+      
+      # Optional runtime settings
+      - key: HEALTH_CHECK_PATH
+        value: "/healthz"
       
       # Razorpay Configuration
       - key: RAZORPAY_KEY_ID
