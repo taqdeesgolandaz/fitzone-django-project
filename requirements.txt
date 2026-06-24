@@ -2,7 +2,7 @@ Django==5.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.0
 django-cors-headers==4.3.1
-razorpay==1.4.0
+razorpay==1.4.2
 Pillow==10.1.0
 reportlab==4.0.7
 celery==5.3.4
