@@ -30,6 +30,12 @@ ALLOWED_HOSTS = [
     'fitzone.onrender.com',  # Your specific Render domain
 ]
 
+# Add Render's external hostname dynamically, if available
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    ALLOWED_HOSTS.append(f'.{RENDER_EXTERNAL_HOSTNAME}')
+
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
