@@ -28,6 +28,7 @@ ALLOWED_HOSTS = [
     '10.15.136.210',
     '.onrender.com',  # Render deployment
     'fitzone.onrender.com',  # Your specific Render domain
+    'fitzone-application.onrender.com',  # Render auto-generated service URL
 ]
 
 # Add Render's external hostname dynamically, if available
