@@ -78,3 +78,131 @@ def get_workout_reminder_email(user, workout_plan):
     html_content = render_to_string('notifications/emails/workout_reminder.html', context)
     plain_content = strip_tags(html_content)
     return html_content, plain_content
+
+
+def get_account_deactivated_email(user):
+    """Account deactivation notification email"""
+    from django.conf import settings
+    site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+    reactivation_path = '/contact-support/'
+    context = {
+        'username': user.full_name or user.username,
+        'reactivation_url': f"{site}{reactivation_path}",
+        'year': 2026,
+    }
+    html_content = render_to_string('emails/account_deactivated.html', context)
+    plain_content = f"""Hello {context['username']},
+
+Your FitZone account has been deactivated. You cannot sign in while the account is deactivated.
+
+If you want to reactivate your account, please contact support at support@fitzone.com and we will assist you.
+
+Regards,
+FitZone Team
+"""
+    return html_content, plain_content
+
+def get_account_recovered_email(user, reset_url='/forgot-password/'):
+    """Account recovered after deletion - instruct user to reset password"""
+    from django.conf import settings
+    site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+    # allow caller to pass an absolute or relative reset_url
+    if reset_url.startswith('http://') or reset_url.startswith('https://'):
+        absolute_reset = reset_url
+    else:
+        absolute_reset = f"{site}{reset_url}"
+    context = {
+        'username': user.full_name or user.username,
+        'reset_url': absolute_reset,
+        'support_url': f"{site}/support/",
+        'year': 2026,
+    }
+    html_content = render_to_string('emails/account_recovered.html', context)
+    plain_content = f"""Hello {context['username']},
+
+Your FitZone account has been recovered. Please reset your password to secure your account:
+{context['reset_url']}
+
+If you did not request this, contact support@fitzone.com
+
+Regards,
+FitZone Team
+"""
+    return html_content, plain_content
+
+def get_account_deleted_email(user):
+    """Account deletion notification email"""
+    from django.conf import settings
+    site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+    support_path = '/contact-support/'
+    context = {
+        'username': user.full_name or user.username,
+        'support_url': f"{site}{support_path}",
+        'year': 2026,
+    }
+    # Render with matching username variable
+    html_content = render_to_string('accounts/emails/account_deleted_by_admin.html', context)
+
+    plain_content = f"""Hello {user.full_name or user.username},
+
+Your FitZone account ({user.username}) has been deleted by an administrator and is no longer active.
+
+If you believe this was a mistake, contact support: {context['support_url']}
+
+Regards,
+FitZone Team
+"""
+    return html_content, plain_content
+
+
+def get_account_reactivated_email(user):
+    """Account reactivated notification email"""
+    from django.conf import settings
+    site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+    dashboard_path = '/dashboard/'
+    context = {
+        'username': user.full_name or user.username,
+        'dashboard_url': f"{site}{dashboard_path}",
+        'support_url': f"{site}/support/",
+        'year': 2026,
+    }
+    html_content = render_to_string('emails/account_reactivated.html', context)
+    plain_content = f"""Hello {context['username']},
+
+Your FitZone account has been reactivated. You can sign in and access your dashboard: {context['dashboard_url']}
+
+If you need help, contact support@fitzone.com
+
+Regards,
+FitZone Team
+"""
+    return html_content, plain_content
+
+def get_password_reset_email(user, reset_link):
+    """Password reset email"""
+    username = user.full_name or user.username
+    from django.utils import timezone
+    # Use a portable strftime format and strip leading zero for hour (works on Windows)
+    now = timezone.now()
+    try:
+        now_str = now.strftime('%I:%M %p').lstrip('0')
+    except Exception:
+        now_str = ''
+    context = {
+        'username': username,
+        'reset_link': reset_link,
+        'year': timezone.now().year,
+        'now': now_str,
+    }
+    html_content = render_to_string('notifications/emails/password_reset.html', context)
+    plain_content = f"""Hello {username},
+
+We received a request to reset your FitZone password.
+
+Please open this email and click the 'Reset Password' button to proceed. This link expires in 24 hours.
+
+If you did not request this, ignore this message.
+
+FitZone Team
+"""
+    return html_content, plain_content

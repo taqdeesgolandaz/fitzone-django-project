@@ -1,0 +1,612 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Member Details - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Fade-in animation */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Card hover effect */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+    }
+    
+    /* Profile header section */
+    .profile-header {
+        background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+        border: 1px solid #E94560/20;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid #E94560;
+        object-fit: cover;
+    }
+    
+    /* Info cards styling */
+    .info-card {
+        background: #1A1A2E;
+        border: 1px solid #E94560/20;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+        border-color: #E94560/50;
+        box-shadow: 0 5px 15px rgba(233, 69, 96, 0.1);
+    }
+    
+    .info-label {
+        color: #A0A0A0;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .info-value {
+        color: #FFFFFF;
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    
+    /* Membership status badge */
+    .membership-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+    
+    .badge-active {
+        background: #00D09C/20;
+        color: #00D09C;
+        border: 1px solid #00D09C/50;
+    }
+    
+    .badge-expired {
+        background: #F87171/20;
+        color: #F87171;
+        border: 1px solid #F87171/50;
+    }
+    
+    .badge-cancelled {
+        background: #6B7280/20;
+        color: #9CA3AF;
+        border: 1px solid #6B7280/50;
+    }
+    
+    /* Statistics grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+        border: 1px solid #E94560/20;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #E94560;
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: #A0A0A0;
+        margin-top: 0.5rem;
+    }
+    
+    /* Contact buttons */
+    .contact-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin: 0.5rem;
+    }
+    
+    .btn-call {
+        background: #3B82F6;
+        color: white;
+    }
+    
+    .btn-call:hover {
+        background: #2563EB;
+        transform: translateY(-2px);
+    }
+    
+    .btn-email {
+        background: #10B981;
+        color: white;
+    }
+    
+    .btn-email:hover {
+        background: #059669;
+        transform: translateY(-2px);
+    }
+    
+    /* Table styling */
+    .table-container {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid #E94560/20;
+        background: #1A1A2E;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    thead {
+        background: #0F0F1A;
+        border-bottom: 2px solid #E94560/20;
+    }
+    
+    th {
+        padding: 1rem;
+        text-align: left;
+        color: #A0A0A0;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+    }
+    
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid #E94560/10;
+        color: #FFFFFF;
+    }
+    
+    tbody tr:hover {
+        background-color: rgba(233, 69, 96, 0.05);
+        transition: background-color 0.3s ease;
+    }
+    
+    /* Section title */
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin: 2rem 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .section-title i {
+        color: #E94560;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            padding: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+        }
+        
+        .info-card {
+            padding: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+        
+        table {
+            font-size: 0.875rem;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .contact-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        table {
+            font-size: 0.75rem;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4 sm:px-6 lg:px-8 fade-in">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-white">Member Details</h1>
+        <a href="{% url 'admin_dashboard:membership_report' %}" class="text-[#E94560] hover:underline flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Back to Membership Report
+        </a>
+    </div>
+
+    <!-- Profile Header -->
+    <div class="profile-header rounded-2xl p-8 mb-8 flex items-center gap-6 card-hover">
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="profile-avatar">
+        {% else %}
+            <div class="profile-avatar bg-[#E94560]/20 flex items-center justify-center">
+                <i class="fas fa-user text-[#E94560] text-4xl"></i>
+            </div>
+        {% endif %}
+        
+        <div class="flex-1">
+            <h2 class="text-2xl font-bold text-white">{{ user.get_full_name|default:user.username }}</h2>
+            <p class="text-text-gray">@{{ user.username }}</p>
+            
+            {% if current_membership %}
+            <div class="mt-3">
+                <span class="membership-badge badge-active">
+                    <i class="fas fa-check-circle mr-1"></i> {{ current_membership.plan.name }}
+                </span>
+                <span class="text-text-gray text-sm ml-3">
+                    <i class="fas fa-calendar mr-1"></i> Expires: {{ current_membership.end_date|date:"M d, Y" }} ({{ days_remaining }} days)
+                </span>
+            </div>
+            {% else %}
+            <div class="mt-3">
+                <span class="membership-badge badge-expired">
+                    <i class="fas fa-times-circle mr-1"></i> No Active Membership
+                </span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card card-hover">
+            <div class="stat-value">{{ total_memberships }}</div>
+            <div class="stat-label">Total Memberships</div>
+        </div>
+        <div class="stat-card card-hover">
+            <div class="stat-value">{{ active_memberships }}</div>
+            <div class="stat-label">Active Memberships</div>
+        </div>
+        <div class="stat-card card-hover">
+            <div class="stat-value">₹{{ total_amount_spent|floatformat:2 }}</div>
+            <div class="stat-label">Total Amount Spent</div>
+        </div>
+        <div class="stat-card card-hover">
+            <div class="stat-value">{{ cancelled_memberships }}</div>
+            <div class="stat-label">Cancelled</div>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="mb-8">
+        <h3 class="section-title">
+            <i class="fas fa-phone"></i> Contact Information
+        </h3>
+        <div class="flex flex-wrap gap-4">
+            {% if user.mobile_number %}
+                <a href="tel:{{ user.mobile_number }}" class="contact-btn btn-call">
+                    <i class="fas fa-phone"></i> Call User
+                </a>
+            {% else %}
+                <button disabled class="contact-btn" style="opacity: 0.5; cursor: not-allowed;">
+                    <i class="fas fa-phone"></i> No Phone Number
+                </button>
+            {% endif %}
+            
+            {% if user.email %}
+                <a href="mailto:{{ user.email }}" class="contact-btn btn-email">
+                    <i class="fas fa-envelope"></i> Send Email
+                </a>
+            {% else %}
+                <button disabled class="contact-btn" style="opacity: 0.5; cursor: not-allowed;">
+                    <i class="fas fa-envelope"></i> No Email
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Personal Information -->
+    <div class="mb-8">
+        <h3 class="section-title">
+            <i class="fas fa-user"></i> Personal Information
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="info-card">
+                <div class="info-label">Full Name</div>
+                <div class="info-value">{{ user.get_full_name|default:"Not provided" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Username</div>
+                <div class="info-value">{{ user.username }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Email</div>
+                <div class="info-value text-sm">{{ user.email|default:"Not provided" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Mobile Number</div>
+                <div class="info-value">{{ user.mobile_number|default:"Not provided" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Gender</div>
+                <div class="info-value">{{ user.get_gender_display|default:"Not specified" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Age</div>
+                <div class="info-value">{{ user.age|default:"Not provided" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Height</div>
+                <div class="info-value">{% if user.height %}{{ user.height }} cm{% else %}Not provided{% endif %}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Weight</div>
+                <div class="info-value">{% if user.weight %}{{ user.weight }} kg{% else %}Not provided{% endif %}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Fitness Goal</div>
+                <div class="info-value">{{ user.get_fitness_goal_display|default:"Not specified" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Date Joined</div>
+                <div class="info-value">{{ user.date_joined|date:"M d, Y" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Last Login</div>
+                <div class="info-value">
+                    {% if user.last_login %}
+                        {{ user.last_login|date:"M d, Y H:i" }}
+                    {% else %}
+                        Never
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Information -->
+    <div class="mb-8">
+        <h3 class="section-title">
+            <i class="fas fa-shield"></i> Account Information
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="info-card">
+                <div class="info-label">User ID</div>
+                <div class="info-value font-mono">{{ user.id }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Account Status</div>
+                <div class="info-value">
+                    {% if user.is_active %}
+                        <span class="text-green-400"><i class="fas fa-check-circle mr-1"></i> Active</span>
+                    {% else %}
+                        <span class="text-red-400"><i class="fas fa-times-circle mr-1"></i> Inactive</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Total Payments</div>
+                <div class="info-value">{{ payments.count }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Current Membership</div>
+                <div class="info-value">
+                    {% if current_membership %}
+                        {{ current_membership.plan.name }}
+                    {% else %}
+                        No Active Membership
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Membership Details -->
+    {% if current_membership %}
+    <div class="mb-8">
+        <h3 class="section-title">
+            <i class="fas fa-badge"></i> Current Membership
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="info-card">
+                <div class="info-label">Plan Name</div>
+                <div class="info-value">{{ current_membership.plan.name }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Membership Type</div>
+                <div class="info-value">{{ current_membership.plan.plan_type|title }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Start Date</div>
+                <div class="info-value">{{ current_membership.start_date|date:"M d, Y" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">End Date</div>
+                <div class="info-value">{{ current_membership.end_date|date:"M d, Y" }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Days Remaining</div>
+                <div class="info-value">{{ days_remaining }} days</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Amount Paid</div>
+                <div class="info-value text-[#E94560]">₹{{ current_membership.amount_paid }}</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Status</div>
+                <div class="info-value">
+                    <span class="membership-badge badge-active">
+                        <i class="fas fa-circle text-sm mr-1"></i> Active
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Membership History -->
+    <div class="mb-8">
+        <h3 class="section-title">
+            <i class="fas fa-history"></i> Membership History
+        </h3>
+        {% if membership_history %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plan</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membership in membership_history %}
+                    <tr>
+                        <td class="font-semibold">{{ membership.plan.name }}</td>
+                        <td>{{ membership.start_date|date:"M d, Y" }}</td>
+                        <td>{{ membership.end_date|date:"M d, Y" }}</td>
+                        <td class="text-[#E94560] font-semibold">₹{{ membership.amount_paid }}</td>
+                        <td>
+                            {% if membership.status == 'active' %}
+                                <span class="membership-badge badge-active">Active</span>
+                            {% elif membership.status == 'cancelled' %}
+                                <span class="membership-badge badge-cancelled">Cancelled</span>
+                            {% else %}
+                                <span class="membership-badge badge-expired">{{ membership.status|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if membership.start_date %}
+                                {{ membership.end_date|add:"-0D"|timesince:membership.start_date|truncatechars:10 }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-text-gray">
+            <i class="fas fa-inbox text-3xl mb-4"></i>
+            <p>No membership history found for this user.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Payment Information -->
+    <div class="mb-8">
+        <h3 class="section-title">
+            <i class="fas fa-credit-card"></i> Payment Information
+        </h3>
+        {% if payments %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Razorpay Order ID</th>
+                        <th>Razorpay Payment ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payment Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td class="font-mono text-sm">{{ payment.razorpay_order_id|default:"N/A" }}</td>
+                        <td class="font-mono text-sm">{{ payment.razorpay_payment_id|default:"N/A" }}</td>
+                        <td class="text-[#E94560] font-semibold">₹{{ payment.amount }}</td>
+                        <td>
+                            {% if payment.status == 'success' %}
+                                <span class="membership-badge badge-active">Success</span>
+                            {% elif payment.status == 'failed' %}
+                                <span class="membership-badge badge-cancelled">Failed</span>
+                            {% else %}
+                                <span class="membership-badge" style="background: #FFA500/20; color: #FFA500; border: 1px solid #FFA500/50;">{{ payment.status|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ payment.created_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-text-gray">
+            <i class="fas fa-inbox text-3xl mb-4"></i>
+            <p>No payment records found for this user.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

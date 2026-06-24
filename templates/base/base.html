@@ -155,24 +155,6 @@
             border: 4px solid #E94560;
         }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #1A1A2E;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #E94560;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ff5a7a;
-        }
-        
         /* Glassmorphism Effect */
         .glass {
             background: rgba(26, 26, 46, 0.7);
@@ -252,29 +234,12 @@ html {
         }
 
         /* Responsive Media Queries */
-        @media (min-width: 1400px) {
-            .container { max-width: 1320px; }
-            main.container { padding-left: 2rem; padding-right: 2rem; }
-        }
-
-        @media (min-width: 1200px) and (max-width: 1399px) {
-            .container { max-width: 1140px; }
-        }
-
-        @media (min-width: 992px) and (max-width: 1199px) {
-            .container { max-width: 960px; }
-        }
-
         @media (min-width: 768px) and (max-width: 991px) {
-            .container { max-width: 720px; margin-left: auto !important; margin-right: auto !important; }
-            main.container { padding-left: 1rem; padding-right: 1rem; }
-            footer .container { max-width: 720px; margin-left: auto !important; margin-right: auto !important; }
             footer .grid { gap: 1.5rem !important; justify-content: center; }
             footer .text-center.sm\:text-left { text-align: center !important; }
         }
 
         @media (min-width: 576px) and (max-width: 767px) {
-            .container { max-width: 540px; margin-left: auto !important; margin-right: auto !important; }
             footer .grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1.5rem; }
         }
 
@@ -286,9 +251,6 @@ html {
         }
 
         footer .container {
-            max-width: 1280px;
-            margin-left: auto !important;
-            margin-right: auto !important;
             width: 100%;
         }
 
@@ -315,7 +277,7 @@ html {
 
 <!-- Navigation Bar -->
 <nav class="bg-[#1A1A2E] border-b border-[#E94560]/20 sticky top-0 z-50" x-data="{ mobileMenuOpen: false, userMenuOpen: false }">
-    <div class="container mx-auto px-4 py-3">
+    <div class="w-full px-4 sm:px-6 xl:px-8 py-3">
         <div class="flex justify-between items-center">
             <!-- Logo -->
             <div class="flex items-center space-x-2 shrink-0">
@@ -424,7 +386,7 @@ html {
                 {% if user.is_authenticated %}
                     <a href="{% url 'notifications:list' %}" class="lg:hidden relative text-text-gray hover:text-[#E94560] transition-colors p-2" aria-label="Open notifications">
                         <i class="fas fa-bell text-2xl"></i>
-                        <span id="notificationCount" class="absolute -top-1 -right-1 bg-[#E94560] text-white text-xs rounded-full w-4 h-4 hidden items-center justify-center"></span>
+                        <span class="notification-count absolute -top-1 -right-1 bg-[#E94560] text-white text-xs rounded-full w-4 h-4 hidden items-center justify-center"></span>
                     </a>
                 {% endif %}
 
@@ -440,7 +402,7 @@ html {
                 {% if user.is_authenticated %}
                     <a href="{% url 'notifications:list' %}" class="relative text-text-gray hover:text-[#E94560] transition-colors" aria-label="Open notifications">
                         <i class="fas fa-bell text-xl"></i>
-                        <span id="notificationCount" class="absolute -top-1 -right-1 bg-[#E94560] text-white text-xs rounded-full w-4 h-4 hidden items-center justify-center"></span>
+                        <span class="notification-count absolute -top-1 -right-1 bg-[#E94560] text-white text-xs rounded-full w-4 h-4 hidden items-center justify-center"></span>
                     </a>
                     
                     <div class="relative" x-data="{ open: false }">
@@ -567,7 +529,7 @@ html {
 <!-- Membership Warning Banner -->
 {% if user.is_authenticated and not user.membership_active and not user.is_staff %}
 <div class="bg-gradient-to-r from-[#E94560]/20 to-[#16213E] border-b border-[#E94560]/20">
-    <div class="container mx-auto px-4 py-2 text-center">
+    <div class="w-full px-3 sm:px-4 lg:px-6 py-2 text-center">
         <p class="text-text-gray text-sm">
             <i class="fas fa-crown text-[#E94560] mr-2"></i>
             You don't have an active membership. 
@@ -580,7 +542,7 @@ html {
 
 <!-- Django messages (site-wide) -->
 {% if messages and request.path != '/login/' and request.path != '/forgot-password/' and request.path|slice:":15" != '/reset-password' %}
-<div class="container mx-auto px-4 mt-4">
+<div class="w-full px-3 sm:px-4 lg:px-6 mt-4">
     {% for message in messages %}
         {% if 'success' in message.tags %}
         <div class="alert bg-[#052e15] border border-[#00D09C]/20 text-white px-4 py-3 rounded-lg mb-3">
@@ -632,7 +594,7 @@ html {
 {% endif %}
 
 <!-- Main Content -->
-<main class="container mx-auto px-4 py-4 fade-in">
+<main class="w-full px-3 sm:px-4 lg:px-6 py-4 fade-in">
     {% block content %}
     {% endblock %}
 </main>
@@ -651,8 +613,8 @@ html {
 {% endif %}
 
 <!-- Footer -->
-<footer class="bg-[#1A1A2E] border-t border-[#E94560]/20 mt-0">
-    <div class="container mx-auto px-4 py-6">
+<footer class="bg-[#1A1A2E] border-t border-[#E94560]/20">
+    <div class="w-full px-6 py-3">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="text-center sm:text-left">
                 <div class="flex items-center space-x-2 mb-3 justify-center sm:justify-start">
@@ -1082,25 +1044,27 @@ html {
     
     // ========== NOTIFICATION COUNT ==========
     function updateNotificationCount() {
-        const countElement = document.getElementById('notificationCount');
-        if (!countElement) return;
+        const countElements = document.querySelectorAll('.notification-count');
+        if (!countElements.length) return;
         
         fetch('/notifications/unread-count/')
             .then(response => response.json())
             .then(data => {
-                if (data.count > 0) {
-                    countElement.textContent = data.count;
-                    countElement.classList.remove('hidden');
-                    countElement.classList.add('flex');
-                } else {
-                    countElement.classList.add('hidden');
-                    countElement.classList.remove('flex');
-                }
+                countElements.forEach(countElement => {
+                    if (data.count > 0) {
+                        countElement.textContent = data.count;
+                        countElement.classList.remove('hidden');
+                        countElement.classList.add('flex');
+                    } else {
+                        countElement.classList.add('hidden');
+                        countElement.classList.remove('flex');
+                    }
+                });
             })
             .catch(error => console.error('Error fetching notification count:', error));
     }
     
-    if (document.getElementById('notificationCount')) {
+    if (document.querySelectorAll('.notification-count').length) {
         updateNotificationCount();
         setInterval(updateNotificationCount, 30000);
     }

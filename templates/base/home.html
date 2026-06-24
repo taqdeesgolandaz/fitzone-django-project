@@ -7,24 +7,6 @@
 <style>
     /* Base styles - Desktop First Approach */
     
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: #1A1A2E;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: #E94560;
-        border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #c72a4a;
-    }
-    
     /* Card hover effect */
     .card-hover {
         transition: all 0.3s ease;
@@ -436,45 +418,26 @@
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 pricing-grid">
-        <!-- Basic Plan -->
-        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 card-hover pricing-card">
-            <h3 class="text-xl font-bold text-white text-center mb-2">Basic</h3>
-            <p class="text-3xl font-bold text-[#E94560] text-center mb-4 price-amount">₹199<span class="text-text-gray text-sm price-period">/month</span></p>
-            <ul class="space-y-2 mb-6 features-list">
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Basic Workout Plans</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Basic Diet Plans</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Progress Tracking</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Basic Analytics & Reports</span></li>
-            </ul>
-            <a href="/membership/plans/" class="block text-center border border-[#E94560] text-[#E94560] py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all">Choose Plan</a>
-        </div>
-        
-        <!-- Pro Plan -->
-        <div class="bg-[#1A1A2E] rounded-xl border-2 border-[#E94560] p-6 card-hover relative pricing-card">
+        {% for plan in plans %}
+        <!-- Plan Card -->
+        <div class="bg-[#1A1A2E] rounded-xl border {% if plan.is_popular %}border-2 border-[#E94560]{% else %}border-[#E94560]/20{% endif %} p-6 card-hover pricing-card relative">
+            {% if plan.is_popular %}
             <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#E94560] text-white text-xs px-3 py-1 rounded-full popular-badge">Most Popular</div>
-            <h3 class="text-xl font-bold text-white text-center mb-2">Pro</h3>
-            <p class="text-3xl font-bold text-[#E94560] text-center mb-4 price-amount">₹399<span class="text-text-gray text-sm price-period">/month</span></p>
+            {% endif %}
+            <h3 class="text-xl font-bold text-white text-center mb-2">{{ plan.name }}</h3>
+            <p class="text-3xl font-bold text-[#E94560] text-center mb-4 price-amount">₹{{ plan.price }}<span class="text-text-gray text-sm price-period">{% if plan.duration == 'monthly' %}/month{% elif plan.duration == 'quarterly' %}/3 months{% else %}/year{% endif %}</span></p>
             <ul class="space-y-2 mb-6 features-list">
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">All Basic Features</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Advanced Workouts</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Video Tutorials</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Priority Support</span></li>
+                {% for feature in plan.features %}
+                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">{{ feature }}</span></li>
+                {% endfor %}
             </ul>
-            <a href="/membership/plans/" class="block text-center bg-[#E94560] text-white py-2 rounded-lg hover:bg-opacity-80 transition-all">Choose Plan</a>
+            <a href="{% url 'membership:plans' %}" class="block text-center {% if plan.is_popular %}bg-[#E94560] text-white hover:bg-opacity-80{% else %}border border-[#E94560] text-[#E94560] hover:bg-[#E94560] hover:text-white{% endif %} py-2 rounded-lg transition-all">Choose Plan</a>
         </div>
-        
-        <!-- Premium Plan -->
-        <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 card-hover pricing-card">
-            <h3 class="text-xl font-bold text-white text-center mb-2">Premium</h3>
-            <p class="text-3xl font-bold text-[#E94560] text-center mb-4 price-amount">₹699<span class="text-text-gray text-sm price-period">/month</span></p>
-            <ul class="space-y-2 mb-6 features-list">
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">All Pro Features</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">1-on-1 Personal Trainer</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">Custom Meal Plans</span></li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-[#00D09C] mr-2 text-sm"></i><span class="text-text-gray">24/7 Support</span></li>
-            </ul>
-            <a href="/membership/plans/" class="block text-center border border-[#E94560] text-[#E94560] py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all">Choose Plan</a>
+        {% empty %}
+        <div class="col-span-3 text-center py-12">
+            <p class="text-text-gray">No membership plans available at the moment. Please check back later.</p>
         </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

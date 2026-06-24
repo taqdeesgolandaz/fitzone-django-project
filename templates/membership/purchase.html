@@ -425,11 +425,12 @@
                 </div>
             </div>
 
-            <!-- Confirm Button -->
-            <button id="upiPayButton" type="button"
+            <!-- Confirm Button (Razorpay) -->
+            <form style="display:none">{% csrf_token %}</form>
+            <button id="razorpayPayButton" type="button"
                class="block w-full bg-[#E94560] text-white py-3 rounded-lg font-semibold text-center hover:bg-opacity-80 transition-all transform hover:scale-[1.02] btn-proceed">
                 <i class="fas fa-credit-card mr-2"></i>
-                Pay ₹{{ plan.price }} via UPI
+                Pay ₹{{ plan.price }}
             </button>
 
             <p class="text-text-gray text-xs text-center mt-4 secure-text">
@@ -448,39 +449,95 @@
 </div>
 
 <!-- DEBUG: Plan ID is {{ plan.id }} -->
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-    const upiId = '{{ upi_id|escapejs }}';
-    const payeeName = '{{ payee_name|escapejs }}';
-    const amount = '{{ plan.price }}';
+    const payBtn = document.getElementById('razorpayPayButton');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]') ? document.querySelector('[name=csrfmiddlewaretoken]').value : '';
+    const razorpayKey = '{{ razorpay_key|default:"" }}';
+    const razorpayOrderId = '{{ razorpay_order.id|default:"" }}';
 
-    function openUpiPayment() {
-        if (!upiId) {
-            alert('UPI payment is not available at the moment.');
-            return;
-        }
-
-        const upiUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${encodeURIComponent(amount)}&cu=INR`;
-        window.location.href = upiUrl;
-    }
-
-    const proceedBtn = document.querySelector('.btn-proceed');
-    if (proceedBtn) {
-        proceedBtn.addEventListener('click', function(e) {
+    if (payBtn) {
+        payBtn.addEventListener('click', function (e) {
             const originalHtml = this.innerHTML;
             if (!this.hasAttribute('data-original-html')) {
                 this.setAttribute('data-original-html', originalHtml);
             }
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+            this.classList.add('opacity-70');
+            this.disabled = true;
 
-            if (typeof showButtonSpinner === 'function') {
-                showButtonSpinner(this);
-            } else {
-                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-                this.classList.add('btn-loading');
+            const options = {
+                key: razorpayKey,
+                amount: '{{ razorpay_order.amount|default:0 }}',
+                currency: 'INR',
+                name: 'FitZone',
+                description: '{{ plan.name }} Membership',
+                order_id: razorpayOrderId,
+                handler: function(response){
+                    fetch("{% url 'payments:payment_success' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            alert('Payment verification failed: ' + (data.error || ''));
+                            if (typeof hideButtonSpinner === 'function') {
+                                hideButtonSpinner(payBtn);
+                            } else {
+                                payBtn.classList.remove('btn-loading');
+                                payBtn.innerHTML = originalHtml;
+                            }
+                            payBtn.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Payment confirmation failed. Please contact support.');
+                        if (typeof hideButtonSpinner === 'function') {
+                            hideButtonSpinner(payBtn);
+                        } else {
+                            payBtn.classList.remove('btn-loading');
+                            payBtn.innerHTML = originalHtml;
+                        }
+                        payBtn.disabled = false;
+                    });
+                },
+                prefill: {
+                    name: '{{ user.full_name|default:user.username }}',
+                    email: '{{ user.email }}',
+                    contact: '{{ user.mobile_number|default:'' }}'
+                },
+                theme: { color: '#E94560' }
+            };
+
+            if (!razorpayKey || !razorpayOrderId) {
+                alert('Payment initialization failed. Please try again or contact support.');
+                payBtn.innerHTML = originalHtml;
+                payBtn.classList.remove('btn-loading');
+                payBtn.disabled = false;
+                return;
             }
 
-            this.classList.add('opacity-70');
-            openUpiPayment();
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', function(response){
+                alert('Payment failed. Please try again.');
+                payBtn.innerHTML = originalHtml;
+                payBtn.classList.remove('btn-loading');
+                payBtn.disabled = false;
+            });
+            rzp.open();
         });
     }
     

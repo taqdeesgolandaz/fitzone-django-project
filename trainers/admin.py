@@ -3,10 +3,14 @@ from .models import Trainer, TrainerSession, TrainerReview
 
 @admin.register(Trainer)
 class TrainerAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'specialization', 'experience_level', 'monthly_rate', 'is_available', 'is_verified', 'average_rating']
+    list_display = ['position', 'full_name', 'specialization', 'experience_level', 'monthly_rate', 'is_available', 'is_verified', 'average_rating']
     list_filter = ['specialization', 'experience_level', 'is_available', 'is_verified']
     search_fields = ['full_name', 'email', 'bio']
-    list_editable = ['is_available', 'is_verified', 'monthly_rate']
+    list_editable = ['position', 'is_available', 'is_verified', 'monthly_rate']
+    ordering = ['position']
+    actions = ['move_up', 'move_down']
+    # Make `full_name` clickable; `position` is editable so it cannot be the link
+    list_display_links = ('full_name',)
     
     fieldsets = (
         ('Personal Information', {
@@ -22,6 +26,28 @@ class TrainerAdmin(admin.ModelAdmin):
             'fields': ('total_ratings', 'average_rating')
         }),
     )
+
+    def move_up(self, request, queryset):
+        """Move selected trainers up in ordering (swap with previous)."""
+        for obj in queryset.order_by('position'):
+            neighbor = Trainer.objects.filter(position__lt=obj.position).order_by('-position').first()
+            if neighbor:
+                obj.position, neighbor.position = neighbor.position, obj.position
+                obj.save()
+                neighbor.save()
+        self.message_user(request, "Selected trainers moved up")
+    move_up.short_description = 'Move selected trainers up'
+
+    def move_down(self, request, queryset):
+        """Move selected trainers down in ordering (swap with next)."""
+        for obj in queryset.order_by('-position'):
+            neighbor = Trainer.objects.filter(position__gt=obj.position).order_by('position').first()
+            if neighbor:
+                obj.position, neighbor.position = neighbor.position, obj.position
+                obj.save()
+                neighbor.save()
+        self.message_user(request, "Selected trainers moved down")
+    move_down.short_description = 'Move selected trainers down'
 
 @admin.register(TrainerSession)
 class TrainerSessionAdmin(admin.ModelAdmin):

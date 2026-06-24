@@ -6,6 +6,8 @@ from django.db.models import Avg, Min, Max
 from .models import FitnessProgress, UserFitnessGoal, WorkoutLog
 from datetime import timedelta
 import json
+from django.utils import timezone as dj_timezone
+from membership.models import UserMembership
 
 @login_required
 def tracking_dashboard(request):
@@ -148,6 +150,15 @@ def set_goal(request):
 @login_required
 def bmi_calculator(request):
     """BMI Calculator tool"""
+    # Require active membership to access BMI calculator
+    has_membership = UserMembership.objects.filter(
+        user=request.user,
+        status='active',
+        end_date__gte=dj_timezone.now()
+    ).exists()
+
+    if not has_membership:
+        return render(request, 'tracking/membership_required.html')
     bmi = None
     category = None
     color = None

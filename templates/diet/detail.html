@@ -357,6 +357,11 @@
 {% endblock %}
 
 {% block content %}
+{% if membership_required and not user.is_staff %}
+<div class="py-12">
+    {% include 'includes/membership_alert.html' %}
+</div>
+{% else %}
 <div class="py-12 diet-container fade-in">
     <!-- Header -->
     <div class="text-center mb-8">

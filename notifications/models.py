@@ -70,6 +70,12 @@ class EmailLog(models.Model):
         ('booking_confirmation', 'Booking Confirmation'),
         ('workout_reminder', 'Workout Reminder'),
         ('password_reset', 'Password Reset'),
+        ('account_deactivated', 'Account Deactivated'),
+        ('account_reactivated', 'Account Reactivated'),
+        ('account_deleted', 'Account Deleted'),
+        ('account_deleted_admin', 'Account Deleted by Admin'),
+        ('account_recovered', 'Account Recovered'),
+        ('test', 'Test Email'),
     ]
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='emails')

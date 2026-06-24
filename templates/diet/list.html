@@ -54,6 +54,12 @@
             gap: 1.5rem;
         }
     }
+
+    /* Tighten footer spacing only on this page */
+    footer .container {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
     
     /* Desktops (992px to 1199px) */
     @media (min-width: 992px) and (max-width: 1199px) {
@@ -400,29 +406,46 @@
 {% endblock %}
 
 {% block content %}
-{% if not user.membership_active and not user.is_staff %}
-    <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-12 text-center max-w-2xl mx-auto mt-12 mb-12 restricted-card card-hover fade-in">
-        <div class="w-20 h-20 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-6 restricted-icon">
-            <i class="fas fa-lock text-[#E94560] text-4xl"></i>
-        </div>
-        <h2 class="text-2xl font-bold text-white mb-4 restricted-title">Membership Required</h2>
-        <p class="text-text-gray mb-6 restricted-text">
-            You need an active membership to access diet plans.
-            Choose a plan that best suits your fitness goals!
-        </p>
-        <div class="flex flex-wrap gap-4 justify-center action-buttons">
-            <a href="{% url 'membership:plans' %}" class="bg-[#E94560] text-white px-6 py-2 rounded-lg font-semibold hover:bg-opacity-80 transition-all">
-                <i class="fas fa-crown mr-2"></i> View Membership Plans
-            </a>
-            <a href="{% url 'dashboard' %}" class="border border-[#E94560] text-[#E94560] px-6 py-2 rounded-lg hover:bg-[#E94560] hover:text-white transition-all">
-                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+{% if membership_required and not user.is_staff %}
+    {% include 'includes/membership_alert.html' %}
+{% else %}
+<div class="pt-0 pb-0 diet-plans-container fade-in">
+    {% if show_pro_banner %}
+    <div class="bg-gradient-to-r from-[#E94560]/20 to-[#16213E] border border-[#E94560]/20 rounded-xl p-3 mb-3">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-crown text-[#E94560] text-lg"></i>
+                <div>
+                    <p class="text-white font-semibold">{{ pro_message }}</p>
+                    <p class="text-text-gray text-sm">Get access to more diet plans and features by upgrading to Pro.</p>
+                </div>
+            </div>
+            <a href="{{ pro_action_url }}" class="bg-[#E94560] text-white px-3 py-1.5 rounded-lg text-sm hover:bg-opacity-80 transition-all">
+                Upgrade to Pro <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
     </div>
-{% else %}
-<div class="py-12 diet-plans-container fade-in">
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-white mb-4 page-title">Diet <span class="text-[#E94560]">Plans</span></h1>
+    {% endif %}
+
+    {% if show_premium_banner %}
+    <div class="bg-gradient-to-r from-[#E94560]/20 to-[#16213E] border border-[#E94560]/20 rounded-xl p-3 mb-0">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-crown text-[#E94560] text-lg"></i>
+                <div>
+                    <p class="text-white font-semibold">{{ premium_message }}</p>
+                    <p class="text-text-gray text-sm">Get access to more diet plans and features by upgrading to Premium.</p>
+                </div>
+            </div>
+            <a href="{{ premium_action_url }}" class="bg-[#E94560] text-white px-3 py-1.5 rounded-lg text-sm hover:bg-opacity-80 transition-all">
+                Upgrade to Premium <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="text-center mb-6">
+        <h1 class="text-4xl font-bold text-white mt-8 page-title">Diet <span class="text-[#E94560]">Plans</span></h1>
         <p class="text-text-gray text-lg max-w-2xl mx-auto page-subtitle">
             Choose a diet plan that matches your fitness goals and start eating healthy!
         </p>

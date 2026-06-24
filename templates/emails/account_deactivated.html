@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 0; }
+        .email-container { max-width: 600px; margin: 24px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; }
+        .header { background: #0b1e2b; color: white; padding: 22px 20px; text-align: left; }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+        .content { padding: 24px; color: #111827; }
+        .content p { line-height: 1.6; margin: 12px 0; }
+        .button-container { text-align: left; margin: 18px 0; }
+        .button { display: inline-block; background-color: #0b1e2b; color: white; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-weight: 600; }
+        .footer { background-color: #f3f4f6; padding: 16px; text-align: center; font-size: 12px; color: #6b7280; }
+        .footer a { color: #0b1e2b; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Account Deactivated</h1>
+        </div>
+
+        <div class="content">
+            <p>Hi {{ username }},</p>
+
+            <p>Your FitZone account has been deactivated. You cannot sign in while the account is deactivated.</p>
+
+            <p>If you would like to reactivate your account, contact our support team. We will assist you promptly.</p>
+
+            <div class="button-container">
+                <a href="{{ reactivation_url }}" class="button">Contact Support</a>
+            </div>
+
+            <p>Regards,<br>The FitZone Team</p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; {{ year }} FitZone. <a href="mailto:support@fitzone.com">support@fitzone.com</a></p>
+        </div>
+    </div>
+</body>
+</html>

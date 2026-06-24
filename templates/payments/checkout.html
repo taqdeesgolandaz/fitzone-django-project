@@ -459,7 +459,7 @@
                 <p class="text-text-gray text-xs">Account: XXXXXX{{ bank_account.account_number|slice:"-4:" }}</p>
                 <p class="text-text-gray text-xs">IFSC: {{ bank_account.ifsc_code }}</p>
                 {% if bank_account.upi_id %}
-                <p class="text-text-gray text-xs">UPI: {{ bank_account.upi_id }}</p>
+                <!-- UPI removed: previously displayed bank_account.upi_id -->
                 {% endif %}
             </div>
             {% endif %}
@@ -521,11 +521,11 @@
                 fetch("{% url 'payments:payment_success' %}", {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/json',
                         'X-CSRFToken': csrfToken,
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: new URLSearchParams({
+                    body: JSON.stringify({
                         razorpay_payment_id: response.razorpay_payment_id,
                         razorpay_order_id: response.razorpay_order_id,
                         razorpay_signature: response.razorpay_signature

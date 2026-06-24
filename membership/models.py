@@ -55,6 +55,20 @@ class MembershipPlan(models.Model):
             return 365
         return 0
     
+    def get_plan_tier_value(self):
+        """Get numeric tier value for plan comparison"""
+        tier_values = {'basic': 1, 'pro': 2, 'premium': 3}
+        return tier_values.get(self.plan_type, 0)
+
+    @property
+    def plan_tier_value(self):
+        """Property wrapper for template-friendly access to tier value"""
+        return self.get_plan_tier_value()
+    
+    def is_upgrade_to(self, other_plan):
+        """Check if other_plan is an upgrade from this plan"""
+        return other_plan.get_plan_tier_value() > self.get_plan_tier_value()
+    
     class Meta:
         ordering = ['price']
         verbose_name = 'Membership Plan'

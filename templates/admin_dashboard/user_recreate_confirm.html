@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Recover Deleted User - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-[#1A1A2E] rounded-3xl border border-[#E94560]/20 p-8">
+            <h1 class="text-2xl font-bold text-white mb-4">Recover Deleted User</h1>
+            <p class="text-text-gray mb-6">You are about to restore a deleted user account and send a recovery email.</p>
+
+            <div class="grid grid-cols-1 gap-4 mb-6">
+                <div class="bg-[#0F0F1A] rounded-xl p-5">
+                    <p class="text-sm text-text-gray">Audit Record</p>
+                    <p class="text-white font-medium mt-2">{{ audit.description }}</p>
+                    <p class="text-xs text-text-gray mt-2">Deleted on {{ audit.timestamp|date:'M d, Y H:i' }}</p>
+                </div>
+                <div class="bg-[#0F0F1A] rounded-xl p-5">
+                    <p class="text-sm text-text-gray">Recovered user details</p>
+                    <p class="text-white font-semibold mt-2">Username: {{ payload.username|default:'Unknown' }}</p>
+                    <p class="text-white font-semibold">Email: {{ payload.email|default:'Unknown' }}</p>
+                    {% if not payload.email %}
+                    <p class="text-sm text-red-400 mt-2">Unable to recover because audit entry does not contain a valid email.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <form method="post" action="" onsubmit="return confirmRecover();" class="w-full">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full inline-flex justify-center items-center rounded-xl bg-[#00D09C] px-5 py-3 text-sm font-semibold text-[#031B16] hover:bg-[#0ec486] transition">
+                        Undo Delete and Send Recovery Email
+                    </button>
+                </form>
+                <a href="{% url 'admin_dashboard:dashboard' %}" class="w-full inline-flex justify-center items-center rounded-xl border border-[#E94560] px-5 py-3 text-sm font-semibold text-white hover:bg-[#E94560]/10 transition">
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmRecover() {
+    return confirm('Recover this deleted user account and send them a recovery email?');
+}
+</script>
+{% endblock %}

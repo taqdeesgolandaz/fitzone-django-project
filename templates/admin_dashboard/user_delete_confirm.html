@@ -1,0 +1,245 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Delete User - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-warning {
+        background: rgba(248, 113, 113, 0.08);
+        border: 2px solid rgba(248, 113, 113, 0.3);
+        border-radius: 16px;
+        padding: 2rem;
+        margin: 2rem 0;
+    }
+
+    .delete-warning-title {
+        color: #f87171;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .warning-info {
+        background: rgba(248, 113, 113, 0.05);
+        border-left: 4px solid #f87171;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    .warning-info-item {
+        margin: 0.75rem 0;
+        color: #E5E7EB;
+        font-size: 0.95rem;
+    }
+
+    .warning-info-item strong {
+        color: #FFFFFF;
+    }
+
+    .delete-action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-delete {
+        background: #f87171;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .btn-delete:hover {
+        background: #ef4444;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(248, 113, 113, 0.3);
+    }
+
+    .btn-cancel {
+        background: #1A1A2E;
+        color: #E5E7EB;
+        padding: 0.75rem 1.5rem;
+        border: 1px solid rgba(233, 69, 96, 0.3);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .btn-cancel:hover {
+        background: #0F0F1A;
+        border-color: rgba(233, 69, 96, 0.5);
+    }
+
+    .info-card {
+        background: #1A1A2E;
+        border: 1px solid rgba(233, 69, 96, 0.15);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin: 1rem 0;
+    }
+
+    .info-label {
+        color: #A0A0A0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-value {
+        color: #FFFFFF;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .delete-warning {
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .delete-warning-title {
+            font-size: 1.25rem;
+        }
+
+        .warning-info {
+            padding: 1rem;
+        }
+
+        .delete-action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-delete, .btn-cancel {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4 sm:px-6 lg:px-8 fade-in">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Delete User Account</h1>
+            <p class="text-text-gray mt-1">Permanent deletion of user account and associated data</p>
+        </div>
+        <a href="{% url 'admin_dashboard:user_details' profile_user.id %}" class="text-[#E94560] hover:text-[#E94560]/80 transition-colors">
+            <i class="fas fa-arrow-left mr-1"></i> Back to User Details
+        </a>
+    </div>
+
+    <!-- Warning Section -->
+    <div class="delete-warning">
+        <div class="delete-warning-title">
+            <i class="fas fa-exclamation-triangle text-xl"></i>
+            WARNING: PERMANENT DELETION
+        </div>
+        <p class="text-text-gray mb-3">
+            You are about to permanently delete this user account. This action <strong>cannot be undone</strong>.
+        </p>
+
+        <!-- User Information to Delete -->
+        <div class="warning-info">
+            <div class="warning-info-item">
+                <strong>Username:</strong> {{ profile_user.username }}
+            </div>
+            <div class="warning-info-item">
+                <strong>Email:</strong> {{ profile_user.email }}
+            </div>
+            <div class="warning-info-item">
+                <strong>Mobile:</strong> {{ profile_user.mobile_number|default:'-' }}
+            </div>
+            <div class="warning-info-item">
+                <strong>Full Name:</strong> {{ profile_user.get_full_name|default:'-' }}
+            </div>
+        </div>
+
+        <!-- Data to be Deleted -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+            <div class="info-card">
+                <p class="info-label"><i class="fas fa-crown mr-1"></i> Memberships</p>
+                <p class="info-value">{{ membership_count }}</p>
+            </div>
+            <div class="info-card">
+                <p class="info-label"><i class="fas fa-credit-card mr-1"></i> Payments</p>
+                <p class="info-value">{{ payment_count }}</p>
+            </div>
+            <div class="info-card">
+                <p class="info-label"><i class="fas fa-calendar-alt mr-1"></i> Joined</p>
+                <p class="info-value">{{ profile_user.date_joined|date:'M d, Y' }}</p>
+            </div>
+        </div>
+
+        <!-- Confirmation Details -->
+        <div class="warning-info">
+            <p class="text-text-gray text-sm mb-2">
+                <i class="fas fa-info-circle mr-1"></i> The following data will be deleted:
+            </p>
+            <ul class="text-text-gray text-sm space-y-1 ml-4">
+                <li>✓ User account and profile information</li>
+                <li>✓ All membership records ({{ membership_count }})</li>
+                <li>✓ All payment records ({{ payment_count }})</li>
+                <li>✓ Workout history and diet progress</li>
+                <li>✓ Trainer sessions and notifications</li>
+            </ul>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="delete-action-buttons">
+            <a href="{% url 'admin_dashboard:user_details' profile_user.id %}" class="btn-cancel text-center">
+                <i class="fas fa-times mr-1"></i> Cancel
+            </a>
+            <form method="post" action="{% url 'admin_dashboard:confirm_delete_user' profile_user.id %}" style="flex: 1;">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete w-full" onclick="return confirm('Please confirm permanent deletion. This action is irreversible.\n\nTo proceed, verify the username: {{ profile_user.username }}')">
+                    <i class="fas fa-trash-alt mr-1"></i> Delete Permanently
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Information Box -->
+    <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 p-6 mt-8">
+        <h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+            <i class="fas fa-lightbulb text-[#E94560]"></i> Alternative Option
+        </h3>
+        <p class="text-text-gray mb-4">
+            Instead of permanent deletion, you can <strong>deactivate</strong> the user account. This allows them to reactivate later and preserves historical data.
+        </p>
+        <a href="{% url 'admin_dashboard:deactivate_user' profile_user.id %}" class="inline-flex items-center gap-2 text-[#E94560] hover:text-[#E94560]/80 transition-colors">
+            <i class="fas fa-pause-circle"></i> Deactivate User Instead
+        </a>
+    </div>
+</div>
+{% endblock %}

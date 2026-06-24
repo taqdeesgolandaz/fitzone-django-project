@@ -13,7 +13,7 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('', include(('accounts.urls', 'accounts'), namespace='accounts')),
     path('accounts/', include('allauth.urls')),
-    path('membership/', include('membership.urls')),
+    path('membership/', include(('membership.urls', 'membership'), namespace='membership')),
     path('payments/', include('payments.urls')),  # This line is critical
     path('workouts/', include('workouts.urls')),  # Add this line
     path('diet/', include('diet.urls')),  # Add this line

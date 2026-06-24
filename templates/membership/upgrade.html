@@ -1,0 +1,1004 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Upgrade Membership - FitZone{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       PROFESSIONAL STYLING FOR UPGRADE PAGE
+    ============================================ */
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Plan Comparison Cards */
+    .plan-comparison {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1.5rem;
+        align-items: stretch;
+        margin: 2rem 0;
+    }
+    
+    .plan-card {
+        background: #1A1A2E;
+        border: 1px solid rgba(233, 69, 96, 0.2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .plan-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(233, 69, 96, 0.15);
+    }
+    
+    .plan-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: rgba(233, 69, 96, 0.15);
+        color: #E94560;
+    }
+    
+    .plan-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #E94560;
+    }
+    
+    .plan-price small {
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: #A0A0A0;
+    }
+    
+    .arrow-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #E94560;
+        font-size: 2rem;
+        padding: 0 0.5rem;
+        animation: pulseArrow 2s infinite;
+    }
+    
+    @keyframes pulseArrow {
+        0%, 100% { transform: translateX(0); opacity: 1; }
+        50% { transform: translateX(8px); opacity: 0.7; }
+    }
+    
+    .pricing-breakdown {
+        background: linear-gradient(135deg, rgba(17, 24, 39, 0.9), rgba(26, 26, 46, 0.9));
+        border-left: none;
+        padding: 1.25rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+    }
+
+    .page-container {
+        width: 100%;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    @media (min-width: 1280px) {
+        .plan-comparison {
+            grid-template-columns: minmax(0, 1.2fr) auto minmax(0, 1.2fr);
+            gap: 0.8rem;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .plan-comparison {
+            gap: 1rem;
+        }
+    }
+    
+    .breakdown-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0;
+        color: #D4D4D8;
+        font-size: 0.9rem;
+    }
+    
+    .breakdown-total {
+        border-top: 2px solid rgba(233, 69, 96, 0.3);
+        padding-top: 0.75rem;
+        margin-top: 0.75rem;
+        font-weight: 700;
+        color: #E94560;
+        font-size: 1.1rem;
+    }
+    
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0;
+    }
+    
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #A0A0A0;
+        font-size: 0.85rem;
+        padding: 0.3rem 0;
+    }
+    
+    .feature-list li i {
+        color: #00D09C;
+        font-size: 0.75rem;
+        width: 1.25rem;
+    }
+    
+    .upgrade-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    
+    .upgrade-btn.primary {
+        background: linear-gradient(135deg, #E94560, #c72a4a);
+        color: white;
+        box-shadow: 0 4px 20px rgba(233, 69, 96, 0.3);
+    }
+    
+    .upgrade-btn.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(233, 69, 96, 0.4);
+    }
+    
+    .upgrade-btn.primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+    
+    .upgrade-btn.success {
+        background: linear-gradient(135deg, #00D09C, #00a87c);
+        color: white;
+        box-shadow: 0 4px 20px rgba(0, 208, 156, 0.3);
+    }
+    
+    .upgrade-btn.success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 208, 156, 0.4);
+    }
+    
+    .btn-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .savings-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(0, 208, 156, 0.15);
+        color: #00D09C;
+        padding: 0.35rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    
+    .progress-bar-wrapper {
+        margin-top: 0.75rem;
+    }
+    
+    .progress-bar-wrapper .bar {
+        height: 6px;
+        border-radius: 9999px;
+        transition: width 0.4s ease;
+        background: #E94560;
+    }
+    
+    .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        z-index: 9999;
+        max-width: 400px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        animation: slideUp 0.3s ease-out;
+        display: none;
+    }
+    
+    .toast.success { background: #00D09C; }
+    .toast.error { background: #E94560; }
+    .toast.info { background: #3B82F6; }
+    
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media (max-width: 1024px) {
+        .plan-comparison { gap: 1rem; }
+        .plan-card { padding: 1.25rem; }
+        .plan-price { font-size: 2rem; }
+    }
+    
+    @media (max-width: 768px) {
+        .plan-comparison {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        .arrow-divider {
+            transform: rotate(90deg);
+            padding: 0.25rem 0;
+            font-size: 1.5rem;
+        }
+        .plan-card { padding: 1rem; }
+        .plan-price { font-size: 1.75rem; }
+        .pricing-breakdown { padding: 1rem; }
+        .breakdown-row { font-size: 0.8rem; }
+        .breakdown-total { font-size: 1rem; }
+    }
+    
+    @media (max-width: 480px) {
+        .plan-card { padding: 0.875rem; }
+        .plan-price { font-size: 1.5rem; }
+        .feature-list li { font-size: 0.75rem; }
+        .upgrade-btn { font-size: 0.875rem; padding: 0.75rem; }
+    }
+
+    /* ============================================
+       UPGRADE BANNER - COMPLETE RESPONSIVE STYLES
+       ============================================ */
+
+    .upgrade-banner {
+        background: linear-gradient(135deg, rgba(233, 69, 96, 0.15), rgba(22, 33, 62, 0.9));
+        border: 1px solid rgba(233, 69, 96, 0.2);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin: 0.25rem 0 0.75rem; /* further reduced top margin */
+        transition: all 0.3s ease;
+    }
+
+    .upgrade-banner:hover {
+        border-color: rgba(233, 69, 96, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(233, 69, 96, 0.1);
+    }
+
+    .upgrade-banner .banner-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .upgrade-banner .banner-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .upgrade-banner .banner-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(233, 69, 96, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .upgrade-banner .banner-icon i {
+        color: #E94560;
+        font-size: 1.25rem;
+    }
+
+    .upgrade-banner .banner-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .upgrade-banner .banner-title {
+        color: white;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .upgrade-banner .banner-subtitle {
+        color: #A0A0A0;
+        font-size: 0.8rem;
+        margin: 0.15rem 0 0;
+        line-height: 1.3;
+    }
+
+    .upgrade-banner .banner-btn {
+        background: #E94560;
+        color: white;
+        padding: 0.5rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .upgrade-banner .banner-btn:hover {
+        background: #c72a4a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    }
+
+    .upgrade-banner .banner-btn:active {
+        transform: scale(0.96);
+    }
+
+    @media (min-width: 1400px) {
+        .upgrade-banner {
+            padding: 1.25rem 1.75rem;
+            border-radius: 16px;
+        }
+
+        .upgrade-banner .banner-title {
+            font-size: 1.1rem;
+        }
+
+        .upgrade-banner .banner-subtitle {
+            font-size: 0.9rem;
+        }
+
+        .upgrade-banner .banner-icon {
+            width: 48px;
+            height: 48px;
+        }
+
+        .upgrade-banner .banner-icon i {
+            font-size: 1.5rem;
+        }
+
+        .upgrade-banner .banner-btn {
+            padding: 0.6rem 1.75rem;
+            font-size: 0.95rem;
+            border-radius: 10px;
+        }
+    }
+
+    @media (min-width: 1200px) and (max-width: 1399px) {
+        .upgrade-banner {
+            padding: 1.125rem 1.5rem;
+        }
+
+        .upgrade-banner .banner-title {
+            font-size: 1rem;
+        }
+    }
+
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .upgrade-banner {
+            padding: 1rem 1.25rem;
+        }
+
+        .upgrade-banner .banner-title {
+            font-size: 0.95rem;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 991px) {
+        .upgrade-banner {
+            padding: 0.875rem 1.125rem;
+            border-radius: 10px;
+        }
+
+        .upgrade-banner .banner-left {
+            gap: 0.75rem;
+            flex: 1 1 100%;
+        }
+
+        .upgrade-banner .banner-icon {
+            width: 36px;
+            height: 36px;
+        }
+
+        .upgrade-banner .banner-icon i {
+            font-size: 1rem;
+        }
+
+        .upgrade-banner .banner-title {
+            font-size: 0.9rem;
+        }
+
+        .upgrade-banner .banner-subtitle {
+            font-size: 0.75rem;
+        }
+
+        .upgrade-banner .banner-btn {
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (min-width: 576px) and (max-width: 767px) {
+        .upgrade-banner {
+            padding: 0.875rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .upgrade-banner .banner-content {
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: stretch;
+        }
+
+        .upgrade-banner .banner-title {
+            font-size: 0.85rem;
+        }
+
+        .upgrade-banner .banner-subtitle {
+            font-size: 0.7rem;
+        }
+
+        .upgrade-banner .banner-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+    }
+
+    @media (min-width: 375px) and (max-width: 575px) {
+        .upgrade-banner {
+            padding: 0.75rem 0.875rem;
+            border-radius: 8px;
+            margin-bottom: 0.875rem;
+        }
+
+        .upgrade-banner .banner-content {
+            flex-direction: column;
+            gap: 0.625rem;
+            align-items: stretch;
+        }
+
+        .upgrade-banner .banner-left {
+            gap: 0.625rem;
+            align-items: flex-start;
+        }
+
+        .upgrade-banner .banner-icon {
+            width: 32px;
+            height: 32px;
+            margin-top: 0.125rem;
+        }
+
+        .upgrade-banner .banner-icon i {
+            font-size: 0.875rem;
+        }
+
+        .upgrade-banner .banner-title {
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        .upgrade-banner .banner-subtitle {
+            font-size: 0.65rem;
+            margin-top: 0.1rem;
+        }
+
+        .upgrade-banner .banner-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.45rem 0.875rem;
+            font-size: 0.75rem;
+            border-radius: 6px;
+        }
+    }
+
+    @media (min-width: 320px) and (max-width: 374px) {
+        .upgrade-banner {
+            padding: 0.625rem 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .upgrade-banner .banner-content {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .upgrade-banner .banner-left {
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .upgrade-banner .banner-icon {
+            width: 28px;
+            height: 28px;
+            margin-top: 0.125rem;
+        }
+
+        .upgrade-banner .banner-icon i {
+            font-size: 0.75rem;
+        }
+
+        .upgrade-banner .banner-title {
+            font-size: 0.7rem;
+        }
+
+        .upgrade-banner .banner-subtitle {
+            font-size: 0.6rem;
+            margin-top: 0.05rem;
+        }
+
+        .upgrade-banner .banner-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.7rem;
+            border-radius: 6px;
+        }
+
+        .upgrade-banner .banner-btn i {
+            font-size: 0.65rem;
+        }
+    }
+
+    @media (max-width: 320px) {
+        .upgrade-banner {
+            padding: 0.5rem 0.625rem;
+            border-radius: 6px;
+            margin-bottom: 0.625rem;
+        }
+
+        .upgrade-banner .banner-title {
+            font-size: 0.65rem;
+        }
+
+        .upgrade-banner .banner-subtitle {
+            font-size: 0.55rem;
+        }
+
+        .upgrade-banner .banner-btn {
+            font-size: 0.65rem;
+            padding: 0.35rem 0.625rem;
+        }
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+        .upgrade-banner .banner-btn:active {
+            transform: scale(0.96);
+        }
+
+        .upgrade-banner:hover {
+            transform: none;
+            box-shadow: none;
+        }
+    }
+
+    @media (max-width: 768px) and (orientation: landscape) {
+        .upgrade-banner .banner-content {
+            flex-direction: row !important;
+            align-items: center;
+        }
+
+        .upgrade-banner .banner-btn {
+            width: auto !important;
+            flex-shrink: 0;
+        }
+    }
+
+    @media (prefers-contrast: high) {
+        .upgrade-banner {
+            border: 2px solid #E94560;
+        }
+
+        .upgrade-banner .banner-btn {
+            border: 1px solid white;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .upgrade-banner:hover,
+        .upgrade-banner .banner-btn:hover {
+            transform: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 page-container w-full px-4 sm:px-6 xl:px-8 fade-in">
+    <!-- Header -->
+    <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-3">
+            Upgrade Your <span class="text-[#E94560]">Membership</span>
+        </h1>
+        <p class="text-text-gray text-lg">
+            Unlock more features and take your fitness journey to the next level
+        </p>
+    </div>
+
+    <!-- Upgrade Banner -->
+    {% if show_upgrade_banner %}
+    <div class="upgrade-banner">
+        <div class="banner-content">
+            <div class="banner-left">
+                <div class="banner-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="banner-text">
+                    <p class="banner-title">Upgrade to Premium for unlimited workout plans!</p>
+                    <p class="banner-subtitle">Get access to more workout plans and advanced membership perks.</p>
+                </div>
+            </div>
+            <a href="{% url 'membership:plans' %}" class="banner-btn">
+                Upgrade Now <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Plan Comparison -->
+    <div class="plan-comparison">
+        <!-- Current Plan -->
+        <div class="plan-card">
+            <div class="flex items-center justify-between mb-3">
+                <span class="plan-badge">Current Plan</span>
+                <span class="text-text-gray text-sm">{{ active_membership.end_date|timeuntil }} remaining</span>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-1">{{ current_plan.name }}</h3>
+            <p class="plan-price">₹{{ current_plan.price }} <small>/month</small></p>
+            <p class="text-text-gray text-sm mt-2">{{ current_plan.description|truncatechars:80 }}</p>
+            
+            <ul class="feature-list">
+                {% for feature in current_features %}
+                <li><i class="fas fa-check-circle"></i> {{ feature }}</li>
+                {% endfor %}
+            </ul>
+            
+            <div class="bg-[#0F0F1A] rounded-lg p-3 mt-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-text-gray">Days Remaining</span>
+                    <span class="text-white font-semibold">{{ days_remaining }} days</span>
+                </div>
+                <div class="flex justify-between text-sm mt-1">
+                    <span class="text-text-gray">Expires</span>
+                    <span class="text-white font-semibold">{{ active_membership.end_date|date:"M d, Y" }}</span>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="bar" style="width: {{ days_remaining_percent }}%"></div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow-divider">
+            <i class="fas fa-arrow-right"></i>
+        </div>
+
+        <!-- New Plan -->
+        <div class="plan-card">
+            <div class="flex items-center justify-between mb-3">
+                <span class="plan-badge">Upgrade</span>
+                {% if savings_percent > 0 %}
+                <span class="savings-badge">
+                    <i class="fas fa-tag"></i> Save {{ savings_percent }}%
+                </span>
+                {% endif %}
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-1">{{ new_plan.name }}</h3>
+            <p class="plan-price">₹{{ new_plan.price }} <small>/month</small></p>
+            <p class="text-text-gray text-sm mt-2">{{ new_plan.description|truncatechars:80 }}</p>
+            
+            <ul class="feature-list">
+                {% for feature in new_features %}
+                <li><i class="fas fa-check-circle"></i> {{ feature }}</li>
+                {% endfor %}
+            </ul>
+            
+            <div class="bg-[#0F0F1A] rounded-lg p-3 mt-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-text-gray">New Expiry</span>
+                    <span class="text-[#00D09C] font-semibold">{{ new_end_date|date:"M d, Y" }}</span>
+                </div>
+                <div class="flex justify-between text-sm mt-1">
+                    <span class="text-text-gray">Extended By</span>
+                    <span class="text-white font-semibold">{{ new_plan.get_duration_days }} days</span>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="bar" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Breakdown -->
+    {% if upgrade_amount > 0 %}
+    <div class="pricing-breakdown">
+        <div class="flex items-center gap-2 mb-3">
+            <i class="fas fa-calculator text-[#E94560]"></i>
+            <h4 class="text-white font-semibold">Cost Breakdown</h4>
+        </div>
+        
+        <div class="breakdown-row">
+            <span>{{ current_plan.name }} Pro-rated ({{ days_remaining }} days)</span>
+            <span>₹{{ current_pro_rate|floatformat:2 }}</span>
+        </div>
+        <div class="breakdown-row">
+            <span>{{ new_plan.name }} (Full month)</span>
+            <span>₹{{ new_plan.price }}</span>
+        </div>
+        <div class="breakdown-row text-text-gray text-sm">
+            <span>Adjustment</span>
+            <span>- ₹{{ adjustment|floatformat:2 }}</span>
+        </div>
+        <div class="breakdown-row breakdown-total">
+            <span>Total Amount Due</span>
+            <span>₹{{ upgrade_amount|floatformat:2 }}</span>
+        </div>
+        
+        <p class="text-text-gray text-xs mt-3 mb-0 flex items-center gap-1">
+            <i class="fas fa-info-circle"></i>
+            Your remaining days will be converted at pro-rated cost.
+        </p>
+    </div>
+    {% else %}
+    <div class="bg-green-500/10 border border-green-500/50 rounded-xl p-4 mb-6 flex items-center gap-3">
+        <i class="fas fa-gift text-green-400 text-xl"></i>
+        <div>
+            <p class="text-green-400 font-semibold">🎉 Great news!</p>
+            <p class="text-text-gray text-sm">Free upgrade available for you.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Payment Section -->
+    <div class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-xl p-6 mb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <i class="fas fa-shield-alt text-[#00D09C] text-xl"></i>
+            <h3 class="text-xl font-bold text-white">Secure Payment</h3>
+            <span class="text-text-gray text-xs bg-[#0F0F1A] px-2 py-0.5 rounded">Powered by Razorpay</span>
+        </div>
+        <p class="text-text-gray mb-4">Complete your upgrade with a secure payment.</p>
+        
+        {% if upgrade_amount > 0 %}
+        <button 
+            id="payButton" 
+            class="upgrade-btn primary"
+            onclick="processPayment()">
+            <span id="payButtonText">
+                <i class="fas fa-lock"></i> Pay ₹{{ upgrade_amount|floatformat:2 }} & Upgrade Now
+            </span>
+            <span id="payButtonLoader" style="display:none;">
+                <span class="btn-spinner"></span> Processing...
+            </span>
+        </button>
+        {% else %}
+        <form method="POST" action="{% url 'payments:process_free_upgrade' %}">
+            {% csrf_token %}
+            <button type="submit" class="upgrade-btn success">
+                <i class="fas fa-check-circle"></i> Confirm Free Upgrade
+            </button>
+        </form>
+        {% endif %}
+        
+        <div class="flex items-center gap-4 mt-4 text-xs text-text-gray justify-center">
+            <span><i class="fas fa-credit-card"></i> Card</span>
+            <span><i class="fas fa-mobile-alt"></i> UPI</span>
+            <span><i class="fas fa-university"></i> Net Banking</span>
+            <span><i class="fas fa-wallet"></i> Wallet</span>
+        </div>
+    </div>
+
+    <!-- Back Link -->
+    <div class="text-center mt-8">
+        <a href="{% url 'membership:plans' %}" class="text-[#E94560] hover:text-[#ff6b8a] transition-colors inline-flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Back to Plans
+        </a>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast">
+    <span id="toastMessage"></span>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        toast.className = `toast ${type}`;
+        toastMessage.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 5000);
+    }
+
+    function processPayment() {
+        const payButton = document.getElementById('payButton');
+        const payButtonText = document.getElementById('payButtonText');
+        const payButtonLoader = document.getElementById('payButtonLoader');
+        
+        payButtonText.style.display = 'none';
+        payButtonLoader.style.display = 'inline-flex';
+        payButton.disabled = true;
+        
+        fetch('{% url "payments:create_upgrade_order" %}', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({ action: 'create_upgrade_order' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                var options = {
+                    "key": "{{ razorpay_key }}",
+                    "order_id": data.order_id,
+                    "amount": data.amount,
+                    "currency": "INR",
+                    "name": "FitZone",
+                    "description": "Membership Upgrade: {{ current_plan.name }} → {{ new_plan.name }}",
+                    "image": "{% static 'images/logo.png' %}",
+                    "handler": function (response) {
+                        verifyPayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
+                    },
+                    "prefill": {
+                        "name": "{{ request.user.get_full_name }}",
+                        "email": "{{ request.user.email }}",
+                        "contact": "{{ request.user.phone|default:'' }}"
+                    },
+                    "notes": {
+                        "user_id": "{{ request.user.id }}",
+                        "plan_id": "{{ new_plan.id }}"
+                    },
+                    "theme": { "color": "#E94560" },
+                    "modal": {
+                        "ondismiss": function() {
+                            payButtonText.style.display = 'inline-flex';
+                            payButtonLoader.style.display = 'none';
+                            payButton.disabled = false;
+                            showToast('Payment cancelled.', 'info');
+                        }
+                    }
+                };
+                var rzp = new Razorpay(options);
+                rzp.open();
+            } else {
+                showToast(data.error || 'Failed to create payment order.', 'error');
+                payButtonText.style.display = 'inline-flex';
+                payButtonLoader.style.display = 'none';
+                payButton.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred. Please try again.', 'error');
+            payButtonText.style.display = 'inline-flex';
+            payButtonLoader.style.display = 'none';
+            payButton.disabled = false;
+        });
+    }
+
+    function verifyPayment(paymentId, orderId, signature) {
+        const payButton = document.getElementById('payButton');
+        const payButtonText = document.getElementById('payButtonText');
+        const payButtonLoader = document.getElementById('payButtonLoader');
+        
+        payButtonText.style.display = 'none';
+        payButtonLoader.style.display = 'inline-flex';
+        payButton.disabled = true;
+        
+        fetch('{% url "payments:verify_upgrade_payment" %}', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                payment_id: paymentId,
+                order_id: orderId,
+                signature: signature,
+                action: 'verify_upgrade_payment'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('✅ Upgrade successful!', 'success');
+                setTimeout(() => {
+                    window.location.href = '{% url "membership:my_membership" %}';
+                }, 2000);
+            } else {
+                showToast(data.error || 'Payment verification failed.', 'error');
+                payButtonText.style.display = 'inline-flex';
+                payButtonLoader.style.display = 'none';
+                payButton.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Payment verification failed.', 'error');
+            payButtonText.style.display = 'inline-flex';
+            payButtonLoader.style.display = 'none';
+            payButton.disabled = false;
+        });
+    }
+    
+    // Refresh page when user comes back
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}

@@ -501,6 +501,98 @@
         }
     }
     
+    /* ============================================
+       FILTER SECTION RESPONSIVE STYLES
+    ============================================ */
+    
+    /* Large Desktops (1200px+) */
+    @media (min-width: 1200px) {
+        .filter-section { padding: 1.5rem 2rem; }
+    }
+    
+    /* Desktops (992px - 1199px) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .filter-section { padding: 1rem 1.5rem; }
+    }
+    
+    /* Tablets Landscape (768px - 991px) */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .filter-section { padding: 1rem; }
+        .filter-form { gap: 0.75rem; }
+        .filter-btn { padding: 0.25rem 0.6rem; font-size: 0.65rem; }
+        .date-input { width: 5rem; }
+        .search-input { min-width: 140px; }
+    }
+    
+    /* Tablets Portrait / Mobile Landscape (576px - 767px) */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .filter-section { padding: 0.875rem; }
+        .filter-form { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+        .filter-group { flex-wrap: wrap; justify-content: center; }
+        .filter-btn { padding: 0.2rem 0.5rem; font-size: 0.6rem; }
+        .search-input { min-width: 100%; }
+        .date-input { width: 6rem; }
+        .action-buttons { justify-content: center; }
+        .table-title { font-size: 1rem; }
+    }
+    
+    /* Mobile Portrait (375px - 575px) */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .filter-section { padding: 0.75rem; }
+        .filter-form { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+        .filter-group { flex-wrap: wrap; justify-content: center; gap: 0.25rem; }
+        .filter-btn { padding: 0.15rem 0.4rem; font-size: 0.55rem; border-radius: 999px; }
+        .search-input { min-width: 100%; padding: 0.3rem 0.6rem; }
+        .date-input { width: 5rem; padding: 0.3rem 0.4rem; }
+        .date-group { padding: 0.3rem 0.5rem; }
+        .action-buttons { justify-content: center; }
+        .action-btn { padding: 0.2rem 0.5rem; font-size: 0.6rem; }
+        .table-title { font-size: 0.9rem; }
+        .table-subtitle { font-size: 0.65rem; }
+        .filter-icon { font-size: 0.6rem; }
+        .filter-btn i { font-size: 0.5rem; }
+    }
+    
+    /* Small Mobile (320px - 374px) */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .filter-section { padding: 0.6rem; }
+        .filter-form { flex-direction: column; align-items: stretch; gap: 0.4rem; }
+        .filter-group { flex-wrap: wrap; justify-content: center; gap: 0.15rem; }
+        .filter-btn { padding: 0.1rem 0.35rem; font-size: 0.5rem; border-radius: 999px; }
+        .search-input { min-width: 100%; padding: 0.25rem 0.5rem; font-size: 0.65rem; }
+        .date-input { width: 4rem; padding: 0.25rem 0.3rem; font-size: 0.6rem; }
+        .date-group { padding: 0.2rem 0.4rem; }
+        .action-buttons { justify-content: center; flex-wrap: wrap; gap: 0.25rem; }
+        .action-btn { padding: 0.15rem 0.4rem; font-size: 0.55rem; }
+        .table-title { font-size: 0.8rem; }
+        .table-subtitle { font-size: 0.55rem; }
+        .filter-icon { font-size: 0.5rem; }
+        .filter-btn i { font-size: 0.4rem; }
+        .filter-btn span { display: none; }
+        .filter-btn .short-label { display: inline; }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .filter-btn:active {
+            transform: scale(0.95);
+        }
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        .filter-btn:hover {
+            background: transparent;
+        }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .filter-btn,
+        .action-btn {
+            transition: none;
+        }
+    }
+
     /* Dark mode support */
     @media (prefers-color-scheme: dark) {
         body {
@@ -576,43 +668,63 @@
     <div class="bg-[#1A1A2E] rounded-xl border border-[#E94560]/20 overflow-hidden users-table card-hover">
         <div class="px-6 py-4 border-b border-[#E94560]/20 bg-[#0F0F1A]">
             <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+                <!-- Header Left -->
                 <div>
-                    <h3 class="text-white font-semibold table-title text-lg">
-                        <i class="fas fa-list-ul text-[#E94560] mr-2"></i>User Report
+                    <h3 class="text-white font-semibold table-title text-lg flex items-center gap-2">
+                        <i class="fas fa-list-ul text-[#E94560]"></i> User Report
                     </h3>
-                    <p class="text-text-gray text-sm mt-1">Showing <span class="text-white font-semibold">{{ filtered_users_count }}</span> of <span class="text-white font-semibold">{{ total_users }}</span> users</p>
+                    <p class="text-text-gray text-sm mt-0.5">Showing <span class="text-white font-semibold">{{ filtered_users_count }}</span> of <span class="text-white font-semibold">{{ total_users }}</span> users</p>
                 </div>
                 
-                <form method="get" class="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full md:w-auto">
+                <!-- Filter Form -->
+                <form method="get" class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+                    <!-- Status Filters -->
                     <div class="flex flex-wrap gap-1 items-center bg-[#0F0F1A] border border-[#E94560]/20 rounded-full px-2 py-1">
-                        <button type="submit" name="status" value="all" class="px-3 py-1 text-xs rounded-full filter-btn {% if status_filter == 'all' %}active{% else %}bg-transparent text-text-gray hover:bg-[#E94560]/20{% endif %}">All</button>
-                        <button type="submit" name="status" value="active" class="px-3 py-1 text-xs rounded-full filter-btn {% if status_filter == 'active' %}active{% else %}bg-transparent text-text-gray hover:bg-[#E94560]/20{% endif %}">Active</button>
-                        <button type="submit" name="status" value="inactive" class="px-3 py-1 text-xs rounded-full filter-btn {% if status_filter == 'inactive' %}active{% else %}bg-transparent text-text-gray hover:bg-[#E94560]/20{% endif %}">Inactive</button>
+                        <button type="submit" name="status" value="all" class="px-3 py-1 text-xs rounded-full {% if status_filter == 'all' %}bg-[#E94560] text-white font-medium{% else %}text-text-gray hover:bg-[#E94560]/20 transition-all{% endif %}">All</button>
+                        <button type="submit" name="status" value="active" class="px-3 py-1 text-xs rounded-full {% if status_filter == 'active' %}bg-[#E94560] text-white font-medium{% else %}text-text-gray hover:bg-[#E94560]/20 transition-all{% endif %}">Active</button>
+                        <button type="submit" name="status" value="inactive" class="px-3 py-1 text-xs rounded-full {% if status_filter == 'inactive' %}bg-[#E94560] text-white font-medium{% else %}text-text-gray hover:bg-[#E94560]/20 transition-all{% endif %}">Inactive</button>
                     </div>
                     
+                    <!-- Membership Filters -->
+                    <div class="flex flex-wrap gap-1 items-center bg-[#0F0F1A] border border-[#E94560]/20 rounded-full px-2 py-1">
+                        <button type="submit" name="membership" value="all" class="px-3 py-1 text-xs rounded-full {% if membership_filter == 'all' %}bg-[#E94560] text-white font-medium{% else %}text-text-gray hover:bg-[#E94560]/20 transition-all{% endif %}">All</button>
+                        <button type="submit" name="membership" value="with_membership" class="px-3 py-1 text-xs rounded-full {% if membership_filter == 'with_membership' %}bg-[#E94560] text-white font-medium{% else %}text-text-gray hover:bg-[#E94560]/20 transition-all{% endif %}">
+                            <i class="fas fa-crown mr-0.5"></i> With
+                        </button>
+                        <button type="submit" name="membership" value="without_membership" class="px-3 py-1 text-xs rounded-full {% if membership_filter == 'without_membership' %}bg-[#E94560] text-white font-medium{% else %}text-text-gray hover:bg-[#E94560]/20 transition-all{% endif %}">
+                            <i class="fas fa-crown-slash mr-0.5"></i> Without
+                        </button>
+                        <button type="submit" name="membership" value="recently_registered" class="px-3 py-1 text-xs rounded-full {% if membership_filter == 'recently_registered' %}bg-[#E94560] text-white font-medium{% else %}text-text-gray hover:bg-[#E94560]/20 transition-all{% endif %}">
+                            <i class="fas fa-star mr-0.5"></i> Recent
+                        </button>
+                    </div>
+                    
+                    <!-- Search Box -->
+                    <div class="flex items-center gap-2 bg-[#0F0F1A] border border-[#E94560]/20 rounded-full px-3 py-1.5 flex-1 min-w-[180px]">
+                        <i class="fas fa-search text-text-gray text-xs"></i>
+                        <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Search users..." class="bg-transparent text-white text-sm outline-none w-full placeholder:text-text-gray/60">
+                    </div>
+                    
+                    <!-- Date Filters -->
                     <div class="flex flex-wrap items-center gap-2">
                         <div class="flex items-center gap-2 bg-[#0F0F1A] border border-[#E94560]/20 rounded-full px-3 py-1.5">
                             <i class="fas fa-calendar-alt text-text-gray text-xs"></i>
-                            <label class="text-text-gray text-xs" for="date_from">From</label>
-                            <input type="date" id="date_from" name="date_from" value="{{ date_from }}" class="bg-transparent text-white text-sm outline-none w-28" />
+                            <input type="date" id="date_from" name="date_from" value="{{ date_from }}" class="bg-transparent text-white text-sm outline-none w-24">
                         </div>
                         <div class="flex items-center gap-2 bg-[#0F0F1A] border border-[#E94560]/20 rounded-full px-3 py-1.5">
                             <i class="fas fa-calendar-alt text-text-gray text-xs"></i>
-                            <label class="text-text-gray text-xs" for="date_to">To</label>
-                            <input type="date" id="date_to" name="date_to" value="{{ date_to }}" class="bg-transparent text-white text-sm outline-none w-28" />
+                            <input type="date" id="date_to" name="date_to" value="{{ date_to }}" class="bg-transparent text-white text-sm outline-none w-24">
                         </div>
-                        <button type="submit" class="bg-[#E94560] text-white px-4 py-1.5 rounded-full text-sm hover:bg-opacity-80 transition-all">
-                            <i class="fas fa-filter mr-1"></i> Filter
+                        <button type="submit" class="bg-[#E94560] text-white px-4 py-1.5 rounded-full text-sm hover:bg-opacity-80 transition-all flex items-center gap-1">
+                            <i class="fas fa-filter text-xs"></i> Filter
                         </button>
                     </div>
                 </form>
                 
-                <div class="flex gap-2 items-center">
-                    <button type="button" onclick="setDateRange('{{ last_month_start }}', '{{ last_month_end }}')" class="px-3 py-1 text-xs rounded-full bg-[#0F0F1A] border border-[#E94560]/20 text-text-gray hover:bg-[#E94560]/10 transition-all">
-                        <i class="fas fa-calendar-week mr-1"></i> Last Month
-                    </button>
-                    <button type="button" onclick="resetFilters()" class="px-3 py-1 text-xs rounded-full bg-[#0F0F1A] border border-[#E94560]/20 text-text-gray hover:bg-[#E94560]/10 transition-all">
-                        <i class="fas fa-undo mr-1"></i> Reset
+                <!-- Actions -->
+                <div class="flex gap-2 items-center flex-wrap">
+                    <button type="button" onclick="resetFilters()" class="px-3 py-1 text-xs rounded-full bg-[#0F0F1A] border border-[#E94560]/20 text-text-gray hover:border-[#E94560] transition-all flex items-center gap-1">
+                        <i class="fas fa-undo"></i> Reset
                     </button>
                 </div>
             </div>
@@ -633,7 +745,13 @@
                             <i class="fas fa-envelope mr-1"></i> Email
                         </th>
                         <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
+                            <i class="fas fa-phone mr-1"></i> Mobile
+                        </th>
+                        <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
                             <i class="fas fa-calendar-alt mr-1"></i> Joined Date
+                        </th>
+                        <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
+                            <i class="fas fa-clock mr-1"></i> Last Login
                         </th>
                         <th class="text-left p-3 text-text-gray text-xs uppercase tracking-wider">
                             <i class="fas fa-circle mr-1"></i> Status
@@ -647,12 +765,12 @@
                     {% for user in users %}
                     <tr class="border-b border-[#E94560]/10 transition-colors hover:bg-[#E94560]/5">
                         <td class="p-3 text-white username-cell">
-                            <div class="flex items-center gap-2">
+                            <a href="{% url 'admin_dashboard:user_details' user.id %}" class="flex items-center gap-2 hover:text-[#E94560] transition-colors">
                                 <div class="w-8 h-8 rounded-full bg-[#E94560]/20 flex items-center justify-center">
                                     <span class="text-[#E94560] text-xs font-bold">{{ user.username|first|upper }}</span>
                                 </div>
                                 <span>{{ user.username }}</span>
-                            </div>
+                            </a>
                         </td>
                         <td class="p-3 text-text-gray truncate-cell">
                             {{ user.full_name|default:"-" }}
@@ -662,8 +780,20 @@
                                 {{ user.email }}
                             </a>
                         </td>
+                        <td class="p-3 text-text-gray mobile-cell">
+                            <a href="tel:{{ user.mobile_number }}" class="hover:text-[#E94560] transition-colors">
+                                {{ user.mobile_number|default:"-" }}
+                            </a>
+                        </td>
                         <td class="p-3 text-text-gray">
                             {{ user.date_joined|date:"M d, Y" }}
+                        </td>
+                        <td class="p-3 text-text-gray">
+                            {% if user.last_login %}
+                                {{ user.last_login|date:"M d, Y H:i" }}
+                            {% else %}
+                                <span class="text-text-gray/60">Never</span>
+                            {% endif %}
                         </td>
                         <td class="p-3">
                             {% if user.is_active %}
@@ -877,5 +1007,83 @@
             if (printBtn) printBtn.click();
         }
     });
+    
+    /* ============================================
+       FILTER HELPER FUNCTIONS
+    ============================================ */
+    
+    /**
+     * Set date range using readable format conversion
+     * Converts dates like "May 1, 2026" to ISO format "2026-05-01"
+     * @param {string} from - Start date as readable string
+     * @param {string} to - End date as readable string
+     */
+    function setDateRange(from, to) {
+        const dateFromInput = document.querySelector('input[name="date_from"]');
+        const dateToInput = document.querySelector('input[name="date_to"]');
+        
+        if (dateFromInput && from) {
+            const fromDate = new Date(from);
+            if (!isNaN(fromDate)) {
+                dateFromInput.value = fromDate.toISOString().split('T')[0];
+            }
+        }
+        
+        if (dateToInput && to) {
+            const toDate = new Date(to);
+            if (!isNaN(toDate)) {
+                dateToInput.value = toDate.toISOString().split('T')[0];
+            }
+        }
+    }
+    
+    /**
+     * Reset all filter inputs and resubmit form
+     * Clears search query, dates, and other filters
+     */
+    function resetFilters() {
+        // Clear text inputs
+        document.querySelectorAll('.search-input').forEach(input => {
+            input.value = '';
+        });
+        
+        // Clear date inputs
+        document.querySelectorAll('.date-input').forEach(input => {
+            input.value = '';
+        });
+        
+        // Reset status to "all" and reset other select inputs
+        document.querySelectorAll('select').forEach(select => {
+            select.selectedIndex = 0;
+        });
+        
+        // Reset status filter buttons to "all"
+        const statusButtons = document.querySelectorAll('button[name="status"]');
+        const membershipButtons = document.querySelectorAll('button[name="membership_filter"]');
+        
+        statusButtons.forEach(btn => {
+            if (btn.value === 'all') {
+                btn.classList.add('bg-[#E94560]', 'text-white', 'font-medium');
+                btn.classList.remove('text-text-gray', 'hover:bg-[#E94560]/20');
+            } else {
+                btn.classList.remove('bg-[#E94560]', 'text-white', 'font-medium');
+                btn.classList.add('text-text-gray', 'hover:bg-[#E94560]/20');
+            }
+        });
+        
+        membershipButtons.forEach(btn => {
+            if (btn.value === 'all') {
+                btn.classList.add('bg-[#E94560]', 'text-white', 'font-medium');
+                btn.classList.remove('text-text-gray', 'hover:bg-[#E94560]/20');
+            } else {
+                btn.classList.remove('bg-[#E94560]', 'text-white', 'font-medium');
+                btn.classList.add('text-text-gray', 'hover:bg-[#E94560]/20');
+            }
+        });
+        
+        // Submit form to reset results
+        const form = document.querySelector('form');
+        if (form) form.submit();
+    }
 </script>
 {% endblock %}

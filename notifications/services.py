@@ -144,3 +144,79 @@ class NotificationService:
             notification_type='trainer',
             link='/trainers/my-sessions/'
         )
+
+    @staticmethod
+    def send_account_deactivated_email(user, admin_user=None):
+        """Send account deactivation email to user"""
+        subject = f"Your FitZone Account Has Been Deactivated"
+        html_content, plain_content = get_account_deactivated_email(user)
+        NotificationService.send_email(user, subject, html_content, plain_content, 'account_deactivated')
+        
+        # Create notification for admin
+        if admin_user:
+            NotificationService.create_notification(
+                user=admin_user,
+                title=f"Account Deactivated: {user.username}",
+                message=f"You have deactivated the account for {user.full_name or user.username}",
+                notification_type='system',
+                link=f'/admin/users/'
+            )
+
+    @staticmethod
+    def send_account_reactivated_email(user, admin_user=None):
+        """Send account reactivated email to user"""
+        subject = f"Your FitZone Account Has Been Reactivated"
+        html_content, plain_content = get_account_reactivated_email(user)
+        NotificationService.send_email(user, subject, html_content, plain_content, 'account_reactivated')
+
+        # Create in-app notification for admin
+        if admin_user:
+            NotificationService.create_notification(
+                user=admin_user,
+                title=f"Account Reactivated: {user.username}",
+                message=f"You have reactivated the account for {user.full_name or user.username}",
+                notification_type='system',
+                link=f'/admin/users/'
+            )
+
+    @staticmethod
+    def send_account_deleted_email(user_email, user_name, admin_user=None):
+        """Send account deletion email before deleting user"""
+        subject = f"Your FitZone Account Has Been Deleted"
+        
+        # Create a temporary user-like object for email rendering
+        class TempUser:
+            def __init__(self, email, name):
+                self.email = email
+                self.full_name = name
+                self.username = name
+        
+        temp_user = TempUser(user_email, user_name)
+        html_content, plain_content = get_account_deleted_email(temp_user)
+        
+        # Use central send logic so DEFAULT_FROM_EMAIL is applied and email is logged
+        try:
+            NotificationService.send_email(temp_user, subject, html_content, plain_content, 'account_deleted')
+            return True
+        except Exception as e:
+            # send_email already logs failures, but ensure method returns False on exception
+            return False
+
+    @staticmethod
+    def send_account_recovered_email(user, reset_url=None, admin_user=None):
+        """Send account recovered email after recreation"""
+        subject = f"Your FitZone Account Has Been Recovered"
+        reset_link = reset_url or f"{settings.SITE_URL}/forgot-password/"
+        html_content, plain_content = get_account_recovered_email(user, reset_link)
+        NotificationService.send_email(user, subject, html_content, plain_content, 'account_recovered')
+
+        # Notify admin
+        if admin_user:
+            NotificationService.create_notification(
+                user=admin_user,
+                title=f"Account Recovered: {user.username}",
+                message=f"You have recovered the account for {user.full_name or user.username}",
+                notification_type='system',
+                link=f'/admin/users/'
+            )
+

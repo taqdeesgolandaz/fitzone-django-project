@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from urllib.parse import urlparse, parse_qs
 
 class WorkoutCategory(models.Model):
     """Workout difficulty categories"""
@@ -57,15 +58,92 @@ class Exercise(models.Model):
     def __str__(self):
         return self.name
     
-    def get_youtube_embed_url(self):
-        """Convert YouTube URL to embed URL"""
-        if 'youtu.be' in self.video_url:
-            video_id = self.video_url.split('/')[-1]
-        elif 'watch?v=' in self.video_url:
-            video_id = self.video_url.split('v=')[1].split('&')[0]
-        else:
-            return self.video_url
+    VIDEO_FALLBACKS = {
+        'bench press': ['https://www.youtube.com/watch?v=SCVCLChPQFY'],
+        'deadlift': ['https://www.youtube.com/watch?v=X1TuhAn6C-g'],
+        'deadlifts': ['https://www.youtube.com/watch?v=X1TuhAn6C-g'],
+        'barbell squat': ['https://www.youtube.com/watch?v=aclHkVaku9U'],
+        'push ups': ['https://www.youtube.com/watch?v=IODxDxX7oi4'],
+        'push-ups': ['https://www.youtube.com/watch?v=IODxDxX7oi4'],
+        'plank': ['https://www.youtube.com/watch?v=ASdvN_XEl_c'],
+        'pull ups': ['https://www.youtube.com/watch?v=b2MRk2eV96M'],
+        'pull-ups': ['https://www.youtube.com/watch?v=b2MRk2eV96M'],
+        'dips': ['https://www.youtube.com/watch?v=2z8lSnHhBvE'],
+        'lunges': ['https://www.youtube.com/watch?v=wrwwXE_x-pQ'],
+        'walking lunges': ['https://www.youtube.com/watch?v=wrwwXE_x-pQ'],
+        'handstand pushups': ['https://www.youtube.com/watch?v=zA2nuzsSDKQ'],
+        'muscle ups': ['https://www.youtube.com/watch?v=_eQ2gw_Gg5Y'],
+        'romanian deadlift': ['https://www.youtube.com/watch?v=ybK7H-WsPAS'],
+        'leg press': ['https://www.youtube.com/watch?v=IZxyjW7MPJQ'],
+        'jump squats': ['https://www.youtube.com/watch?v=Ow0PDAcrJW0'],
+        'pistol squat': ['https://www.youtube.com/watch?v=sZfNXl8uDFs'],
+        'pistol squats': ['https://www.youtube.com/watch?v=sZfNXl8uDFs'],
+        'mountain climbers': ['https://www.youtube.com/watch?v=boa8XbnkLlc'],
+        'jumping jacks': ['https://www.youtube.com/watch?v=dmYwZH_BNd0'],
+        'burpees': ['https://www.youtube.com/watch?v=1YMLT8MYJ9w'],
+        'bench press': ['https://www.youtube.com/watch?v=SCVCLChPQFY'],
+        'overhead press': ['https://www.youtube.com/watch?v=qEwKCR5JCog'],
+        'dumbbell curl': ['https://www.youtube.com/watch?v=sAq_ocpRh_I'],
+        'tricep pushdown': ['https://www.youtube.com/watch?v=2-LAMcpzODU'],
+        'leg curl': ['https://www.youtube.com/watch?v=1Tq3QdILLpc'],
+        'leg extension': ['https://www.youtube.com/watch?v=AmCqjGRS6m0'],
+        'calf raise': ['https://www.youtube.com/watch?v=BT1n6c80Z3E'],
+        'hamstring stretch': ['https://www.youtube.com/watch?v=5T5-BRw_3qk'],
+        'shoulder stretch': ['https://www.youtube.com/watch?v=H3L61lh8GYk'],
+        'hip flexor stretch': ['https://www.youtube.com/watch?v=VnAqD_mJ4Lk'],
+    }
+
+    @staticmethod
+    def _normalize_exercise_name(name):
+        if not name:
+            return ''
+        return ''.join(ch for ch in name.lower() if ch.isalnum() or ch.isspace()).strip()
+
+    @staticmethod
+    def _youtube_embed_url(video_url):
+        if not video_url:
+            return ''
+
+        parsed = urlparse(video_url)
+        hostname = parsed.hostname or ''
+        path = parsed.path or ''
+        query = parse_qs(parsed.query)
+
+        video_id = ''
+        if 'youtu.be' in hostname:
+            video_id = path.lstrip('/')
+        elif 'youtube.com' in hostname:
+            if path.startswith('/watch'):
+                video_id = query.get('v', [''])[0]
+            elif path.startswith('/embed/'):
+                video_id = path.split('/embed/')[1]
+            elif path.startswith('/shorts/'):
+                video_id = path.split('/shorts/')[1]
+
+        if not video_id:
+            return video_url
+
         return f"https://www.youtube.com/embed/{video_id}"
+
+    def get_youtube_embed_urls(self):
+        urls = []
+        if self.video_url:
+            primary_url = self._youtube_embed_url(self.video_url)
+            if primary_url:
+                urls.append(primary_url)
+
+        normalized_name = self._normalize_exercise_name(self.name)
+        fallback_urls = self.VIDEO_FALLBACKS.get(normalized_name, [])
+        for fallback_url in fallback_urls:
+            embed_url = self._youtube_embed_url(fallback_url)
+            if embed_url and embed_url not in urls:
+                urls.append(embed_url)
+
+        return urls
+
+    def get_youtube_embed_url(self):
+        urls = self.get_youtube_embed_urls()
+        return urls[0] if urls else ''
 
 
 class WorkoutPlan(models.Model):

@@ -5,7 +5,7 @@
 {% block extra_css %}
 <style>
     /* ============================================
-       MEDIA QUERIES FOR TRAINERS PAGE
+       TRAINERS PAGE - COMPLETE RESPONSIVE
     ============================================ */
     
     /* Animation for fade-in */
@@ -42,6 +42,165 @@
         overflow: hidden;
     }
     
+    /* ============================================
+       SEARCH & FILTER - CENTERED & ATTRACTIVE
+    ============================================ */
+    
+    .search-filter-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        width: 100%;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+    }
+    
+    .filter-btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-btn i {
+        font-size: 0.8rem;
+    }
+    
+    .filter-btn.active {
+        background: #E94560;
+        color: white;
+        border-color: #E94560;
+        box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    }
+    
+    .filter-btn.inactive {
+        background: #1A1A2E;
+        color: #A0A0A0;
+        border-color: rgba(233, 69, 96, 0.15);
+    }
+    
+    .filter-btn.inactive:hover {
+        background: rgba(233, 69, 96, 0.15);
+        color: white;
+        border-color: rgba(233, 69, 96, 0.3);
+        transform: translateY(-2px);
+    }
+    
+    .filter-btn.active:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+    }
+    
+    /* ============================================
+       SEARCH FORM - BORDERLESS & INTEGRATED
+    ============================================ */
+
+    .search-form-wrapper {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 480px;
+        background: #1A1A2E;
+        border-radius: 9999px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        /* No border - removed */
+    }
+
+    .search-form-wrapper:focus-within {
+        box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.3), 0 4px 20px rgba(233, 69, 96, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .search-wrapper {
+        position: relative;
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-wrapper .search-icon {
+        position: absolute;
+        left: 1.6rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6B7280;
+        font-size: 0.9rem;
+        pointer-events: none;
+        transition: color 0.3s ease;
+    }
+
+    .search-form-wrapper:focus-within .search-icon {
+        color: #E94560;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.4rem 1rem 0.4rem 4.5rem;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 0.9rem;
+        outline: none;
+    }
+
+    .search-input::placeholder {
+        color: #6B7280;
+        font-weight: 400;
+    }
+
+    .search-input:focus {
+        outline: none;
+    }
+
+    .search-btn {
+        padding: 0.7rem 1.5rem;
+        background: #E94560;
+        color: white;
+        border: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        min-height: 100%;
+    }
+
+    .search-btn i {
+        font-size: 0.85rem;
+    }
+
+    .search-btn:hover {
+        background: #c72a4a;
+    }
+
+    .search-btn:active {
+        transform: scale(0.96);
+    }
+    
+    /* ============================================
+       RESPONSIVE BREAKPOINTS
+    ============================================ */
+    
     /* Very Large Desktops (1400px and above) */
     @media (min-width: 1400px) {
         .trainers-container {
@@ -62,36 +221,51 @@
             gap: 2rem;
         }
         
-        .trainer-card {
-            padding: 0;
-        }
-        
         .trainer-image {
             height: 320px;
         }
         
-        .trainer-name {
-            font-size: 1.35rem;
+        .filter-btn {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .search-form-wrapper {
+            max-width: 550px;
+        }
+        
+        .search-input {
+            padding: 0.5rem 1.2rem 0.5rem 4.2rem;
+            font-size: 1rem;
+        }
+        
+        .search-btn {
+            padding: 0.8rem 2rem;
+            font-size: 0.95rem;
         }
     }
     
     /* Desktops (992px to 1199px) */
     @media (min-width: 992px) and (max-width: 1199px) {
         .trainers-container {
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
+            padding-left: 0;
+            padding-right: 0;
         }
         
         .trainers-grid {
             gap: 1.5rem;
+        }
+        
+        .search-form-wrapper {
+            max-width: 400px;
         }
     }
     
     /* Tablets Landscape (768px to 991px) */
     @media (min-width: 768px) and (max-width: 991px) {
         .trainers-container {
-            padding-left: 1rem;
-            padding-right: 1rem;
+            padding-left: 0;
+            padding-right: 0;
         }
         
         .page-title {
@@ -103,27 +277,23 @@
             padding: 0 1rem;
         }
         
-        .search-filter-section {
-            flex-direction: column;
-            gap: 1rem;
-            align-items: stretch;
-        }
-        
-        .filter-buttons {
-            justify-content: center;
-        }
-        
         .filter-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
         }
         
-        .search-form {
-            width: 100%;
+        .search-form-wrapper {
+            max-width: 420px;
         }
         
         .search-input {
-            flex: 1;
+            padding: 0.4rem 1rem 0.4rem 3.8rem;
+            font-size: 0.85rem;
+        }
+        
+        .search-btn {
+            padding: 0.6rem 1.25rem;
+            font-size: 0.8rem;
         }
         
         .trainers-grid {
@@ -143,16 +313,8 @@
             font-size: 1.1rem;
         }
         
-        .trainer-specialization {
-            font-size: 0.8rem;
-        }
-        
         .trainer-bio {
             font-size: 0.75rem;
-        }
-        
-        .trainer-stats {
-            margin-bottom: 1rem;
         }
         
         .stat-label {
@@ -176,48 +338,45 @@
     /* Tablets Portrait (576px to 767px) */
     @media (min-width: 576px) and (max-width: 767px) {
         .trainers-container {
-            padding-left: 0.875rem;
-            padding-right: 0.875rem;
+            padding-left: 0;
+            padding-right: 0;
         }
         
         .page-title {
             font-size: 1.75rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
         
         .page-subtitle {
             font-size: 0.9rem;
         }
         
-        .search-filter-section {
-            flex-direction: column;
-            gap: 1rem;
+        .search-filter-wrapper {
+            gap: 0.75rem;
             margin-bottom: 1.5rem;
         }
         
         .filter-buttons {
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
         
         .filter-btn {
-            padding: 0.4rem 0.875rem;
-            font-size: 0.8rem;
+            padding: 0.35rem 0.875rem;
+            font-size: 0.75rem;
         }
         
-        .search-form {
-            width: 100%;
+        .search-form-wrapper {
+            max-width: 100%;
         }
         
         .search-input {
-            width: 100%;
-            padding: 0.5rem;
-            font-size: 0.85rem;
+            padding: 0.4rem 0.875rem 0.4rem 3.5rem;
+            font-size: 0.8rem;
         }
         
         .search-btn {
-            padding: 0.5rem 1rem;
+            padding: 0.55rem 1.25rem;
+            font-size: 0.8rem;
         }
         
         .trainers-grid {
@@ -237,23 +396,8 @@
             font-size: 1rem;
         }
         
-        .trainer-rating {
-            font-size: 0.8rem;
-        }
-        
-        .trainer-specialization {
-            font-size: 0.75rem;
-            margin-bottom: 0.5rem;
-        }
-        
         .trainer-bio {
             font-size: 0.7rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        .trainer-stats {
-            margin-bottom: 0.75rem;
-            gap: 1rem;
         }
         
         .stat-label {
@@ -281,15 +425,6 @@
             font-size: 3rem;
         }
         
-        .empty-state-text {
-            font-size: 0.9rem;
-        }
-        
-        .py-12 {
-            padding-top: 1.5rem;
-            padding-bottom: 1.5rem;
-        }
-        
         .mb-12 {
             margin-bottom: 1rem;
         }
@@ -298,8 +433,8 @@
     /* Mobile Landscape (375px to 575px) */
     @media (min-width: 375px) and (max-width: 575px) {
         .trainers-container {
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
+            padding-left: 0;
+            padding-right: 0;
         }
         
         .page-title {
@@ -310,18 +445,37 @@
             font-size: 0.85rem;
         }
         
-        .filter-buttons {
-            gap: 0.4rem;
-        }
-        
         .filter-btn {
-            padding: 0.35rem 0.7rem;
+            padding: 0.3rem 0.7rem;
             font-size: 0.7rem;
         }
         
+        .filter-btn i {
+            font-size: 0.65rem;
+        }
+        
+        .search-form-wrapper {
+            max-width: 100%;
+            border-radius: 12px;
+        }
+        
         .search-input {
-            font-size: 0.8rem;
-            padding: 0.45rem;
+            padding: 0.35rem 0.75rem 0.35rem 3.2rem;
+            font-size: 0.75rem;
+        }
+
+        .search-wrapper .search-icon {
+            left: 1.2rem;
+            font-size: 0.75rem;
+        }
+        
+        .search-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+        
+        .search-btn i {
+            font-size: 0.7rem;
         }
         
         .trainer-image {
@@ -356,16 +510,26 @@
     /* Small Mobile Devices (320px to 374px) */
     @media (min-width: 320px) and (max-width: 374px) {
         .filter-btn {
-            padding: 0.3rem 0.6rem;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.65rem;
+        }
+        
+        .search-input {
+            padding: 0.3rem 0.6rem 0.3rem 3.0rem;
+            font-size: 0.7rem;
+        }
+        
+        .search-btn {
+            padding: 0.45rem 0.75rem;
+            font-size: 0.7rem;
+        }
+        
+        .search-btn i {
             font-size: 0.65rem;
         }
         
         .trainer-name {
             font-size: 0.85rem;
-        }
-        
-        .trainer-specialization {
-            font-size: 0.7rem;
         }
         
         .stat-value {
@@ -384,7 +548,19 @@
         }
         
         .filter-btn:active, .view-btn:active, .search-btn:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
+        }
+        
+        .filter-btn.inactive:hover {
+            transform: none;
+        }
+        
+        .filter-btn.active:hover {
+            transform: none;
+        }
+        
+        .search-form-wrapper:hover {
+            border-color: rgba(233, 69, 96, 0.15);
         }
     }
     
@@ -398,8 +574,12 @@
             height: 160px;
         }
         
-        .search-filter-section {
-            flex-direction: row !important;
+        .filter-buttons {
+            justify-content: center;
+        }
+        
+        .search-form-wrapper {
+            max-width: 400px;
         }
     }
     
@@ -409,8 +589,12 @@
             border: 2px solid #E94560;
         }
         
-        .filter-btn, .view-btn, .search-btn {
-            border: 1px solid white;
+        .filter-btn.active {
+            border: 2px solid white;
+        }
+        
+        .search-form-wrapper {
+            border: 2px solid #E94560;
         }
     }
     
@@ -421,6 +605,14 @@
         }
         
         .card-hover:hover {
+            transform: none;
+        }
+        
+        .filter-btn:hover {
+            transform: none;
+        }
+        
+        .search-form-wrapper:focus-within {
             transform: none;
         }
     }
@@ -438,54 +630,78 @@
     }
     
     @keyframes pulse {
-        0%, 100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.7;
-        }
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
+    /* Featured badge styling */
+    .featured-badge {
+        background: #E94560;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="py-12 trainers-container fade-in">
+<div class="py-0 trainers-container fade-in mt-4 sm:mt-6 md:mt-8 lg:mt-10">
     <!-- Header -->
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-white mb-4 page-title">Meet Our <span class="text-[#E94560]">Expert Trainers</span></h1>
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-white mb-2 page-title">Meet Our <span class="text-[#E94560]">Expert Trainers</span></h1>
         <p class="text-text-gray text-lg max-w-2xl mx-auto page-subtitle">
             Work with certified professionals who will guide you towards your fitness goals
         </p>
     </div>
 
-    <!-- Search and Filter -->
-    <div class="mb-8 flex flex-col md:flex-row gap-4 justify-between items-center search-filter-section">
-        <div class="flex gap-2 flex-wrap filter-buttons">
-            <a href="{% url 'trainers:list' %}" class="px-4 py-2 rounded-lg {% if not selected_specialization %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all filter-btn">
-                <i class="fas fa-users mr-1"></i> All
+    <!-- Search and Filter - Centered -->
+    <div class="search-filter-wrapper">
+        <!-- Filter Buttons -->
+        <div class="filter-buttons">
+            <a href="{% url 'trainers:list' %}" class="filter-btn {% if not selected_specialization %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-users"></i> All
             </a>
-            {% for value, label in specializations %}
-            <a href="?specialization={{ value }}" class="px-4 py-2 rounded-lg {% if selected_specialization == value %}bg-[#E94560] text-white{% else %}bg-[#1A1A2E] text-text-gray hover:bg-[#E94560]/20{% endif %} transition-all filter-btn">
-                <i class="fas 
-                    {% if value == 'weight_loss' %}fa-weight-scale
-                    {% elif value == 'muscle_gain' %}fa-dumbbell
-                    {% elif value == 'fitness' %}fa-heartbeat
-                    {% elif value == 'yoga' %}fa-praying-hands
-                    {% elif value == 'nutrition' %}fa-apple-alt
-                    {% else %}fa-chalkboard-user{% endif %} mr-1"></i>
-                {{ label }}
+            <a href="?specialization=weight_loss" class="filter-btn {% if selected_specialization == 'weight_loss' %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-weight-scale"></i> Weight Loss
             </a>
-            {% endfor %}
+            <a href="?specialization=muscle_gain" class="filter-btn {% if selected_specialization == 'muscle_gain' %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-dumbbell"></i> Muscle Gain
+            </a>
+            <a href="?specialization=cardio" class="filter-btn {% if selected_specialization == 'cardio' %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-heart-pulse"></i> Cardio
+            </a>
+            <a href="?specialization=strength_training" class="filter-btn {% if selected_specialization == 'strength_training' %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-dumbbell"></i> Strength Training
+            </a>
+            <a href="?specialization=yoga" class="filter-btn {% if selected_specialization == 'yoga' %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-praying-hands"></i> Yoga
+            </a>
+            <a href="?specialization=nutrition" class="filter-btn {% if selected_specialization == 'nutrition' %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-apple-alt"></i> Nutrition
+            </a>
+            <a href="?specialization=general_fitness" class="filter-btn {% if selected_specialization == 'general_fitness' %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-heartbeat"></i> General Fitness
+            </a>
         </div>
         
-        <form method="GET" class="flex gap-2 search-form">
+        <!-- Search Form - Professional & Attractive -->
+        <form method="GET" class="search-form-wrapper">
             {% if selected_specialization %}
             <input type="hidden" name="specialization" value="{{ selected_specialization }}">
             {% endif %}
-            <input type="text" name="search" value="{{ search_query }}" placeholder="Search trainers..." 
-                   class="flex-1 px-4 py-2 bg-[#1A1A2E] border border-[#E94560]/30 rounded-lg text-white focus:outline-none focus:border-[#E94560] search-input">
-            <button type="submit" class="bg-[#E94560] text-white px-4 py-2 rounded-lg hover:bg-opacity-80 transition-all search-btn">
-                <i class="fas fa-search"></i>
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                  <input type="text" name="search" value="{{ search_query|default:'' }}" placeholder="Search trainers by name..." 
+                      class="search-input">
+            </div>
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i> Search
             </button>
         </form>
     </div>
@@ -504,8 +720,8 @@
                     </div>
                 {% endif %}
                 {% if trainer.is_featured %}
-                <div class="absolute top-4 right-4 bg-[#E94560] text-white text-xs px-2 py-1 rounded-full featured-badge">
-                    <i class="fas fa-star mr-1"></i> Featured
+                <div class="absolute top-4 right-4 featured-badge">
+                    <i class="fas fa-star"></i> Featured
                 </div>
                 {% endif %}
             </div>
@@ -553,7 +769,7 @@
         {% endfor %}
     </div>
     
-    <!-- Load More Button (Optional) -->
+    <!-- Load More Button -->
     {% if trainers.has_next %}
     <div class="text-center mt-8">
         <a href="?page={{ trainers.next_page_number }}{% if selected_specialization %}&specialization={{ selected_specialization }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" 
@@ -590,7 +806,7 @@
     });
     
     // Preserve filter values on form submit
-    const searchForm = document.querySelector('.search-form');
+    const searchForm = document.querySelector('.search-form-wrapper');
     if (searchForm) {
         searchForm.addEventListener('submit', function() {
             const specialization = '{{ selected_specialization }}';
@@ -602,12 +818,6 @@
                 this.appendChild(input);
             }
         });
-    }
-    
-    // Show notification for filter application
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('specialization') || urlParams.get('search')) {
-        console.log('Filters applied');
     }
 </script>
 {% endblock %}

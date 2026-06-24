@@ -1,0 +1,722 @@
+{% extends 'base/base.html' %}
+
+{% block title %}User Details - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       BASE STYLES & ANIMATIONS
+    ============================================ */
+    .fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ============================================
+       PROFILE & CARD STYLES
+    ============================================ */
+    .profile-header {
+        background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+        border: 1px solid rgba(233, 69, 96, 0.2);
+    }
+
+    .profile-avatar {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 4px solid #E94560;
+        object-fit: cover;
+    }
+
+    .profile-avatar-placeholder {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 4px solid #E94560;
+        background: #0F0F1A;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: #E94560;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .section-title i {
+        color: #E94560;
+        font-size: 1.2rem;
+        width: 1.5rem;
+        text-align: center;
+    }
+
+    /* ============================================
+       CARD COMPONENTS
+    ============================================ */
+    .info-card,
+    .stats-card,
+    .table-card {
+        background: #1A1A2E;
+        border: 1px solid rgba(233, 69, 96, 0.15);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover,
+    .stats-card:hover,
+    .table-card:hover {
+        border-color: rgba(233, 69, 96, 0.35);
+        box-shadow: 0 10px 30px rgba(233, 69, 96, 0.12);
+    }
+
+    .info-label {
+        color: #A0A0A0;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+
+    .info-value {
+        color: #FFFFFF;
+        font-size: 0.95rem;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    /* ============================================
+       BADGE STYLES
+    ============================================ */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-active { background: rgba(0, 208, 156, 0.18); color: #00D09C; border: 1px solid rgba(0, 208, 156, 0.3); }
+    .badge-expired { background: rgba(248, 113, 113, 0.18); color: #F87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+    .badge-cancelled { background: rgba(107, 114, 128, 0.18); color: #9CA3AF; border: 1px solid rgba(107, 114, 128, 0.3); }
+    .badge-pending { background: rgba(251, 191, 36, 0.18); color: #FBBF24; border: 1px solid rgba(251, 191, 36, 0.3); }
+
+    /* ============================================
+       BUTTON STYLES
+    ============================================ */
+    .contact-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        border-radius: 999px;
+        border: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .contact-btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.85;
+    }
+
+    .btn-call { background: #3B82F6; color: white; }
+    .btn-email { background: #10B981; color: white; }
+    .btn-report { background: #E94560; color: white; }
+    .btn-back { background: #0F172A; color: white; border: 1px solid rgba(233, 69, 96, 0.2); }
+
+    /* ============================================
+       ADMIN ACTION BUTTONS
+    ============================================ */
+    .admin-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        cursor: pointer;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .admin-action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .admin-action-btn i {
+        font-size: 1rem;
+    }
+
+    .edit-btn {
+        background: rgba(100, 150, 255, 0.15);
+        color: #64B6FF;
+        border: 1px solid rgba(100, 150, 255, 0.3);
+    }
+
+    .edit-btn:hover {
+        background: rgba(100, 150, 255, 0.25);
+        border-color: rgba(100, 150, 255, 0.5);
+    }
+
+    .deactivate-btn {
+        background: rgba(251, 191, 36, 0.15);
+        color: #FBBF24;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .deactivate-btn:hover {
+        background: rgba(251, 191, 36, 0.25);
+        border-color: rgba(251, 191, 36, 0.5);
+    }
+
+    .delete-btn {
+        background: rgba(248, 113, 113, 0.15);
+        color: #F87171;
+        border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    .delete-btn:hover {
+        background: rgba(248, 113, 113, 0.25);
+        border-color: rgba(248, 113, 113, 0.5);
+    }
+
+    /* ============================================
+       TABLE STYLES
+    ============================================ */
+    .table-card table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+    }
+
+    .table-card th,
+    .table-card td {
+        padding: 0.85rem 0.5rem;
+        border-bottom: 1px solid rgba(233, 69, 96, 0.08);
+        color: #E5E7EB;
+        text-align: left;
+    }
+
+    .table-card th {
+        color: #A0A0A0;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+    }
+
+    .table-card tbody tr:hover { background: rgba(233, 69, 96, 0.05); }
+
+    .table-card td:first-child,
+    .table-card th:first-child { padding-left: 0; }
+
+    .table-card td:last-child,
+    .table-card th:last-child { padding-right: 0; }
+
+    /* ============================================
+       STATS GRID
+    ============================================ */
+    .stat-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* ============================================
+       LAYOUT GRID
+    ============================================ */
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1.5rem;
+    }
+
+    /* ============================================
+       RESPONSIVE - LARGE DESKTOPS (1400px+)
+    ============================================ */
+    @media (min-width: 1400px) {
+        .profile-avatar,
+        .profile-avatar-placeholder {
+            width: 180px;
+            height: 180px;
+            font-size: 4.5rem;
+        }
+        .profile-avatar-placeholder { font-size: 4.5rem; }
+        .section-title { font-size: 1.5rem; }
+        .info-value { font-size: 1.1rem; }
+        .stat-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* ============================================
+       RESPONSIVE - DESKTOPS (992px - 1199px)
+    ============================================ */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .details-grid { grid-template-columns: 1fr 1.8fr; gap: 1.25rem; }
+        .profile-avatar,
+        .profile-avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            font-size: 3rem;
+        }
+        .profile-avatar-placeholder { font-size: 3rem; }
+        .info-card,
+        .stats-card,
+        .table-card { padding: 1.25rem; }
+    }
+
+    /* ============================================
+       RESPONSIVE - TABLETS (768px - 991px)
+    ============================================ */
+    @media (min-width: 768px) and (max-width: 991px) {
+        .details-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+        .profile-avatar,
+        .profile-avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            font-size: 3rem;
+        }
+        .profile-avatar-placeholder { font-size: 3rem; }
+        .stat-grid { grid-template-columns: repeat(2, 1fr); }
+        .info-card,
+        .stats-card,
+        .table-card { padding: 1.25rem; }
+        .table-card table { font-size: 0.8rem; }
+        .table-card th,
+        .table-card td { padding: 0.6rem 0.4rem; }
+        .contact-btn { font-size: 0.8rem; padding: 0.5rem 0.8rem; }
+    }
+
+    /* ============================================
+       RESPONSIVE - MOBILE LANDSCAPE (576px - 767px)
+    ============================================ */
+    @media (min-width: 576px) and (max-width: 767px) {
+        .details-grid { grid-template-columns: 1fr; gap: 1rem; }
+        .profile-avatar,
+        .profile-avatar-placeholder {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+        .profile-avatar-placeholder { font-size: 2.5rem; }
+        .profile-header { padding: 1.5rem; }
+        .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .info-card,
+        .stats-card,
+        .table-card { padding: 1rem; }
+        .section-title { font-size: 1.1rem; }
+        .info-value { font-size: 0.9rem; }
+        .table-card table { font-size: 0.75rem; }
+        .table-card th,
+        .table-card td { padding: 0.5rem 0.3rem; }
+        .contact-btn { font-size: 0.75rem; padding: 0.45rem 0.7rem; }
+        .btn-text-hide { display: none; }
+    }
+
+    /* ============================================
+       RESPONSIVE - MOBILE PORTRAIT (375px - 575px)
+    ============================================ */
+    @media (min-width: 375px) and (max-width: 575px) {
+        .details-grid { grid-template-columns: 1fr; gap: 1rem; }
+        .profile-avatar,
+        .profile-avatar-placeholder {
+            width: 90px;
+            height: 90px;
+            font-size: 2.2rem;
+        }
+        .profile-avatar-placeholder { font-size: 2.2rem; }
+        .profile-header { padding: 1.25rem; }
+        .stat-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .info-card,
+        .stats-card,
+        .table-card { padding: 0.875rem; border-radius: 12px; }
+        .section-title { font-size: 1rem; }
+        .section-title i { font-size: 1rem; width: 1.25rem; }
+        .info-value { font-size: 0.85rem; }
+        .info-label { font-size: 0.6rem; }
+        .table-card table { font-size: 0.7rem; }
+        .table-card th,
+        .table-card td { padding: 0.4rem 0.25rem; }
+        .contact-btn { font-size: 0.7rem; padding: 0.4rem 0.6rem; }
+        .btn-text-hide { display: none; }
+        .badge { font-size: 0.65rem; padding: 0.25rem 0.5rem; }
+        .grid-cols-2 { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================
+       RESPONSIVE - SMALL MOBILE (320px - 374px)
+    ============================================ */
+    @media (min-width: 320px) and (max-width: 374px) {
+        .details-grid { grid-template-columns: 1fr; gap: 0.875rem; }
+        .profile-avatar,
+        .profile-avatar-placeholder {
+            width: 75px;
+            height: 75px;
+            font-size: 1.8rem;
+        }
+        .profile-avatar-placeholder { font-size: 1.8rem; }
+        .profile-header { padding: 1rem; }
+        .stat-grid { grid-template-columns: 1fr; gap: 0.5rem; }
+        .info-card,
+        .stats-card,
+        .table-card { padding: 0.75rem; border-radius: 10px; }
+        .section-title { font-size: 0.9rem; }
+        .section-title i { font-size: 0.9rem; width: 1.25rem; }
+        .info-value { font-size: 0.8rem; }
+        .info-label { font-size: 0.55rem; }
+        .table-card table { font-size: 0.6rem; }
+        .table-card th,
+        .table-card td { padding: 0.3rem 0.2rem; }
+        .contact-btn { font-size: 0.6rem; padding: 0.35rem 0.5rem; }
+        .btn-text-hide { display: none; }
+        .badge { font-size: 0.55rem; padding: 0.2rem 0.4rem; }
+    }
+
+    /* ============================================
+       TOUCH DEVICE OPTIMIZATIONS
+    ============================================ */
+    @media (hover: none) and (pointer: coarse) {
+        .info-card:active,
+        .stats-card:active,
+        .table-card:active {
+            transform: scale(0.99);
+        }
+        .contact-btn:active {
+            transform: scale(0.97);
+        }
+    }
+
+    /* ============================================
+       REDUCED MOTION PREFERENCE
+    ============================================ */
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in { animation: none; }
+        .info-card:hover,
+        .stats-card:hover,
+        .table-card:hover {
+            transform: none;
+        }
+        .contact-btn:hover {
+            transform: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 px-4 sm:px-6 lg:px-8 fade-in">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-white">User Details</h1>
+            <p class="text-text-gray mt-1">Profile, membership, payment history, and account stats for {{ profile_user.get_full_name|default:profile_user.username }}.</p>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+            <a href="tel:{{ profile_user.mobile_number }}" class="contact-btn btn-call text-xs px-2 py-1">
+                <i class="fas fa-phone text-xs"></i>
+                <span>Call</span>
+            </a>
+            <a href="mailto:{{ profile_user.email }}" class="contact-btn btn-email text-xs px-2 py-1">
+                <i class="fas fa-envelope text-xs"></i>
+                <span>Email</span>
+            </a>
+            <a href="{% url 'admin_dashboard:membership_report' %}" class="contact-btn btn-report text-xs px-2 py-1">
+                <i class="fas fa-id-card-alt text-xs"></i>
+                <span>Membership</span>
+            </a>
+            <a href="{% url 'admin_dashboard:user_report' %}" class="contact-btn btn-back text-xs px-2 py-1">
+                <i class="fas fa-arrow-left text-xs"></i>
+                <span>Back</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="details-grid">
+        <!-- Left Column: Profile -->
+        <div class="col-span-1">
+            <div class="profile-header rounded-3xl p-8 flex flex-col items-center gap-5">
+                {% if profile_user.profile_picture %}
+                    <img src="{{ profile_user.profile_picture.url }}" alt="Profile picture" class="profile-avatar" />
+                {% else %}
+                    <div class="profile-avatar-placeholder">{{ profile_user.username|first|upper }}</div>
+                {% endif %}
+
+                <div class="text-center">
+                    <p class="text-sm text-text-gray uppercase tracking-[0.2em]">Profile</p>
+                    <h2 class="text-2xl font-bold text-white">{{ profile_user.get_full_name|default:profile_user.username }}</h2>
+                    <p class="text-text-gray">@{{ profile_user.username }}</p>
+                </div>
+
+                <div class="w-full grid gap-3">
+                    <div class="info-card">
+                        <p class="info-label">Email</p>
+                        <p class="info-value">{{ profile_user.email }}</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="info-label">Mobile</p>
+                        <p class="info-value">{{ profile_user.mobile_number|default:'-' }}</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="info-label">Gender</p>
+                        <p class="info-value">{{ profile_user.get_gender_display|default:'-' }}</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="info-label">Date of Birth</p>
+                        <p class="info-value">{{ profile_user.date_of_birth|default:'-' }}</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="info-label">Address</p>
+                        <p class="info-value">{{ profile_user.address|default:'-' }}</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="info-label">City</p>
+                        <p class="info-value">{{ profile_user.city|default:'-' }}</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="info-label">State</p>
+                        <p class="info-value">{{ profile_user.state|default:'-' }}</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="info-label">Country</p>
+                        <p class="info-value">{{ profile_user.country|default:'-' }}</p>
+                    </div>
+                    <div class="info-card">
+                        <p class="info-label">Pincode</p>
+                        <p class="info-value">{{ profile_user.pincode|default:'-' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Account Details -->
+        <div class="col-span-1">
+            <!-- Account Info -->
+            <div class="info-card mb-6">
+                <h3 class="section-title"><i class="fas fa-user-circle"></i> Account Information</h3>
+                <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+                    <div>
+                        <p class="info-label">User ID</p>
+                        <p class="info-value">{{ profile_user.id }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Date Joined</p>
+                        <p class="info-value">{{ profile_user.date_joined|date:'M d, Y' }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Last Login</p>
+                        <p class="info-value">{{ profile_user.last_login|date:'M d, Y H:i'|default:'Never' }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Account Status</p>
+                        <p class="info-value">{{ profile_user.is_active|yesno:'Active,Inactive' }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Role</p>
+                        <p class="info-value">{% if profile_user.is_superuser %}Super Admin{% elif profile_user.is_staff %}Staff{% else %}User{% endif %}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Membership Status</p>
+                        <p class="info-value">{% if profile_user.membership_active %}Active{% else %}None{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stat-grid mb-6">
+                <div class="stats-card">
+                    <p class="info-label">Total Payments</p>
+                    <p class="info-value">{{ total_payments }}</p>
+                </div>
+                <div class="stats-card">
+                    <p class="info-label">Total Spent</p>
+                    <p class="info-value">₹{{ total_amount_spent }}</p>
+                </div>
+                <div class="stats-card">
+                    <p class="info-label">Active Memberships</p>
+                    <p class="info-value">{{ active_memberships }}</p>
+                </div>
+                <div class="stats-card">
+                    <p class="info-label">Cancelled Memberships</p>
+                    <p class="info-value">{{ cancelled_memberships }}</p>
+                </div>
+                <div class="stats-card">
+                    <p class="info-label">Workout Sessions</p>
+                    <p class="info-value">{{ workout_sessions }}</p>
+                </div>
+                <div class="stats-card">
+                    <p class="info-label">Diet Plans</p>
+                    <p class="info-value">{{ diet_plans_count }}</p>
+                </div>
+            </div>
+
+            <!-- Current Membership -->
+            <div class="info-card mb-6">
+                <h3 class="section-title"><i class="fas fa-id-card"></i> Current Membership</h3>
+                {% if current_membership %}
+                <div class="grid grid-cols-2 gap-x-8 gap-y-4">
+                    <div>
+                        <p class="info-label">Plan Name</p>
+                        <p class="info-value">{{ current_membership.plan.name }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Type</p>
+                        <p class="info-value">{{ current_membership.plan.get_plan_type_display }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Start Date</p>
+                        <p class="info-value">{{ current_membership.start_date|date:'M d, Y' }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">End Date</p>
+                        <p class="info-value">{{ current_membership.end_date|date:'M d, Y' }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Days Remaining</p>
+                        <p class="info-value">{{ days_remaining }}</p>
+                    </div>
+                    <div>
+                        <p class="info-label">Status</p>
+                        <p class="info-value">{{ current_membership.get_status_display }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-text-gray">No active membership found for this user.</p>
+                {% endif %}
+            </div>
+
+            <!-- Admin Actions -->
+            <div class="info-card mb-6">
+                <h3 class="section-title"><i class="fas fa-tools"></i> Admin Actions</h3>
+                <div class="grid grid-cols-1 gap-3">
+                    <a href="#" class="admin-action-btn edit-btn" onclick="return alert('Edit user feature coming soon');">
+                        <i class="fas fa-edit"></i>
+                        <span>Edit User</span>
+                    </a>
+                    {% if profile_user.is_active %}
+                    <form method="post" action="{% url 'admin_dashboard:deactivate_user' profile_user.id %}" onsubmit="return confirmDeactivate('{{ profile_user.username }}');" class="m-0 p-0">
+                        {% csrf_token %}
+                        <button type="submit" class="admin-action-btn deactivate-btn">
+                            <i class="fas fa-pause-circle"></i>
+                            <span>Deactivate User</span>
+                        </button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'admin_dashboard:reactivate_user' profile_user.id %}" class="m-0 p-0">
+                        {% csrf_token %}
+                        <button type="submit" class="admin-action-btn edit-btn">
+                            <i class="fas fa-play-circle"></i>
+                            <span>Reactivate User</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                    <a href="{% url 'admin_dashboard:delete_user' profile_user.id %}" class="admin-action-btn delete-btn">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Delete User</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div class="table-card">
+            <h3 class="section-title"><i class="fas fa-history"></i> Membership History</h3>
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membership in membership_history %}
+                        <tr>
+                            <td>{{ membership.plan.name }}</td>
+                            <td>{{ membership.start_date|date:'M d, Y' }}</td>
+                            <td>{{ membership.end_date|date:'M d, Y' }}</td>
+                            <td>₹{{ membership.amount_paid }}</td>
+                            <td>{{ membership.get_status_display }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-text-gray">No membership history available.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <h3 class="section-title"><i class="fas fa-credit-card"></i> Payment History</h3>
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Payment ID</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.razorpay_order_id }}</td>
+                            <td>{{ payment.razorpay_payment_id|default:'-' }}</td>
+                            <td>₹{{ payment.amount }}</td>
+                            <td>{{ payment.paid_at|date:'M d, Y'|default:'-' }}</td>
+                            <td>{{ payment.get_status_display }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-text-gray">No payment history available.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        // Confirm before deactivating a user
+        function confirmDeactivate(username) {
+            return confirm(`Deactivate user ${username}?\n\nThey can reactivate their account later.`);
+        }
+    </script>
+{% endblock %}

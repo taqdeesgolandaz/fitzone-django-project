@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from .models import CustomUser
 
@@ -19,11 +20,37 @@ class RegisterSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
+    username = serializers.CharField(required=True, validators=[
+        UniqueValidator(queryset=CustomUser.objects.all(), message="A user with that username already exists.")
+    ])
+    email = serializers.EmailField(required=True, validators=[
+        UniqueValidator(queryset=CustomUser.objects.all(), message="A user with that email already exists.")
+    ])
+    mobile_number = serializers.CharField(required=True, allow_blank=False, error_messages={
+        'blank': 'Mobile number is required.',
+        'required': 'Mobile number is required.'
+    })
     
     class Meta:
         model = CustomUser
         fields = ['username', 'first_name', 'last_name', 'full_name', 'email', 'password', 'password2', 'mobile_number',
                  'age', 'gender', 'height', 'weight', 'fitness_goal']
+    
+    def validate_mobile_number(self, value):
+        """Validate mobile number: must be exactly 10 digits"""
+        if not value:
+            raise serializers.ValidationError("Mobile number is required.")
+
+        # Remove any spaces or special characters for checking
+        clean_number = ''.join(filter(str.isdigit, value))
+
+        if len(clean_number) != 10:
+            raise serializers.ValidationError("Enter a valid 10-digit mobile number.")
+
+        if not clean_number.isdigit():
+            raise serializers.ValidationError("Mobile number must contain only digits.")
+
+        return clean_number
     
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -51,6 +78,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+    
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializer for User Profile Update"""

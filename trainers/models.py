@@ -9,8 +9,8 @@ class Trainer(models.Model):
     SPECIALIZATIONS = [
         ('weight_loss', 'Weight Loss'),
         ('muscle_gain', 'Muscle Gain'),
-        ('strength_training', 'Strength Training'),
         ('cardio', 'Cardio'),
+        ('strength_training', 'Strength Training'),
         ('yoga', 'Yoga'),
         ('nutrition', 'Nutrition'),
         ('general_fitness', 'General Fitness'),
@@ -50,6 +50,8 @@ class Trainer(models.Model):
     is_available = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
+    # Position for manual ordering in admin (lower = higher on list)
+    position = models.PositiveIntegerField(default=0, db_index=True)
     
     # Ratings
     total_ratings = models.IntegerField(default=0)
@@ -60,6 +62,13 @@ class Trainer(models.Model):
     
     def __str__(self):
         return f"{self.full_name} - {self.get_specialization_display()}"
+
+    def save(self, *args, **kwargs):
+        # Ensure new trainers are appended to the end if position not set
+        if self.pk is None and (self.position is None or self.position == 0):
+            max_pos = Trainer.objects.aggregate(models.Max('position'))['position__max']
+            self.position = (max_pos or 0) + 1
+        super().save(*args, **kwargs)
     
     def get_rating_stars(self):
         """Return star rating as HTML"""
@@ -68,7 +77,7 @@ class Trainer(models.Model):
         return {'full': full_stars, 'half': half_star, 'empty': 5 - full_stars - half_star}
     
     class Meta:
-        ordering = ['-is_featured', '-average_rating']
+        ordering = ['position', '-is_featured', '-average_rating']
 
 
 class TrainerSession(models.Model):

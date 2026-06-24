@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.urls import reverse
 from django.utils import timezone
 from .models import WorkoutPlan, WorkoutCategory, UserWorkoutProgress, Exercise
 
@@ -15,40 +16,96 @@ DAY_ORDER = {
     'sunday': 7,
 }
 
+def _get_user_plan_type(user):
+    if user.is_authenticated and getattr(user, 'membership_active', False):
+        current = getattr(user, 'current_membership', None)
+        if not current:
+            try:
+                current = user.memberships.filter(status='active', end_date__gt=timezone.now()).first()
+            except Exception:
+                current = None
+        if current:
+            plan_type = getattr(current, 'plan_type', None)
+            if not plan_type and hasattr(current, 'plan'):
+                plan_type = getattr(current.plan, 'plan_type', None)
+            return plan_type
+    return None
+
+
 def workout_list(request):
-    """Display all workout plans - Shows message if no membership"""
-    
-    # Check if user is not logged in
-    if not request.user.is_authenticated:
-        return redirect('login')
-    
-    # Check if user has active membership (admin/staff users are exempt)
-    if not request.user.is_staff and not request.user.membership_active:
-        return render(request, 'workouts/list.html', {
-            'membership_required': True,
-            'message': 'You need an active membership to access workout plans. Choose a plan that best suits your fitness goals!',
-            'beginner_workouts': [],  # Add empty list
-            'intermediate_workouts': [],  # Add empty list
-            'advanced_workouts': [],  # Add empty list
-        })
-    
-    # Rest of your code...
+    """Display workout plans based on membership level"""
+    from accounts.decorators import membership_required as _membership_required  # ensure decorator available
+
+    user_plan = _get_user_plan_type(request.user)
     categories = WorkoutCategory.objects.filter(is_active=True)
-    
-    beginner_workouts = list(WorkoutPlan.objects.filter(difficulty='beginner', is_active=True))
-    intermediate_workouts = list(WorkoutPlan.objects.filter(difficulty='intermediate', is_active=True))
-    advanced_workouts = list(WorkoutPlan.objects.filter(difficulty='advanced', is_active=True))
-    
-    beginner_workouts.sort(key=lambda x: DAY_ORDER.get(x.day_of_week, 99))
-    intermediate_workouts.sort(key=lambda x: DAY_ORDER.get(x.day_of_week, 99))
-    advanced_workouts.sort(key=lambda x: DAY_ORDER.get(x.day_of_week, 99))
-    
+
+    # Filter workouts based on membership level
+    if user_plan == 'premium':
+        beginner_workouts = WorkoutPlan.objects.filter(difficulty='beginner', is_active=True)
+        intermediate_workouts = WorkoutPlan.objects.filter(difficulty='intermediate', is_active=True)
+        advanced_workouts = WorkoutPlan.objects.filter(difficulty='advanced', is_active=True)
+    elif user_plan == 'pro':
+        beginner_workouts = WorkoutPlan.objects.filter(difficulty='beginner', is_active=True)[:10]
+        intermediate_workouts = WorkoutPlan.objects.filter(difficulty='intermediate', is_active=True)[:10]
+        advanced_workouts = WorkoutPlan.objects.filter(difficulty='advanced', is_active=True)[:5]
+    else:  # Basic or anonymous
+        beginner_workouts = WorkoutPlan.objects.filter(difficulty='beginner', is_active=True)[:5]
+        intermediate_workouts = WorkoutPlan.objects.filter(difficulty='intermediate', is_active=True)[:3]
+        advanced_workouts = WorkoutPlan.objects.filter(difficulty='advanced', is_active=True)[:2]
+
+    # Sort by day order
+    beginner_workouts = sorted(beginner_workouts, key=lambda x: DAY_ORDER.get(getattr(x, 'day_of_week', '').lower(), 99))
+    intermediate_workouts = sorted(intermediate_workouts, key=lambda x: DAY_ORDER.get(getattr(x, 'day_of_week', '').lower(), 99))
+    advanced_workouts = sorted(advanced_workouts, key=lambda x: DAY_ORDER.get(getattr(x, 'day_of_week', '').lower(), 99))
+
+    # Upgrade flow is transient per-request via ?upgrade=pro or ?upgrade=premium
+    request_upgrade = request.GET.get('upgrade', '').lower()
+    is_in_upgrade_flow = request_upgrade in {'pro', 'premium'}
+    selected_upgrade_plan = request_upgrade
+    is_target_selected = selected_upgrade_plan in {'pro', 'premium'}
+    is_premium_selected = selected_upgrade_plan == 'premium'
+    is_upgrade_page = False
+    is_checkout_page = False
+
+    # Decide which upgrade banners to show.
+    pro_action_url = reverse('membership:plans') + '?upgrade=pro'
+    premium_action_url = reverse('membership:plans') + '?upgrade=premium'
+
+    show_pro_banner = False
+    show_premium_banner = False
+    # Basic users: show Pro banner only. Pro users: show Premium banner only.
+    if user_plan == 'pro':
+        show_premium_banner = not is_in_upgrade_flow
+    elif user_plan == 'premium':
+        show_pro_banner = False
+        show_premium_banner = False
+    else:
+        # Treat unauthenticated or other values as Basic
+        show_pro_banner = not is_in_upgrade_flow
+        show_premium_banner = False
+
+    pro_message = "Upgrade to Pro for more workout plans and features!"
+    premium_message = "Upgrade to Premium for unlimited workout plans!"
+
     context = {
         'categories': categories,
         'beginner_workouts': beginner_workouts,
         'intermediate_workouts': intermediate_workouts,
         'advanced_workouts': advanced_workouts,
+        'user_plan': user_plan,
+        'selected_upgrade_plan': selected_upgrade_plan,
+        'is_target_selected': is_target_selected,
         'membership_required': False,
+        'is_upgrade_page': is_upgrade_page,
+        'is_checkout_page': is_checkout_page,
+        'is_premium_selected': is_premium_selected,
+        'is_in_upgrade_flow': is_in_upgrade_flow,
+        'show_pro_banner': show_pro_banner,
+        'show_premium_banner': show_premium_banner,
+        'pro_action_url': pro_action_url,
+        'premium_action_url': premium_action_url,
+        'pro_message': pro_message,
+        'premium_message': premium_message,
     }
     return render(request, 'workouts/list.html', context)
 

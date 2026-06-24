@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; color: #333; }
+        .content h2 { color: #d32f2f; font-size: 20px; margin-top: 0; }
+        .content p { line-height: 1.6; margin: 15px 0; }
+        .warning-box { background-color: #ffebee; border-left: 4px solid #d32f2f; padding: 15px; margin: 20px 0; }
+        .warning-box strong { color: #d32f2f; }
+        .footer { background-color: #f4f4f4; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; font-size: 12px; color: #666; }
+        .footer a { color: #d32f2f; text-decoration: none; }
+        .icon { font-size: 48px; margin-bottom: 10px; }
+        .data-list { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .data-list li { margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="icon">⚠️</div>
+            <h1>Account Deletion Notice</h1>
+        </div>
+
+        <div class="content">
+            <h2>Hi {{ username }},</h2>
+
+            <p>This is to inform you that your FitZone account has been <strong>permanently deleted</strong>.</p>
+
+            <div class="warning-box">
+                <strong>🗑️ Important:</strong>
+                <p>This action is <strong>permanent and irreversible</strong>. Your account and all associated data have been removed from our system.</p>
+            </div>
+
+            <p><strong>The following data has been removed:</strong></p>
+            <ul class="data-list">
+                <li>✗ Profile and personal information</li>
+                <li>✗ Workout history and achievements</li>
+                <li>✗ Membership records and billing history</li>
+                <li>✗ Trainer sessions and bookings</li>
+                <li>✗ Diet plans and tracking data</li>
+                <li>✗ All custom settings and preferences</li>
+            </ul>
+
+            <p><strong>What's retained (for legal/compliance reasons only):</strong></p>
+            <ul class="data-list">
+                <li>Transaction records (anonymized) for auditing</li>
+                <li>Account deletion timestamp and reason (logs only)</li>
+            </ul>
+
+            <p><strong>Want to come back?</strong></p>
+            <p>You can create a new FitZone account anytime with a different email address. Note that your previous data cannot be recovered as it has been permanently deleted.</p>
+
+            <p>If you believe this was done in error, please contact our support team within 7 days. After that, recovery may not be possible.</p>
+
+            <p><strong>Thank you for being part of the FitZone community!</strong> 🙏</p>
+
+            <p><strong>Best regards,</strong><br>The FitZone Team</p>
+        </div>
+
+        <div class="footer">
+            <p>You received this email because it was associated with a deleted FitZone account.</p>
+            <p><a href="{{ privacy_url }}">Privacy Policy</a> | <a href="{{ contact_url }}">Contact Us</a> | <a href="{{ support_url }}">Support</a></p>
+            <p>&copy; {{ year }} FitZone. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

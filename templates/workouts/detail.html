@@ -388,7 +388,7 @@
     
     /* Modal responsive */
     @media (max-width: 640px) {
-        #videoModal .bg-[#1A1A2E] {
+        #videoModal .video-modal-content {
             width: 95%;
         }
         
@@ -473,12 +473,16 @@
                     </div>
                     
                     <!-- Video Button -->
-                    {% if workout_exercise.exercise.video_url %}
-                    <button onclick="openVideo('{{ workout_exercise.exercise.get_youtube_embed_url }}', '{{ workout_exercise.exercise.name }}')" 
-                            class="bg-[#E94560] text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-80 transition-colors video-btn">
-                        <i class="fab fa-youtube mr-1"></i> Watch Tutorial
-                    </button>
-                    {% endif %}
+                    {% with video_urls=workout_exercise.exercise.get_youtube_embed_urls %}
+                        {% if video_urls %}
+                            <button type="button"
+                                    data-video-urls="{{ video_urls|join:'|~|'|escapejs }}"
+                                    onclick="openVideo(this, '{{ workout_exercise.exercise.name|escapejs }}')"
+                                    class="bg-[#E94560] text-white px-4 py-2 rounded-lg text-sm hover:bg-opacity-80 transition-colors video-btn">
+                                <i class="fab fa-youtube mr-1"></i> Watch Tutorial
+                            </button>
+                        {% endif %}
+                    {% endwith %}
                 </div>
                 
                 <!-- Instructions -->
@@ -561,7 +565,7 @@
 
 <!-- Video Modal -->
 <div id="videoModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 p-4">
-    <div class="bg-[#1A1A2E] rounded-xl max-w-4xl w-full">
+    <div class="bg-[#1A1A2E] rounded-xl max-w-4xl w-full video-modal-content">
         <div class="flex justify-between items-center p-4 border-b border-[#E94560]/20">
             <h3 id="videoTitle" class="text-white font-semibold">Exercise Tutorial</h3>
             <button onclick="closeVideo()" class="text-text-gray hover:text-[#E94560] transition-colors">
@@ -569,22 +573,118 @@
             </button>
         </div>
         <div class="aspect-video">
-            <iframe id="videoFrame" class="w-full h-full rounded-b-xl" src="" frameborder="0" allowfullscreen></iframe>
+            <div id="videoFrame" class="w-full h-full rounded-b-xl"></div>
         </div>
     </div>
 </div>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    function openVideo(url, title) {
+    window.youTubeApiReady = false;
+    window.videoQueue = [];
+    window.videoIndex = 0;
+    window.ytPlayer = null;
+
+    function onYouTubeIframeAPIReady() {
+        window.youTubeApiReady = true;
+    }
+
+    function openVideo(button, title) {
+        const encodedUrls = button.dataset.videoUrls || '';
+        window.videoQueue = encodedUrls ? encodedUrls.split('|~|') : [];
+        window.videoIndex = 0;
+
         document.getElementById('videoTitle').innerText = title;
-        document.getElementById('videoFrame').src = url;
         document.getElementById('videoModal').classList.remove('hidden');
         document.getElementById('videoModal').classList.add('flex');
         document.body.style.overflow = 'hidden';
+
+        loadVideoFromQueue();
     }
-    
+
+    function loadVideoFromQueue() {
+        const source = window.videoQueue[window.videoIndex] || '';
+        if (!source) {
+            document.getElementById('videoFrame').innerHTML = '';
+            return;
+        }
+
+        if (window.ytPlayer) {
+            window.ytPlayer.destroy();
+            window.ytPlayer = null;
+        }
+
+        if (window.youTubeApiReady && window.YT && window.YT.Player) {
+            const videoId = extractYouTubeVideoId(source);
+            if (!videoId) {
+                document.getElementById('videoFrame').innerHTML = '';
+                return;
+            }
+
+            window.ytPlayer = new window.YT.Player('videoFrame', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    rel: 0,
+                    modestbranding: 1,
+                    controls: 1,
+                    autoplay: 1,
+                },
+                events: {
+                    onError: onPlayerError,
+                }
+            });
+        } else {
+            document.getElementById('videoFrame').innerHTML = `<iframe class="w-full h-full rounded-b-xl" src="${source}" frameborder="0" allowfullscreen></iframe>`;
+        }
+    }
+
+    function onPlayerError(event) {
+        if (window.videoIndex < window.videoQueue.length - 1) {
+            window.videoIndex += 1;
+            loadVideoFromQueue();
+        } else {
+            document.getElementById('videoFrame').innerHTML = '';
+        }
+    }
+
+    function extractYouTubeVideoId(url) {
+        if (!url) {
+            return '';
+        }
+
+        const parser = document.createElement('a');
+        parser.href = url;
+        const hostname = parser.hostname || '';
+        const path = parser.pathname || '';
+        const searchParams = new URLSearchParams(parser.search);
+
+        if (hostname.includes('youtu.be')) {
+            return path.replace('/', '');
+        }
+
+        if (hostname.includes('youtube.com')) {
+            if (path.startsWith('/watch')) {
+                return searchParams.get('v') || '';
+            }
+            if (path.startsWith('/embed/')) {
+                return path.split('/embed/')[1] || '';
+            }
+            if (path.startsWith('/shorts/')) {
+                return path.split('/shorts/')[1] || '';
+            }
+        }
+
+        return '';
+    }
+
     function closeVideo() {
-        document.getElementById('videoFrame').src = '';
+        if (window.ytPlayer) {
+            window.ytPlayer.destroy();
+            window.ytPlayer = null;
+        }
+        document.getElementById('videoFrame').innerHTML = '';
         document.getElementById('videoModal').classList.add('hidden');
         document.getElementById('videoModal').classList.remove('flex');
         document.body.style.overflow = '';

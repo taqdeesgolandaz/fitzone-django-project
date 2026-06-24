@@ -419,7 +419,11 @@
                 <tbody>
                     {% for membership in memberships %}
                     <tr class="border-b border-[#E94560]/10 transition-colors">
-                        <td class="p-3 text-white">{{ membership.user.username }}</td>
+                        <td class="p-3 text-white">
+                            <a href="{% url 'admin_dashboard:member_details' membership.user.id %}" class="text-[#E94560] hover:underline font-semibold">
+                                {{ membership.user.username }}
+                            </a>
+                        </td>
                         <td class="p-3 text-text-gray">{{ membership.plan.name }}</td>
                         <td class="p-3 text-text-gray">{{ membership.start_date|date:"M d, Y" }}</td>
                         <td class="p-3 text-text-gray">{{ membership.end_date|date:"M d, Y" }}</td>

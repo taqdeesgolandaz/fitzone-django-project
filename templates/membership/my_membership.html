@@ -37,7 +37,9 @@
     /* Very Large Desktops (1400px and above) */
     @media (min-width: 1400px) {
         .membership-container {
-            max-width: 1280px;
+            max-width: 100%;
+            padding-left: 2rem;
+            padding-right: 2rem;
         }
         
         .page-title {
@@ -56,7 +58,9 @@
     /* Desktops (992px to 1199px) */
     @media (min-width: 992px) and (max-width: 1199px) {
         .membership-container {
-            max-width: 960px;
+            max-width: 100%;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
         }
     }
     
@@ -473,11 +477,6 @@
         }
     }
     
-    /* Progress bar animation */
-    .progress-fill {
-        transition: width 0.5s ease;
-    }
-    
     /* Table row hover effect */
     tbody tr:hover {
         background-color: rgba(233, 69, 96, 0.05);
@@ -504,7 +503,7 @@
                         <span class="ml-3 bg-[#E94560] text-white text-xs px-2 py-1 rounded">POPULAR</span>
                     {% endif %}
                 </div>
-                <p class="text-text-gray mb-2 membership-detail">Status: 
+                <p class="text-text-gray mb-2 membership-detail text-center md:text-left">Status: 
                     <span class="text-[#00D09C] font-semibold">
                         <i class="fas fa-circle text-xs mr-1"></i>Active
                     </span>
@@ -516,9 +515,6 @@
                 <p class="text-text-gray text-sm days-label">Days Remaining</p>
                 <p class="text-4xl font-bold text-[#E94560] days-remaining">{{ active_membership.days_remaining }}</p>
                 <p class="text-text-gray text-sm days-label">days</p>
-                <div class="w-32 bg-[#0F0F1A] rounded-full h-2 mt-2 progress-bar mx-auto md:mx-0">
-                    <div class="bg-[#E94560] rounded-full h-2 progress-fill" style="width: {% widthratio active_membership.days_remaining active_membership.plan.get_duration_days 100 %}%"></div>
-                </div>
             </div>
         </div>
     </div>
@@ -542,13 +538,17 @@
             <i class="fas fa-dumbbell text-[#E94560] text-2xl mb-2 block quick-action-icon"></i>
             <span class="text-white quick-action-text">View Workouts</span>
         </a>
-        <a href="{% url 'diet:plans' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-lg p-4 text-center hover:border-[#E94560] transition-all quick-action-card card-hover">
+        <a href="{% url 'diet:list' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-lg p-4 text-center hover:border-[#E94560] transition-all quick-action-card card-hover">
             <i class="fas fa-apple-alt text-[#E94560] text-2xl mb-2 block quick-action-icon"></i>
             <span class="text-white quick-action-text">View Diet Plans</span>
         </a>
-        <a href="{% url 'tracking:progress' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-lg p-4 text-center hover:border-[#E94560] transition-all quick-action-card card-hover">
+        <a href="{% url 'tracking:workout_log' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-lg p-4 text-center hover:border-[#E94560] transition-all quick-action-card card-hover">
             <i class="fas fa-chart-line text-[#E94560] text-2xl mb-2 block quick-action-icon"></i>
             <span class="text-white quick-action-text">Track Progress</span>
+        </a>
+        <a href="{% url 'membership:my_membership' %}" class="bg-[#1A1A2E] border border-[#E94560]/20 rounded-lg p-4 text-center hover:border-[#E94560] transition-all quick-action-card card-hover">
+            <i class="fas fa-id-card text-[#E94560] text-2xl mb-2 block quick-action-icon"></i>
+            <span class="text-white quick-action-text">My Memberships</span>
         </a>
     </div>
 
@@ -625,18 +625,6 @@
         card.style.transform = 'translateY(20px)';
         card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         observer.observe(card);
-    });
-    
-    // Progress bar animation
-    window.addEventListener('load', function() {
-        const progressBars = document.querySelectorAll('.progress-fill');
-        progressBars.forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.width = width;
-            }, 100);
-        });
     });
 </script>
 {% endblock %}

@@ -6,8 +6,11 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from notifications.services import NotificationService
+from notifications.email_templates import get_password_reset_email
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
@@ -17,6 +20,7 @@ from django.utils import translation
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from urllib3 import request
+from threading import Thread
 from .models import CustomUser
 from .forms import UserProfileForm, UserSettingsForm
 from .serializers import (UserSerializer, RegisterSerializer, 
@@ -25,6 +29,25 @@ from .signals import ensure_single_session
 
 User = get_user_model()
 
+
+def send_email_async(subject, message, from_email, recipient_list, html_message=None):
+    """Send email in background thread"""
+    def send():
+        try:
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=from_email,
+                recipient_list=recipient_list,
+                html_message=html_message,
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(f"Async email error: {str(e)}")
+    
+    thread = Thread(target=send, daemon=True)
+    thread.start()
+
 # Import for achievements
 from achievements.models import UserAchievement, Badge
 
@@ -32,7 +55,15 @@ from achievements.models import UserAchievement, Badge
 
 def home_view(request):
     """Landing page view"""
-    return render(request, 'base/home.html')
+    from membership.models import MembershipPlan
+    
+    # Get active membership plans for home page
+    plans = MembershipPlan.objects.filter(is_active=True).order_by('price')
+    
+    context = {
+        'plans': plans,
+    }
+    return render(request, 'base/home.html', context)
 
 def login_view(request):
     """Render login page and handle login"""
@@ -84,108 +115,80 @@ def register_view(request):
             return redirect('admin_dashboard:dashboard')
         return redirect('dashboard')
     
+    context = {}
+    
     if request.method == 'POST':
         serializer = RegisterSerializer(data=request.POST)
         
         if serializer.is_valid():
             user = serializer.save()
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
             messages.success(request, 'Registration successful! Welcome to FitZone!')
             return redirect('dashboard')
         else:
+            # Collect unique, user-friendly error messages and pass to template (do NOT add to messages())
+            seen_errors = []
             for field, errors in serializer.errors.items():
+                pretty_field = field.replace('_', ' ').title() if field != 'non_field_errors' else ''
                 for error in errors:
-                    messages.error(request, f'{field}: {error}')
+                    # Suppress the mobile-number 'required' message from the form error box
+                    if field == 'mobile_number' and str(error).strip().lower() in (
+                        'mobile number is required.',
+                        'this field may not be blank.'
+                    ):
+                        continue
+                    msg = f"{pretty_field + ': ' if pretty_field else ''}{error}"
+                    if msg not in seen_errors:
+                        seen_errors.append(msg)
+            context['form_errors'] = seen_errors
+
+            # Store form data for pre-filling the form, but exclude passwords for security
+            form_data = request.POST.copy()
+            form_data.pop('password', None)
+            form_data.pop('password2', None)
+            context['form_data'] = form_data
     
-    return render(request, 'accounts/register.html')
+    return render(request, 'accounts/register.html', context)
 
 
 def forgot_password(request):
     """Forgot password page"""
     if request.method == 'POST':
         email = request.POST.get('email')
+        
         if not email:
             messages.error(request, 'Please enter your email address.')
             return render(request, 'accounts/forgot_password.html')
-
+        
         try:
-            user = User.objects.get(email__iexact=email)
+            user = User.objects.get(email=email)
+            
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            
+            # Always use SITE_URL from settings for reset link (not request.build_absolute_uri)
+            site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+            reset_link = f"{site}{reverse('reset_password', kwargs={'uidb64': uid, 'token': token})}"
+            
+            subject = '[FitZone] Password Reset Request'
+            html_content, plain_content = get_password_reset_email(user, reset_link)
+
+            send_email_async(
+                subject=subject,
+                message=plain_content,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                html_message=html_content,
+            )
+            
+            messages.success(request, 'Password reset link has been sent to your email.')
+            return redirect('login')
+            
         except User.DoesNotExist:
             messages.error(request, 'No account found with this email address.')
             return render(request, 'accounts/forgot_password.html')
-
-        try:
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            reset_link = f"{settings.SITE_URL}/reset-password/{uid}/{token}/"
-
-            subject = f'{settings.EMAIL_SUBJECT_PREFIX}Password reset request'
-            plain_message = f"""
-Hello {user.get_full_name() or user.username},
-
-We received a request to reset your password for your FitZone account.
-
-Use the link below to reset your password:
-{reset_link}
-
-This link will expire in 24 hours.
-
-If you did not request a password reset, please ignore this email.
-
-Thanks,
-FitZone Team
-"""
-
-            html_message = f"""
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Reset</title>
-</head>
-<body>
-    <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px;">
-        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 10px; overflow: hidden;">
-            <div style="background: #E94560; padding: 20px; text-align: center;">
-                <h1 style="margin: 0; color: #ffffff;">Password reset request</h1>
-            </div>
-            <div style="padding: 30px; color: #333333;">
-                <p>Hello <strong>{user.get_full_name() or user.username}</strong>,</p>
-                <p>We received a request to reset your password for your FitZone account.</p>
-                <p><a href="{reset_link}" style="display: inline-block; background: #E94560; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px;">Reset password</a></p>
-                <p>If the button doesn't work, copy and paste this link into your browser:</p>
-                <p style="word-break: break-all; color: #333333;">{reset_link}</p>
-                <p>This link will expire in <strong>24 hours</strong>.</p>
-                <p>If you did not request this reset, please ignore this email.</p>
-                <p>Thanks,<br>FitZone Team</p>
-            </div>
-            <div style="background: #f4f4f4; padding: 15px; text-align: center; color: #666666; font-size: 12px;">
-                &copy; {timezone.now().year} FitZone Fitness Platform. All rights reserved.<br>
-                This is an automated message, please do not reply.
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-"""
-
-            email_msg = EmailMultiAlternatives(
-                subject=subject,
-                body=plain_message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[user.email],
-            )
-            email_msg.attach_alternative(html_message, "text/html")
-            email_msg.send(fail_silently=False)
-
-            messages.success(request, 'Password reset link has been sent to your email.')
-            return redirect('login')
-
-        except Exception:
-            messages.error(request, 'Unable to send reset email. Please try again later.')
-            return render(request, 'accounts/forgot_password.html')
-
+    
     return render(request, 'accounts/forgot_password.html')
 
 
@@ -356,7 +359,7 @@ class LoginView(APIView):
             except CustomUser.DoesNotExist:
                 username = username_or_email
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
         
         if user:
             ensure_single_session(request, user)
