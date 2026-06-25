@@ -261,7 +261,7 @@ EMAIL_SUBJECT_PREFIX = '[FitZone] '
 # Add these for better deliverability
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'false').lower() in ['true', '1', 'yes']
 EMAIL_TIMEOUT = 30
-SITE_URL = os.getenv('SITE_URL')
+SITE_URL = os.getenv('SITE_URL', '')
 
 # Safety fallback for local development: if SMTP backend is configured but no
 # `EMAIL_HOST_PASSWORD` is set, switch to the console backend to avoid
