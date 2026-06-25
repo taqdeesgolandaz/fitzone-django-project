@@ -4,6 +4,7 @@ services:
     env: docker
     dockerfilePath: Dockerfile
     dockerContext: .
+    buildCommand: "./render-build.sh"
     autoDeploy: true
     region: oregon
     plan: standard
