@@ -34,7 +34,7 @@ services:
       - key: SECRET_KEY
         sync: false
       
-      # Email Configuration - Gmail
+      # Email Configuration - SendGrid API
       - key: EMAIL_BACKEND
         value: "notifications.sendgrid_backend.SendGridEmailBackend"
       - key: EMAIL_HOST
@@ -49,6 +49,8 @@ services:
         value: "apikey"
       - key: SENDGRID_API_KEY
         sync: false
+      - key: SENDGRID_FROM_EMAIL
+        value: "support@fitzone.com"
       - key: DEFAULT_FROM_EMAIL
         value: "FitZone <support@fitzone.com>"
       
