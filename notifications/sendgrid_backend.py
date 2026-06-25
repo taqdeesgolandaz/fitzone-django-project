@@ -2,9 +2,16 @@ import sys
 
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
+from django.core.mail.backends.smtp import EmailBackend as SMTPEmailBackend
 from django.core.mail.message import EmailMessage
-import sendgrid
-from sendgrid.helpers.mail import Mail
+
+
+try:
+    import sendgrid
+    from sendgrid.helpers.mail import Mail
+except ImportError:
+    sendgrid = None
+    Mail = None
 
 
 class SendGridEmailBackend(BaseEmailBackend):
@@ -16,7 +23,6 @@ class SendGridEmailBackend(BaseEmailBackend):
     def _build_mail(self, message: EmailMessage):
         html_content = None
         if hasattr(message, 'alternatives') and message.alternatives:
-            # Use the first HTML alternative if present
             html_content = message.alternatives[0][0]
         elif message.content_subtype == 'html':
             html_content = message.body
@@ -29,12 +35,33 @@ class SendGridEmailBackend(BaseEmailBackend):
             plain_text_content=message.body if html_content else message.body,
         )
 
+    def _smtp_fallback(self):
+        return SMTPEmailBackend(
+            host=getattr(settings, 'EMAIL_HOST', ''),
+            port=getattr(settings, 'EMAIL_PORT', ''),
+            username=getattr(settings, 'EMAIL_HOST_USER', ''),
+            password=getattr(settings, 'EMAIL_HOST_PASSWORD', ''),
+            use_tls=getattr(settings, 'EMAIL_USE_TLS', False),
+            use_ssl=getattr(settings, 'EMAIL_USE_SSL', False),
+            fail_silently=self.fail_silently,
+            timeout=getattr(settings, 'EMAIL_TIMEOUT', None),
+        )
+
     def send_messages(self, email_messages):
         if not email_messages:
             return 0
 
         api_key = self._get_api_key()
+        if not sendgrid or not Mail:
+            if self._can_use_smtp_fallback():
+                print('SendGrid package unavailable; falling back to SMTP email backend.', file=sys.stderr)
+                return self._smtp_fallback().send_messages(email_messages)
+            raise ImportError('SendGrid package is not installed. Install sendgrid or configure a SMTP backend.')
+
         if not api_key:
+            if self._can_use_smtp_fallback():
+                print('SendGrid API key missing; falling back to SMTP email backend.', file=sys.stderr)
+                return self._smtp_fallback().send_messages(email_messages)
             raise ValueError('SendGrid API key is not configured. Set SENDGRID_API_KEY or EMAIL_HOST_PASSWORD in environment.')
 
         sg = sendgrid.SendGridAPIClient(api_key)
@@ -48,6 +75,9 @@ class SendGridEmailBackend(BaseEmailBackend):
             try:
                 response = sg.send(mail)
             except Exception as e:
+                if self._can_use_smtp_fallback():
+                    print('SendGrid API send failed; retrying via SMTP backend.', file=sys.stderr)
+                    return self._smtp_fallback().send_messages(email_messages)
                 if not self.fail_silently:
                     raise
                 print(f'SendGrid send failed: {e}', file=sys.stderr)
@@ -69,3 +99,8 @@ class SendGridEmailBackend(BaseEmailBackend):
                     file=sys.stderr,
                 )
         return sent_count
+
+    def _can_use_smtp_fallback(self):
+        host = getattr(settings, 'EMAIL_HOST', '')
+        port = getattr(settings, 'EMAIL_PORT', '')
+        return bool(host and port)

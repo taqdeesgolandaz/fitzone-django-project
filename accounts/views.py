@@ -17,15 +17,15 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils import translation
+import sys
 import time
 import smtplib
 import ssl
+import traceback
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from urllib3 import request
 from threading import Thread
-import smtplib
-import ssl
 from .models import CustomUser
 from .forms import UserProfileForm, UserSettingsForm
 from .serializers import (UserSerializer, RegisterSerializer, 
@@ -36,7 +36,7 @@ User = get_user_model()
 
 
 def send_email_async(subject, message, from_email, recipient_list, html_message=None):
-    """Send email in background thread"""
+    """Send email in background thread without letting failures crash the request."""
     def send():
         try:
             send_mail(
@@ -48,11 +48,29 @@ def send_email_async(subject, message, from_email, recipient_list, html_message=
                 fail_silently=False,
             )
         except Exception as e:
-            print(f"Async email error: {str(e)}")
-            raise
-    
+            print(f"Async email error: {e}", file=sys.stderr)
+            traceback.print_exc(file=sys.stderr)
+
     thread = Thread(target=send, daemon=True)
     thread.start()
+
+
+def send_email_sync(subject, message, from_email, recipient_list, html_message=None, email_type='generic'):
+    """Send email synchronously and return False on failure."""
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=recipient_list,
+            html_message=html_message,
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        print(f"Sync email error ({email_type}): {e}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+        return False
 
 # Import for achievements
 from achievements.models import UserAchievement, Badge
@@ -169,8 +187,11 @@ def forgot_password(request):
             return render(request, 'accounts/forgot_password.html')
         
         try:
-            user = User.objects.get(email=email)
-            
+            user = User.objects.filter(email__iexact=email).first()
+            if not user:
+                messages.error(request, 'No account found with this email address.')
+                return render(request, 'accounts/forgot_password.html')
+
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             
@@ -186,19 +207,25 @@ def forgot_password(request):
                 f"[forgot_password] email settings BACKEND={settings.EMAIL_BACKEND} HOST={settings.EMAIL_HOST} PORT={settings.EMAIL_PORT} TLS={settings.EMAIL_USE_TLS} SSL={settings.EMAIL_USE_SSL} USER_SET={bool(settings.EMAIL_HOST_USER)} SENDGRID_KEY_SET={bool(settings.SENDGRID_API_KEY)} PASSWORD_SET={bool(settings.EMAIL_HOST_PASSWORD)}"
             )
 
-            send_email_async(
+            email_sent = send_email_sync(
                 subject=subject,
                 message=plain_content,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 html_message=html_content,
+                email_type='password_reset',
             )
-            print(f"[forgot_password] send dispatched at {time.time()}")
+            print(f"[forgot_password] send result={email_sent} at {time.time()}")
+            if not email_sent:
+                messages.error(request, 'Unable to send password reset email right now. Please try again later.')
+                return render(request, 'accounts/forgot_password.html')
+
             messages.success(request, 'Password reset link has been sent to your email.')
             return redirect('login')
-            
-        except User.DoesNotExist:
-            messages.error(request, 'No account found with this email address.')
+        except Exception as e:
+            print(f"[forgot_password] unhandled exception: {e}", file=sys.stderr)
+            traceback.print_exc(file=sys.stderr)
+            messages.error(request, 'An unexpected error occurred. Please try again or contact support.')
             return render(request, 'accounts/forgot_password.html')
     
     return render(request, 'accounts/forgot_password.html')

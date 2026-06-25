@@ -169,6 +169,5 @@ class CustomUser(AbstractUser):
             print(f"Error optimizing profile picture: {e}")
 
     class Meta:
-        db_table = 'users'
         verbose_name = 'User'
         verbose_name_plural = 'Users'
