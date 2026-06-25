@@ -65,14 +65,14 @@ Set all of these in Render dashboard (Web Service → Environment):
 
 **Email:**
 - [ ] `EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`
-- [ ] `EMAIL_HOST=<smtp.mailgun.org or your provider>`
-- [ ] `EMAIL_PORT=465`
-- [ ] `EMAIL_USE_SSL=true`
-- [ ] `EMAIL_USE_TLS=false`
-- [ ] `EMAIL_HOST_USER=<your-mail-provider-username>`
-- [ ] `EMAIL_HOST_PASSWORD=<your-mail-provider-password>`
-- [ ] `DEFAULT_FROM_EMAIL=<email>`
-- [ ] `SERVER_EMAIL=<email>`
+- [ ] `EMAIL_HOST=smtp.gmail.com`
+- [ ] `EMAIL_PORT=587`
+- [ ] `EMAIL_USE_TLS=true`
+- [ ] `EMAIL_USE_SSL=false`
+- [ ] `EMAIL_HOST_USER=fitzone.noreply@gmail.com`
+- [ ] `EMAIL_HOST_PASSWORD=<your-app-password>`
+- [ ] `DEFAULT_FROM_EMAIL=FitZone <fitzone.noreply@gmail.com>`
+- [ ] `SERVER_EMAIL=fitzone.noreply@gmail.com`
 
 **Razorpay:**
 - [ ] `RAZORPAY_KEY_ID=<test-or-live-key>`

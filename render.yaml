@@ -33,17 +33,17 @@ services:
       - key: SECRET_KEY
         sync: false
       
-      # Email Configuration — use a transactional SMTP provider like Mailgun or Postmark
+      # Email Configuration - Gmail
       - key: EMAIL_BACKEND
         value: "django.core.mail.backends.smtp.EmailBackend"
       - key: EMAIL_HOST
-        value: "smtp.mailgun.org"
+        value: "smtp.gmail.com"
       - key: EMAIL_PORT
-        value: "465"
+        value: "587"
       - key: EMAIL_USE_TLS
-        value: "false"
-      - key: EMAIL_USE_SSL
         value: "true"
+      - key: EMAIL_USE_SSL
+        value: "false"
       - key: EMAIL_HOST_USER
         sync: false
       - key: EMAIL_HOST_PASSWORD
