@@ -61,7 +61,8 @@ htmlcov/
 
 # Database
 *.sqlite3
-db.sqlite3
+!db.sqlite3
+db.sqlite3.backup
 
 # Media and static files
 /media/
