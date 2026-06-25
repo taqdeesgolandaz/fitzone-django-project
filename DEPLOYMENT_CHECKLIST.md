@@ -64,8 +64,13 @@ Set all of these in Render dashboard (Web Service → Environment):
 - [ ] `DATABASE_URL` (auto-set if using render.yaml)
 
 **Email:**
-- [ ] `EMAIL_HOST_USER=<your-email>`
-- [ ] `EMAIL_HOST_PASSWORD=<app-specific-password>`
+- [ ] `EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`
+- [ ] `EMAIL_HOST=<smtp.mailgun.org or your provider>`
+- [ ] `EMAIL_PORT=465`
+- [ ] `EMAIL_USE_SSL=true`
+- [ ] `EMAIL_USE_TLS=false`
+- [ ] `EMAIL_HOST_USER=<your-mail-provider-username>`
+- [ ] `EMAIL_HOST_PASSWORD=<your-mail-provider-password>`
 - [ ] `DEFAULT_FROM_EMAIL=<email>`
 - [ ] `SERVER_EMAIL=<email>`
 
