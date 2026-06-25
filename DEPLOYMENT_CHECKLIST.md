@@ -69,10 +69,10 @@ Set all of these in Render dashboard (Web Service → Environment):
 - [ ] `EMAIL_PORT=587`
 - [ ] `EMAIL_USE_TLS=true`
 - [ ] `EMAIL_USE_SSL=false`
-- [ ] `EMAIL_HOST_USER=fitzone.noreply@gmail.com`
+- [ ] `EMAIL_HOST_USER=fitzone.alerts@gmail.com`
 - [ ] `EMAIL_HOST_PASSWORD=<your-app-password>`
-- [ ] `DEFAULT_FROM_EMAIL=FitZone <fitzone.noreply@gmail.com>`
-- [ ] `SERVER_EMAIL=fitzone.noreply@gmail.com`
+- [ ] `DEFAULT_FROM_EMAIL=FitZone <fitzone.alerts@gmail.com>`
+- [ ] `SERVER_EMAIL=fitzone.alerts@gmail.com`
 
 **Razorpay:**
 - [ ] `RAZORPAY_KEY_ID=<test-or-live-key>`

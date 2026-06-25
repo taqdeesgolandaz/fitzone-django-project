@@ -34,11 +34,11 @@ services:
       - key: SECRET_KEY
         sync: false
       
-      # Email Configuration - SendGrid API
+      # Email Configuration - Gmail SMTP
       - key: EMAIL_BACKEND
-        value: "notifications.sendgrid_backend.SendGridEmailBackend"
+        value: "django.core.mail.backends.smtp.EmailBackend"
       - key: EMAIL_HOST
-        value: "smtp.sendgrid.net"
+        value: "smtp.gmail.com"
       - key: EMAIL_PORT
         value: "587"
       - key: EMAIL_USE_TLS
@@ -46,13 +46,11 @@ services:
       - key: EMAIL_USE_SSL
         value: "false"
       - key: EMAIL_HOST_USER
-        value: "apikey"
-      - key: SENDGRID_API_KEY
+        value: "fitzone.alerts@gmail.com"
+      - key: EMAIL_HOST_PASSWORD
         sync: false
-      - key: SENDGRID_FROM_EMAIL
-        value: "support@fitzone.com"
       - key: DEFAULT_FROM_EMAIL
-        value: "FitZone <support@fitzone.com>"
+        value: "FitZone <fitzone.alerts@gmail.com>"
       
       # SITE_URL for email links (reset password, contact support, etc.)
       - key: SITE_URL
