@@ -21,24 +21,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here-chang
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() in ['true', '1', 'yes']
 
-RENDER_ENV = os.getenv('RENDER', 'false').lower() in ['true', '1', 'yes']
-
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
     if host.strip()
 ]
-
-# In Render deployments, always accept Render hostnames and the external Render service URL.
-if RENDER_ENV:
-    if '.onrender.com' not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append('.onrender.com')
-    render_external_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-    if render_external_hostname:
-        if render_external_hostname not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(render_external_hostname)
-        if f'.{render_external_hostname}' not in ALLOWED_HOSTS:
-            ALLOWED_HOSTS.append(f'.{render_external_hostname}')
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -100,7 +87,7 @@ ROOT_URLCONF = 'fitzone.urls'
 WSGI_APPLICATION = 'fitzone.wsgi.application'
 
 # Database
-# Use DATABASE_URL if available (Render), otherwise use SQLite locally
+# Use DATABASE_URL if available, otherwise use SQLite locally
 if 'DATABASE_URL' in os.environ:
     DATABASES = {
         'default': dj_database_url.config(
@@ -226,7 +213,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # Razorpay Configuration
-# Use environment variables - set in .env for local development, in Render dashboard for production
+# Use environment variables - set in .env for local development and production
 RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'rzp_test_SwU8wO2DuOpWoo')
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'hS7jKWDqXYQRbo3IoS6J3oMB')
 
@@ -266,8 +253,8 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <support@fitz
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 SITE_URL = os.environ.get('SITE_URL', '')
 
-if RENDER_ENV and not EMAIL_HOST_PASSWORD:
-    print('ERROR: EMAIL_HOST_PASSWORD is not set in Render environment. Emails will fail to send.', file=sys.stderr)
+if not DEBUG and not EMAIL_HOST_PASSWORD:
+    print('ERROR: EMAIL_HOST_PASSWORD is not set in production environment. Emails will fail to send.', file=sys.stderr)
 
 print(
     'EMAIL CONFIG:',
