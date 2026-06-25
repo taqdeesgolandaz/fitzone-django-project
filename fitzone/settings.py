@@ -22,7 +22,11 @@ DEBUG = os.getenv('DEBUG', 'True').lower() in ['true', '1', 'yes']
 
 RENDER_ENV = os.getenv('RENDER', 'false').lower() in ['true', '1', 'yes']
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+    if host.strip()
+]
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
