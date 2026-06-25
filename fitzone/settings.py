@@ -261,9 +261,10 @@ if EMAIL_USE_SSL and EMAIL_USE_TLS:
     print('WARNING: EMAIL_USE_SSL and EMAIL_USE_TLS both enabled; using SSL only.', file=sys.stderr)
 
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'apikey')
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '')
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', os.environ.get('EMAIL_HOST_PASSWORD', ''))
+SENDGRID_FROM_EMAIL = os.environ.get('SENDGRID_FROM_EMAIL', 'support@fitzone.com')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', f'FitZone <{SENDGRID_FROM_EMAIL}>')
 EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <support@fitzone.com>')
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 SITE_URL = os.environ.get('SITE_URL', '')
 
@@ -277,22 +278,9 @@ print(
     f'PORT={EMAIL_PORT}',
     f'TLS={EMAIL_USE_TLS}',
     f'SSL={EMAIL_USE_SSL}',
+    f'FROM={DEFAULT_FROM_EMAIL}',
     f'USER_SET={bool(EMAIL_HOST_USER)}',
     f'SENDGRID_KEY_SET={bool(SENDGRID_API_KEY)}',
-    file=sys.stderr,
-)
-
-if RENDER_ENV and EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not EMAIL_HOST_PASSWORD:
-    print('ERROR: EMAIL_HOST_PASSWORD is not set in Render environment. Emails will fail to send.', file=sys.stderr)
-
-print(
-    'EMAIL CONFIG:',
-    f'BACKEND={EMAIL_BACKEND}',
-    f'HOST={EMAIL_HOST}',
-    f'PORT={EMAIL_PORT}',
-    f'TLS={EMAIL_USE_TLS}',
-    f'SSL={EMAIL_USE_SSL}',
-    f'USER_SET={bool(EMAIL_HOST_USER)}',
     f'PASSWORD_SET={bool(EMAIL_HOST_PASSWORD)}',
     file=sys.stderr,
 )
