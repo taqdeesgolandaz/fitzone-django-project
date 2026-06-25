@@ -17,6 +17,7 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils import translation
+import time
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from urllib3 import request
@@ -157,6 +158,7 @@ def register_view(request):
 def forgot_password(request):
     """Forgot password page"""
     if request.method == 'POST':
+        print(f"[forgot_password] POST received at {time.time()}")
         email = request.POST.get('email')
         
         if not email:
@@ -177,6 +179,7 @@ def forgot_password(request):
             html_content, plain_content = get_password_reset_email(user, reset_link)
 
             # Send in a worker and enforce a timeout so the request doesn't hang
+            print(f"[forgot_password] starting send at {time.time()}")
             with ThreadPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(
                     send_mail,
@@ -189,13 +192,14 @@ def forgot_password(request):
                 )
                 try:
                     future.result(timeout=10)
+                    print(f"[forgot_password] send completed at {time.time()}")
                 except FuturesTimeout:
                     future.cancel()
-                    print("Password reset email send timed out")
+                    print(f"[forgot_password] send timed out at {time.time()}")
                     messages.error(request, 'Sending password reset email timed out. Please try again later.')
                     return render(request, 'accounts/forgot_password.html')
                 except Exception as e:
-                    print(f"Password reset email send failed: {e}")
+                    print(f"[forgot_password] send failed at {time.time()}: {e}")
                     messages.error(request, 'Unable to send password reset email right now. Please try again later.')
                     return render(request, 'accounts/forgot_password.html')
 
