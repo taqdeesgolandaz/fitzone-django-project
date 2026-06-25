@@ -4,6 +4,7 @@ Django settings for fitzone project.
 
 from pathlib import Path
 import os
+import sys
 from datetime import timedelta
 import dj_database_url
 
@@ -264,11 +265,14 @@ EMAIL_TIMEOUT = 30
 SITE_URL = os.getenv('SITE_URL', '')
 
 # Safety fallback for local development: if SMTP backend is configured but no
-# `EMAIL_HOST_PASSWORD` is set, switch to the console backend to avoid
-# SMTP authentication errors while testing locally.
+# `EMAIL_HOST_PASSWORD` is set, fall back to the console backend only when not
+# running in production.
 if EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not EMAIL_HOST_PASSWORD:
-    print('WARNING: EMAIL_HOST_PASSWORD is not set. Falling back to console email backend for local development.')
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    if DEBUG and not RENDER_ENV:
+        print('WARNING: EMAIL_HOST_PASSWORD is not set. Falling back to console email backend for local development.')
+        EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    else:
+        print('ERROR: EMAIL_HOST_PASSWORD is not set in production. Emails will fail to send. Set EMAIL_HOST_PASSWORD in Render environment variables.', file=sys.stderr)
 
 # Templates (required for admin and django templates)
 TEMPLATES = [

@@ -44,6 +44,7 @@ def send_email_async(subject, message, from_email, recipient_list, html_message=
             )
         except Exception as e:
             print(f"Async email error: {str(e)}")
+            raise
     
     thread = Thread(target=send, daemon=True)
     thread.start()
