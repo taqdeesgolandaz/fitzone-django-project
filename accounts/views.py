@@ -18,6 +18,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils import translation
 import time
+import smtplib
+import ssl
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from urllib3 import request
@@ -200,6 +202,20 @@ def forgot_password(request):
                     return render(request, 'accounts/forgot_password.html')
                 except Exception as e:
                     print(f"[forgot_password] send failed at {time.time()}: {e}")
+
+                    if 'smtp.gmail.com' in settings.EMAIL_HOST.lower() and settings.EMAIL_PORT == 587 and settings.EMAIL_USE_TLS:
+                        print('[forgot_password] retrying with SSL on port 465')
+                        try:
+                            with smtplib.SMTP_SSL(settings.EMAIL_HOST, 465, timeout=settings.EMAIL_TIMEOUT) as server:
+                                server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+                                msg = f"Subject: {subject}\nContent-Type: text/html; charset=utf-8\n\n{html_content}"
+                                server.sendmail(settings.DEFAULT_FROM_EMAIL, [user.email], msg)
+                                print(f"[forgot_password] ssl retry succeeded at {time.time()}")
+                                messages.success(request, 'Password reset link has been sent to your email.')
+                                return redirect('login')
+                        except Exception as ssl_e:
+                            print(f"[forgot_password] SSL retry failed at {time.time()}: {ssl_e}")
+
                     messages.error(request, 'Unable to send password reset email right now. Please try again later.')
                     return render(request, 'accounts/forgot_password.html')
 
