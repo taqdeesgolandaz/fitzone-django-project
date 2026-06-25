@@ -8,6 +8,7 @@ services:
     autoDeploy: true
     region: oregon
     plan: standard
+    startCommand: gunicorn fitzone.wsgi:application --timeout 120 --workers 2
     
     envVars:
       - key: PYTHON_VERSION
@@ -35,9 +36,9 @@ services:
       
       # Email Configuration - Gmail
       - key: EMAIL_BACKEND
-        value: "django.core.mail.backends.smtp.EmailBackend"
+        value: "notifications.sendgrid_backend.SendGridEmailBackend"
       - key: EMAIL_HOST
-        value: "smtp.gmail.com"
+        value: "smtp.sendgrid.net"
       - key: EMAIL_PORT
         value: "587"
       - key: EMAIL_USE_TLS
@@ -45,11 +46,11 @@ services:
       - key: EMAIL_USE_SSL
         value: "false"
       - key: EMAIL_HOST_USER
-        sync: false
-      - key: EMAIL_HOST_PASSWORD
+        value: "apikey"
+      - key: SENDGRID_API_KEY
         sync: false
       - key: DEFAULT_FROM_EMAIL
-        sync: false
+        value: "FitZone <support@fitzone.com>"
       
       # SITE_URL for email links (reset password, contact support, etc.)
       - key: SITE_URL
