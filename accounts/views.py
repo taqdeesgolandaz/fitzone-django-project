@@ -175,14 +175,22 @@ def forgot_password(request):
             subject = '[FitZone] Password Reset Request'
             html_content, plain_content = get_password_reset_email(user, reset_link)
 
-            send_email_async(
-                subject=subject,
-                message=plain_content,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                html_message=html_content,
-            )
-            
+            # Send synchronously so any SMTP errors are surfaced to the user/logs
+            try:
+                send_mail(
+                    subject=subject,
+                    message=plain_content,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    html_message=html_content,
+                    fail_silently=False,
+                )
+            except Exception as e:
+                # Log and show a friendly error so the user knows delivery failed
+                print(f"Password reset email send failed: {e}")
+                messages.error(request, 'Unable to send password reset email right now. Please try again later.')
+                return render(request, 'accounts/forgot_password.html')
+
             messages.success(request, 'Password reset link has been sent to your email.')
             return redirect('login')
             
