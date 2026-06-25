@@ -28,6 +28,17 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
+# In Render deployments, always accept Render hostnames and the external Render service URL.
+if RENDER_ENV:
+    if '.onrender.com' not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append('.onrender.com')
+    render_external_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+    if render_external_hostname:
+        if render_external_hostname not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(render_external_hostname)
+        if f'.{render_external_hostname}' not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(f'.{render_external_hostname}')
+
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
