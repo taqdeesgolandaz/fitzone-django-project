@@ -183,7 +183,7 @@ def forgot_password(request):
 
             print(f"[forgot_password] starting send at {time.time()}")
             print(
-                f"[forgot_password] email settings HOST={settings.EMAIL_HOST} PORT={settings.EMAIL_PORT} TLS={settings.EMAIL_USE_TLS} SSL={settings.EMAIL_USE_SSL} USER_SET={bool(settings.EMAIL_HOST_USER)} PASSWORD_SET={bool(settings.EMAIL_HOST_PASSWORD)}"
+                f"[forgot_password] email settings BACKEND={settings.EMAIL_BACKEND} HOST={settings.EMAIL_HOST} PORT={settings.EMAIL_PORT} TLS={settings.EMAIL_USE_TLS} SSL={settings.EMAIL_USE_SSL} USER_SET={bool(settings.EMAIL_HOST_USER)} SENDGRID_KEY_SET={bool(settings.SENDGRID_API_KEY)} PASSWORD_SET={bool(settings.EMAIL_HOST_PASSWORD)}"
             )
 
             send_email_async(

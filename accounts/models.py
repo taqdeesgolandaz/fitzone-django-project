@@ -116,57 +116,58 @@ class CustomUser(AbstractUser):
             return timezone.now() <= self.membership_expiry
         return False
     
-def save(self, *args, **kwargs):
-    # Auto-generate full_name from first_name and last_name
-    if self.first_name and self.last_name:
-        self.full_name = f"{self.first_name} {self.last_name}"
-    elif self.first_name:
-        self.full_name = self.first_name
-    
-    # Optimize profile picture
-    if self.profile_picture:
-        self.optimize_profile_picture()
-    
-    super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        # Auto-generate full_name from first_name and last_name
+        if self.first_name and self.last_name:
+            self.full_name = f"{self.first_name} {self.last_name}"
+        elif self.first_name:
+            self.full_name = self.first_name
+        
+        # Optimize profile picture
+        if self.profile_picture:
+            self.optimize_profile_picture()
+        
+        super().save(*args, **kwargs)
 
-def optimize_profile_picture(self):
-    """Optimize and resize profile picture to fit perfectly"""
-    try:
-        img = Image.open(self.profile_picture.path)
-        
-        # Convert to RGB if necessary (for PNG with transparency)
-        if img.mode in ('RGBA', 'LA', 'P'):
-            rgb_img = Image.new('RGB', img.size, (26, 26, 46))  # FitZone dark background
-            rgb_img.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
-            img = rgb_img
-        
-        # Calculate new size (300x300 square)
-        target_size = (300, 300)
-        
-        # Crop to square first
-        min_dimension = min(img.size)
-        left = (img.size[0] - min_dimension) / 2
-        top = (img.size[1] - min_dimension) / 2
-        right = (img.size[0] + min_dimension) / 2
-        bottom = (img.size[1] + min_dimension) / 2
-        img = img.crop((left, top, right, bottom))
-        
-        # Resize to target size
-        img = img.resize(target_size, Image.Resampling.LANCZOS)
-        
-        # Save optimized image
-        output = BytesIO()
-        img.save(output, format='JPEG', quality=85, optimize=True)
-        output.seek(0)
-        
-        # Update the file
-        self.profile_picture.save(
-            self.profile_picture.name,
-            ContentFile(output.read()),
-            save=False
-        )
-    except Exception as e:
-        print(f"Error optimizing profile picture: {e}")
+    def optimize_profile_picture(self):
+        """Optimize and resize profile picture to fit perfectly"""
+        try:
+            img = Image.open(self.profile_picture.path)
+            
+            # Convert to RGB if necessary (for PNG with transparency)
+            if img.mode in ('RGBA', 'LA', 'P'):
+                rgb_img = Image.new('RGB', img.size, (26, 26, 46))  # FitZone dark background
+                rgb_img.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                img = rgb_img
+            
+            # Calculate new size (300x300 square)
+            target_size = (300, 300)
+            
+            # Crop to square first
+            min_dimension = min(img.size)
+            left = (img.size[0] - min_dimension) / 2
+            top = (img.size[1] - min_dimension) / 2
+            right = (img.size[0] + min_dimension) / 2
+            bottom = (img.size[1] + min_dimension) / 2
+            img = img.crop((left, top, right, bottom))
+            
+            # Resize to target size
+            img = img.resize(target_size, Image.Resampling.LANCZOS)
+            
+            # Save optimized image
+            output = BytesIO()
+            img.save(output, format='JPEG', quality=85, optimize=True)
+            output.seek(0)
+            
+            # Update the file
+            self.profile_picture.save(
+                self.profile_picture.name,
+                ContentFile(output.read()),
+                save=False
+            )
+        except Exception as e:
+            print(f"Error optimizing profile picture: {e}")
+
     class Meta:
         db_table = 'users'
         verbose_name = 'User'
