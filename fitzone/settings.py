@@ -273,6 +273,18 @@ SITE_URL = os.environ.get('SITE_URL', '')
 if RENDER_ENV and EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not EMAIL_HOST_PASSWORD:
     print('ERROR: EMAIL_HOST_PASSWORD is not set in Render environment. Emails will fail to send.', file=sys.stderr)
 
+print(
+    'EMAIL CONFIG:',
+    f'BACKEND={EMAIL_BACKEND}',
+    f'HOST={EMAIL_HOST}',
+    f'PORT={EMAIL_PORT}',
+    f'TLS={EMAIL_USE_TLS}',
+    f'SSL={EMAIL_USE_SSL}',
+    f'USER_SET={bool(EMAIL_HOST_USER)}',
+    f'PASSWORD_SET={bool(EMAIL_HOST_PASSWORD)}',
+    file=sys.stderr,
+)
+
 # ALLOWED_HOSTS
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 

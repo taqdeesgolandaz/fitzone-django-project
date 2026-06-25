@@ -182,6 +182,9 @@ def forgot_password(request):
             html_content, plain_content = get_password_reset_email(user, reset_link)
 
             print(f"[forgot_password] starting send at {time.time()}")
+            print(
+                f"[forgot_password] email settings HOST={settings.EMAIL_HOST} PORT={settings.EMAIL_PORT} TLS={settings.EMAIL_USE_TLS} SSL={settings.EMAIL_USE_SSL} USER_SET={bool(settings.EMAIL_HOST_USER)} PASSWORD_SET={bool(settings.EMAIL_HOST_PASSWORD)}"
+            )
             try:
                 send_mail(
                     subject=subject,
