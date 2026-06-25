@@ -21,24 +21,32 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here-chang
 DEBUG = os.getenv('DEBUG', 'True').lower() in ['true', '1', 'yes']
 
 RENDER_ENV = os.getenv('RENDER', 'false').lower() in ['true', '1', 'yes']
-if RENDER_ENV:
-    ALLOWED_HOSTS = ['*']
-else:
-    ALLOWED_HOSTS = [
-        'localhost',
-        '127.0.0.1',
-        '0.0.0.0',
-        '10.96.118.210',
-        '10.15.136.210',
-        '.onrender.com',  # Render deployment
-        'fitzone.onrender.com',  # Your specific Render domain
-        'fitzone-application.onrender.com',  # Render auto-generated service URL
-    ]
 
-# Add Render's external hostname dynamically, if available
+# Allow ALLOWED_HOSTS to be configured through environment variables in Render.
+# If not provided, fall back to a safe default list for local and Render deployments.
+env_allowed_hosts = os.getenv('ALLOWED_HOSTS', '')
+if env_allowed_hosts:
+    ALLOWED_HOSTS = [host.strip() for host in env_allowed_hosts.split(',') if host.strip()]
+else:
+    if RENDER_ENV:
+        ALLOWED_HOSTS = ['*']
+    else:
+        ALLOWED_HOSTS = [
+            'localhost',
+            '127.0.0.1',
+            '0.0.0.0',
+            '10.96.118.210',
+            '10.15.136.210',
+            '.onrender.com',  # Render deployment
+            'fitzone.onrender.com',  # Your specific Render domain
+            'fitzone-application.onrender.com',  # Render auto-generated service URL
+        ]
+
+# Add Render's external hostname dynamically, if available.
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME', 'fitzone-application.onrender.com')
-if not RENDER_ENV:
+if RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+if f'.{RENDER_EXTERNAL_HOSTNAME}' not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(f'.{RENDER_EXTERNAL_HOSTNAME}')
 
 # Custom User Model
