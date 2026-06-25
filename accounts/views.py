@@ -24,7 +24,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from urllib3 import request
 from threading import Thread
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
+import smtplib
+import ssl
 from .models import CustomUser
 from .forms import UserProfileForm, UserSettingsForm
 from .serializers import (UserSerializer, RegisterSerializer, 
@@ -180,11 +181,9 @@ def forgot_password(request):
             subject = '[FitZone] Password Reset Request'
             html_content, plain_content = get_password_reset_email(user, reset_link)
 
-            # Send in a worker and enforce a timeout so the request doesn't hang
             print(f"[forgot_password] starting send at {time.time()}")
-            with ThreadPoolExecutor(max_workers=1) as executor:
-                future = executor.submit(
-                    send_mail,
+            try:
+                send_mail(
                     subject=subject,
                     message=plain_content,
                     from_email=settings.DEFAULT_FROM_EMAIL,
@@ -192,32 +191,25 @@ def forgot_password(request):
                     html_message=html_content,
                     fail_silently=False,
                 )
-                try:
-                    future.result(timeout=10)
-                    print(f"[forgot_password] send completed at {time.time()}")
-                except FuturesTimeout:
-                    future.cancel()
-                    print(f"[forgot_password] send timed out at {time.time()}")
-                    messages.error(request, 'Sending password reset email timed out. Please try again later.')
-                    return render(request, 'accounts/forgot_password.html')
-                except Exception as e:
-                    print(f"[forgot_password] send failed at {time.time()}: {e}")
+                print(f"[forgot_password] send completed at {time.time()}")
+            except Exception as e:
+                print(f"[forgot_password] send failed at {time.time()}: {e}")
 
-                    if 'smtp.gmail.com' in settings.EMAIL_HOST.lower() and settings.EMAIL_PORT == 587 and settings.EMAIL_USE_TLS:
-                        print('[forgot_password] retrying with SSL on port 465')
-                        try:
-                            with smtplib.SMTP_SSL(settings.EMAIL_HOST, 465, timeout=settings.EMAIL_TIMEOUT) as server:
-                                server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-                                msg = f"Subject: {subject}\nContent-Type: text/html; charset=utf-8\n\n{html_content}"
-                                server.sendmail(settings.DEFAULT_FROM_EMAIL, [user.email], msg)
-                                print(f"[forgot_password] ssl retry succeeded at {time.time()}")
-                                messages.success(request, 'Password reset link has been sent to your email.')
-                                return redirect('login')
-                        except Exception as ssl_e:
-                            print(f"[forgot_password] SSL retry failed at {time.time()}: {ssl_e}")
+                if 'smtp.gmail.com' in settings.EMAIL_HOST.lower() and settings.EMAIL_PORT == 587 and settings.EMAIL_USE_TLS:
+                    print('[forgot_password] retrying with SSL on port 465')
+                    try:
+                        with smtplib.SMTP_SSL(settings.EMAIL_HOST, 465, timeout=settings.EMAIL_TIMEOUT) as server:
+                            server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+                            msg = f"Subject: {subject}\nContent-Type: text/html; charset=utf-8\n\n{html_content}"
+                            server.sendmail(settings.DEFAULT_FROM_EMAIL, [user.email], msg)
+                            print(f"[forgot_password] ssl retry succeeded at {time.time()}")
+                            messages.success(request, 'Password reset link has been sent to your email.')
+                            return redirect('login')
+                    except Exception as ssl_e:
+                        print(f"[forgot_password] SSL retry failed at {time.time()}: {ssl_e}")
 
-                    messages.error(request, 'Unable to send password reset email right now. Please try again later.')
-                    return render(request, 'accounts/forgot_password.html')
+                messages.error(request, 'Unable to send password reset email right now. Please try again later.')
+                return render(request, 'accounts/forgot_password.html')
 
             messages.success(request, 'Password reset link has been sent to your email.')
             return redirect('login')

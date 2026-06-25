@@ -267,7 +267,7 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '465' if EMAIL_USE_SSL else '587')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <noreply@fitzone.com>')
-EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '30'))
+EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 SITE_URL = os.environ.get('SITE_URL', '')
 
 if RENDER_ENV and EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not EMAIL_HOST_PASSWORD:
