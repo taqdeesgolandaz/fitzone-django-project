@@ -83,7 +83,8 @@ def get_workout_reminder_email(user, workout_plan):
 def get_account_deactivated_email(user):
     """Account deactivation notification email"""
     from django.conf import settings
-    site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+    site_url = getattr(settings, 'SITE_URL', None) or 'http://localhost:8000'
+    site = site_url.rstrip('/')
     reactivation_path = '/contact-support/'
     context = {
         'username': user.full_name or user.username,
@@ -105,7 +106,8 @@ FitZone Team
 def get_account_recovered_email(user, reset_url='/forgot-password/'):
     """Account recovered after deletion - instruct user to reset password"""
     from django.conf import settings
-    site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+    site_url = getattr(settings, 'SITE_URL', None) or 'http://localhost:8000'
+    site = site_url.rstrip('/')
     # allow caller to pass an absolute or relative reset_url
     if reset_url.startswith('http://') or reset_url.startswith('https://'):
         absolute_reset = reset_url
@@ -133,7 +135,8 @@ FitZone Team
 def get_account_deleted_email(user):
     """Account deletion notification email"""
     from django.conf import settings
-    site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+    site_url = getattr(settings, 'SITE_URL', None) or 'http://localhost:8000'
+    site = site_url.rstrip('/')
     support_path = '/contact-support/'
     context = {
         'username': user.full_name or user.username,
@@ -158,7 +161,8 @@ FitZone Team
 def get_account_reactivated_email(user):
     """Account reactivated notification email"""
     from django.conf import settings
-    site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+    site_url = getattr(settings, 'SITE_URL', None) or 'http://localhost:8000'
+    site = site_url.rstrip('/')
     dashboard_path = '/dashboard/'
     context = {
         'username': user.full_name or user.username,

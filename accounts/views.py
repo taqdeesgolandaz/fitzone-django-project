@@ -196,7 +196,8 @@ def forgot_password(request):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             
             # Always use SITE_URL from settings for reset link (not request.build_absolute_uri)
-            site = getattr(settings, 'SITE_URL', '').rstrip('/') or 'http://localhost:8000'
+            site_url = getattr(settings, 'SITE_URL', None) or 'http://localhost:8000'
+            site = site_url.rstrip('/')
             reset_link = f"{site}{reverse('reset_password', kwargs={'uidb64': uid, 'token': token})}"
             
             subject = '[FitZone] Password Reset Request'
