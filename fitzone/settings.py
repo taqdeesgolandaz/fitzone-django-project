@@ -248,16 +248,19 @@ UPI_PAYEE_NAME = 'FitZone'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 
-# Email Configuration
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+import os
+
+# Environment variables
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ['true', '1', 'yes']
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <noreply@fitzone.com>')
-SERVER_EMAIL = os.environ.get('SERVER_EMAIL', EMAIL_HOST_USER or 'fitzone.alerts@gmail.com')
-EMAIL_SUBJECT_PREFIX = '[FitZone] '
+
+# ALLOWED_HOSTS
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Add these for better deliverability
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'false').lower() in ['true', '1', 'yes']
@@ -265,8 +268,7 @@ EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '30'))
 SITE_URL = os.environ.get('SITE_URL', '')
 
 # Safety fallback for local development: if SMTP backend is configured but no
-# `EMAIL_HOST_PASSWORD` is set, fall back to the console backend only when not
-# running in production.
+# `EMAIL_HOST_PASSWORD` is set, fall back to the console backend only in local dev.
 if EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not EMAIL_HOST_PASSWORD:
     if DEBUG and not RENDER_ENV:
         print('WARNING: EMAIL_HOST_PASSWORD is not set. Falling back to console email backend for local development.')
