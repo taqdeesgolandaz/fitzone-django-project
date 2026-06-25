@@ -251,13 +251,27 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 import os
 
 # Environment variables
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <noreply@fitzone.com>')
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '')
+
+if SENDGRID_API_KEY:
+    EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.sendgrid.net')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'apikey')
+    EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <noreply@fitzone.com>')
+else:
+    EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <noreply@fitzone.com>')
+
+if RENDER_ENV and not SENDGRID_API_KEY and EMAIL_HOST == 'smtp.gmail.com':
+    print('WARNING: Render may block Gmail SMTP auth. Set SENDGRID_API_KEY and use SendGrid SMTP in production.', file=sys.stderr)
 
 # ALLOWED_HOSTS
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
@@ -275,18 +289,6 @@ if EMAIL_BACKEND == 'django.core.mail.backends.smtp.EmailBackend' and not EMAIL_
         EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     else:
         print('ERROR: EMAIL_HOST_PASSWORD is not set in production. Emails will fail to send. Set EMAIL_HOST_PASSWORD in Render environment variables.', file=sys.stderr)
-
-# If a SendGrid API key is provided, prefer SendGrid SMTP (works well on Render)
-if os.environ.get('SENDGRID_API_KEY'):
-    SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.sendgrid.net'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_USE_SSL = False
-    EMAIL_HOST_USER = 'apikey'  # literal username for SendGrid SMTP
-    EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', DEFAULT_FROM_EMAIL)
 
 # Templates (required for admin and django templates)
 TEMPLATES = [
