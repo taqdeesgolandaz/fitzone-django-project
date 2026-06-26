@@ -248,7 +248,7 @@ if EMAIL_USE_SSL and EMAIL_USE_TLS:
     print('WARNING: EMAIL_USE_SSL and EMAIL_USE_TLS both enabled; using SSL only.', file=sys.stderr)
 
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_HOST_PASSWORD = os.environ.get('BREVO_SMTP_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <support@fitzone.com>')
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 SITE_URL = os.environ.get('SITE_URL', '')
