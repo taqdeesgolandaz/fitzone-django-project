@@ -105,6 +105,8 @@
 "- EMAIL_USE_TLS=True\n" 
 "- EMAIL_HOST_USER=<your-brevo-login>\n" 
 "- EMAIL_HOST_PASSWORD=<your-brevo-password>\n" 
+"- BREVO_API_KEY=<your-brevo-api-key>\n" 
+"- BREVO_SENDER_EMAIL=<your-brevo-sender-email>\n" 
 "- DEFAULT_FROM_EMAIL=\"FitZone <fitzone.alerts@gmail.com>\"\n" 
 "" 
 "4. Do not commit `.env` to Git:" 

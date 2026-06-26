@@ -9,7 +9,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from notifications.services import NotificationService
+from notifications.services import NotificationService, send_email_via_brevo
 from notifications.email_templates import get_password_reset_email
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -58,6 +58,19 @@ def send_email_async(subject, message, from_email, recipient_list, html_message=
 def send_email_sync(subject, message, from_email, recipient_list, html_message=None, email_type='generic'):
     """Send email synchronously and return False on failure."""
     try:
+        if getattr(settings, 'BREVO_API_KEY', ''):
+            brevo_result = send_email_via_brevo(
+                subject=subject,
+                plain_content=message,
+                html_content=html_message,
+                from_email=from_email,
+                recipient_list=recipient_list,
+            )
+            if brevo_result is True:
+                return True
+            if brevo_result is False:
+                return False
+
         send_mail(
             subject=subject,
             message=message,
