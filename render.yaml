@@ -25,7 +25,7 @@ services:
         sync: false
       - key: EMAIL_HOST_USER
         sync: false
-      - key: BREVO_SMTP_PASSWORD
+      - key: EMAIL_HOST_PASSWORD
         sync: false
       - key: DEFAULT_FROM_EMAIL
         sync: false
