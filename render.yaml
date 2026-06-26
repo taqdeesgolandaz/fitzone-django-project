@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: fitzone-web
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn fitzone.wsgi --bind 0.0.0.0:$PORT --log-file -
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: EMAIL_BACKEND
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        sync: false
+      - key: EMAIL_USE_TLS
+        sync: false
+      - key: EMAIL_USE_SSL
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: SITE_URL
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: SECURE_SSL_REDIRECT
+        sync: false
+      - key: SESSION_COOKIE_SECURE
+        sync: false
+      - key: CSRF_COOKIE_SECURE
+        sync: false
+      - key: SECURE_HSTS_SECONDS
+        sync: false
+      - key: SECURE_HSTS_INCLUDE_SUBDOMAINS
+        sync: false
+      - key: SECURE_HSTS_PRELOAD
+        sync: false
