@@ -8,40 +8,32 @@ from .email_templates import *
 
 
 def send_email_via_brevo(subject, plain_content, html_content, from_email, recipient_list):
-    """Send email through Brevo Transactional Emails API when configured."""
+    """Send email through Brevo Transactional Emails API using requests (utils.email.send_brevo_email)."""
     if not getattr(settings, 'BREVO_API_KEY', ''):
         return False
 
     try:
-        import brevo_python
-    except ImportError:
-        print('Brevo API package not installed; cannot send via Brevo API.', file=sys.stderr)
+        # Use the lightweight requests-based sender to avoid brevo-python dependency
+        from utils.email import send_brevo_email
+    except Exception:
+        print('Could not import utils.email.send_brevo_email; cannot send via Brevo API.', file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
         return False
 
     try:
-        configuration = brevo_python.Configuration()
-        configuration.api_key['api-key'] = settings.BREVO_API_KEY
-        api_client = brevo_python.ApiClient(configuration)
-        api_instance = brevo_python.TransactionalEmailsApi(api_client)
+        # Use first recipient only for transactional API wrapper (matches previous behavior)
+        recipient = recipient_list[0] if recipient_list else None
+        if not recipient:
+            print('No recipient provided for Brevo API send.', file=sys.stderr)
+            return False
 
-        sender_email = settings.BREVO_SENDER_EMAIL or from_email
-        if '<' in sender_email and '>' in sender_email:
-            sender_name = sender_email.split('<')[0].strip()
-            sender_address = sender_email.split('<')[1].split('>')[0].strip()
-            sender = {'email': sender_address, 'name': sender_name}
-        else:
-            sender = {'email': sender_email}
-
-        send_smtp_email = brevo_python.SendSmtpEmail(
-            to=[{'email': recipient} for recipient in recipient_list],
-            sender=sender,
+        result = send_brevo_email(
             subject=subject,
             html_content=html_content or plain_content,
-            text_content=plain_content,
+            recipient_email=recipient,
+            recipient_name=None,
         )
-
-        api_instance.send_transac_email(send_smtp_email)
-        return True
+        return bool(result)
     except Exception as e:
         print(f'Brevo API send failed: {e}', file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
