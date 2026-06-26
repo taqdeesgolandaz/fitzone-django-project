@@ -247,13 +247,14 @@ if EMAIL_USE_SSL and EMAIL_USE_TLS:
     EMAIL_USE_TLS = False
     print('WARNING: EMAIL_USE_SSL and EMAIL_USE_TLS both enabled; using SSL only.', file=sys.stderr)
 
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'aff029001')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'aff029001@smtp.brevo.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', os.environ.get('BREVO_SMTP_PASSWORD', ''))
 
 # Brevo API Settings
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
 BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL', 'aff029001@smtp.brevo.com')
 BREVO_SENDER_NAME = os.environ.get('BREVO_SENDER_NAME', 'FitZone')
+USE_BREVO_API = bool(BREVO_API_KEY)
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <aff029001@smtp.brevo.com>')
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))

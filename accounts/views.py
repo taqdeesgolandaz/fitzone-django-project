@@ -68,8 +68,8 @@ def send_email_sync(subject, message, from_email, recipient_list, html_message=N
             )
             if brevo_result is True:
                 return True
-            if brevo_result is False:
-                return False
+            print(f"[send_email_sync] Brevo API result={brevo_result}", file=sys.stderr)
+            return False
 
         send_mail(
             subject=subject,
@@ -218,7 +218,7 @@ def forgot_password(request):
 
             print(f"[forgot_password] starting send at {time.time()}")
             print(
-                f"[forgot_password] email settings BACKEND={settings.EMAIL_BACKEND} HOST={settings.EMAIL_HOST} PORT={settings.EMAIL_PORT} TLS={settings.EMAIL_USE_TLS} SSL={settings.EMAIL_USE_SSL} USER_SET={bool(settings.EMAIL_HOST_USER)} PASSWORD_SET={bool(settings.EMAIL_HOST_PASSWORD)}"
+                f"[forgot_password] email settings BACKEND={settings.EMAIL_BACKEND} HOST={settings.EMAIL_HOST} PORT={settings.EMAIL_PORT} TLS={settings.EMAIL_USE_TLS} SSL={settings.EMAIL_USE_SSL} USER_SET={bool(settings.EMAIL_HOST_USER)} PASSWORD_SET={bool(settings.EMAIL_HOST_PASSWORD)} BREVO_API_KEY_SET={bool(getattr(settings, 'BREVO_API_KEY', ''))}"
             )
 
             email_sent = send_email_sync(

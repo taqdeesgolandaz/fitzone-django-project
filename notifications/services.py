@@ -10,13 +10,13 @@ from .email_templates import *
 def send_email_via_brevo(subject, plain_content, html_content, from_email, recipient_list):
     """Send email through Brevo Transactional Emails API when configured."""
     if not getattr(settings, 'BREVO_API_KEY', ''):
-        return None
+        return False
 
     try:
         import brevo_python
     except ImportError:
-        print('Brevo API package not installed; falling back to SMTP.', file=sys.stderr)
-        return None
+        print('Brevo API package not installed; cannot send via Brevo API.', file=sys.stderr)
+        return False
 
     try:
         configuration = brevo_python.Configuration()
