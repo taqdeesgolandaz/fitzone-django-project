@@ -239,7 +239,7 @@ import os
 
 # Email Configuration
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp-relay.brevo.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ['true', '1', 'yes']
 EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() in ['true', '1', 'yes']
@@ -247,9 +247,15 @@ if EMAIL_USE_SSL and EMAIL_USE_TLS:
     EMAIL_USE_TLS = False
     print('WARNING: EMAIL_USE_SSL and EMAIL_USE_TLS both enabled; using SSL only.', file=sys.stderr)
 
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('BREVO_SMTP_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <support@fitzone.com>')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'aff029001')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', os.environ.get('BREVO_SMTP_PASSWORD', ''))
+
+# Brevo API Settings
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
+BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL', 'aff029001@smtp.brevo.com')
+BREVO_SENDER_NAME = os.environ.get('BREVO_SENDER_NAME', 'FitZone')
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'FitZone <aff029001@smtp.brevo.com>')
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 SITE_URL = os.environ.get('SITE_URL', '')
 
@@ -266,6 +272,7 @@ print(
     f'FROM={DEFAULT_FROM_EMAIL}',
     f'USER_SET={bool(EMAIL_HOST_USER)}',
     f'PASSWORD_SET={bool(EMAIL_HOST_PASSWORD)}',
+    f'BREVO_API_KEY_SET={bool(BREVO_API_KEY)}',
     file=sys.stderr,
 )
 
