@@ -274,6 +274,8 @@ print(
     f'USER_SET={bool(EMAIL_HOST_USER)}',
     f'PASSWORD_SET={bool(EMAIL_HOST_PASSWORD)}',
     f'BREVO_API_KEY_SET={bool(BREVO_API_KEY)}',
+    f'BREVO_SENDER_EMAIL={BREVO_SENDER_EMAIL}',
+    f'DEFAULT_FROM_EMAIL={DEFAULT_FROM_EMAIL}',
     file=sys.stderr,
 )
 
