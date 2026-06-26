@@ -2,6 +2,7 @@ import requests
 import json
 from django.conf import settings
 import logging
+from django.utils.html import strip_tags
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,8 @@ def send_brevo_email(subject, html_content, recipient_email, recipient_name=""):
                 "name": recipient_name or recipient_email
             }],
             "subject": subject,
-            "htmlContent": html_content
+            "htmlContent": html_content,
+            "textContent": strip_tags(html_content)
         }
         
         headers = {
@@ -35,7 +37,7 @@ def send_brevo_email(subject, html_content, recipient_email, recipient_name=""):
         # Send email via API
         response = requests.post(url, json=payload, headers=headers, timeout=10)
         
-        if response.status_code == 201:
+        if 200 <= response.status_code < 300:
             logger.info(f"✅ Email sent successfully to {recipient_email}")
             print(f"[forgot_password] ✅ Email sent successfully to {recipient_email}")
             return True
