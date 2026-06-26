@@ -221,6 +221,24 @@ def forgot_password(request):
                 f"[forgot_password] email settings BACKEND={settings.EMAIL_BACKEND} HOST={settings.EMAIL_HOST} PORT={settings.EMAIL_PORT} TLS={settings.EMAIL_USE_TLS} SSL={settings.EMAIL_USE_SSL} USER_SET={bool(settings.EMAIL_HOST_USER)} PASSWORD_SET={bool(settings.EMAIL_HOST_PASSWORD)} BREVO_API_KEY_SET={bool(getattr(settings, 'BREVO_API_KEY', ''))}"
             )
 
+            # If Brevo API key is configured, use API (avoids Render blocking SMTP on port 587).
+            if getattr(settings, 'BREVO_API_KEY', ''):
+                print(f"[forgot_password] attempting Brevo API send at {time.time()}", file=sys.stderr)
+                brevo_result = send_email_via_brevo(
+                    subject=subject,
+                    plain_content=plain_content,
+                    html_content=html_content,
+                    from_email=getattr(settings, 'BREVO_SENDER_EMAIL', settings.DEFAULT_FROM_EMAIL),
+                    recipient_list=[user.email],
+                )
+                print(f"[forgot_password] brevo_result={brevo_result} at {time.time()}", file=sys.stderr)
+                if not brevo_result:
+                    messages.error(request, 'Unable to send password reset email right now. Please try again later.')
+                    return render(request, 'accounts/forgot_password.html')
+                messages.success(request, 'Password reset link has been sent to your email.')
+                return redirect('login')
+
+            # Fallback to SMTP-based sender (may timeout on Render)
             email_sent = send_email_sync(
                 subject=subject,
                 message=plain_content,
@@ -233,7 +251,6 @@ def forgot_password(request):
             if not email_sent:
                 messages.error(request, 'Unable to send password reset email right now. Please try again later.')
                 return render(request, 'accounts/forgot_password.html')
-
             messages.success(request, 'Password reset link has been sent to your email.')
             return redirect('login')
         except Exception as e:
