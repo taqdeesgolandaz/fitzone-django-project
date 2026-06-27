@@ -255,8 +255,8 @@ SOCIALACCOUNT_PROVIDERS = {
 # Use environment variables - set in .env for local development and production
 raw_razorpay_key_id = os.getenv('RAZORPAY_KEY_ID', '')
 raw_razorpay_key_secret = os.getenv('RAZORPAY_KEY_SECRET', '')
-RAZORPAY_KEY_ID = raw_razorpay_key_id.strip() if raw_razorpay_key_id and raw_razorpay_key_id.strip().lower() != 'none' else 'rzp_test_SwU8wO2DuOpWoo'
-RAZORPAY_KEY_SECRET = raw_razorpay_key_secret.strip() if raw_razorpay_key_secret and raw_razorpay_key_secret.strip().lower() != 'none' else 'hS7jKWDqXYQRbo3IoS6J3oMB'
+RAZORPAY_KEY_ID = raw_razorpay_key_id.strip() if raw_razorpay_key_id and raw_razorpay_key_id.strip().lower() != 'none' else 'rzp_test_SwU8w02Du0pWoo'
+RAZORPAY_KEY_SECRET = raw_razorpay_key_secret.strip() if raw_razorpay_key_secret and raw_razorpay_key_secret.strip().lower() != 'none' else 'hS7jKWdQXYQRbo3IoS6J3oMB'
 
 if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
     print('WARNING: Razorpay keys are not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the environment.', file=sys.stderr)
