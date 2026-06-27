@@ -21,6 +21,16 @@ def get_razorpay_client():
         print(f'Razorpay API keys are missing in membership views. ID set: {bool(settings.RAZORPAY_KEY_ID)}, secret set: {bool(settings.RAZORPAY_KEY_SECRET)}', file=sys.stderr)
         return None
 
+    def safe_create_order(client, order_data, context=''):
+        try:
+            return client.order.create(data=order_data)
+        except Exception as exc:
+            err_type = type(exc)
+            print(f'Razorpay order creation error ({context}) in membership views: {err_type.__name__}: {exc}', file=sys.stderr)
+            if 'Authentication' in str(exc) or 'auth' in str(exc).lower():
+                print('HINT: Authentication failed. Verify RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are correct and active.', file=sys.stderr)
+            raise
+
     try:
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
         secret_mask = 'SET' if settings.RAZORPAY_KEY_SECRET else 'NOT SET'
@@ -143,7 +153,7 @@ def purchase_plan(request, plan_id):
                     'type': 'membership',
                 }
             }
-            razorpay_order = client.order.create(data=order_data)
+            razorpay_order = safe_create_order(client, order_data, context='purchase_plan')
 
             # Create pending Payment record
             payment = Payment.objects.create(
@@ -280,7 +290,7 @@ def upgrade_membership(request, plan_id):
                         'type': 'upgrade',
                     }
                 }
-                razorpay_order = client.order.create(data=order_data)
+                razorpay_order = safe_create_order(client, order_data, context='upgrade_membership')
 
                 # Create pending Payment record
                 payment = Payment.objects.create(
