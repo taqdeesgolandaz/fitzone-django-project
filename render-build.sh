@@ -3,28 +3,34 @@
 set -o errexit
 
 echo "========================================="
-echo "🚀 PHASE 1: Installing setuptools first..."
+echo "🚀 PHASE 1: Verifying Python and pip environment..."
 echo "========================================="
-pip install --upgrade pip setuptools wheel
+python --version
+python -m pip --version
 
 echo "========================================="
-echo "📦 PHASE 2: Installing requirements..."
+echo "🚀 PHASE 2: Installing setuptools and wheel first..."
 echo "========================================="
-pip install -r requirements.txt
+python -m pip install --upgrade pip setuptools wheel
 
 echo "========================================="
-echo "🔍 PHASE 3: Verifying pkg_resources..."
+echo "📦 PHASE 3: Installing requirements..."
+echo "========================================="
+python -m pip install -r requirements.txt
+
+echo "========================================="
+echo "🔍 PHASE 4: Verifying pkg_resources and razorpay..."
 echo "========================================="
 python -c "import pkg_resources; print('✅ pkg_resources available')"
 python -c "import razorpay; print('✅ razorpay available')"
 
 echo "========================================="
-echo "🔄 PHASE 4: Running migrations..."
+echo "🔄 PHASE 5: Running migrations..."
 echo "========================================="
 python manage.py migrate --noinput
 
 echo "========================================="
-echo "📁 PHASE 5: Collecting static files..."
+echo "📁 PHASE 6: Collecting static files..."
 echo "========================================="
 python manage.py collectstatic --noinput
 
