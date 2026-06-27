@@ -15,6 +15,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 from dotenv import load_dotenv
 load_dotenv(BASE_DIR / '.env')
 
+try:
+    import pkg_resources
+    print(f'Loaded setuptools version: {pkg_resources.get_distribution("setuptools").version}', file=sys.stderr)
+except Exception as exc:
+    print(f'ERROR: pkg_resources import failed in settings: {exc}. Ensure setuptools is installed.', file=sys.stderr)
+
+try:
+    import razorpay  # noqa: F401
+    print('Razorpay package is available at startup.', file=sys.stderr)
+except ImportError as exc:
+    print(f'ERROR: Razorpay package import failed in settings: {exc}.', file=sys.stderr)
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here-change-this-in-production')
 

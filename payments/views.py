@@ -14,6 +14,8 @@ def get_razorpay_client():
         import razorpay
     except ImportError as exc:
         print(f'Razorpay package import failed: {exc}', file=sys.stderr)
+        if 'pkg_resources' in str(exc):
+            print('HINT: pkg_resources is missing. Please install setuptools in the production environment.', file=sys.stderr)
         return None
 
     def _mask(s, keep=4):
