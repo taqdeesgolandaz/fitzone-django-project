@@ -16,16 +16,27 @@ def get_razorpay_client():
         print(f'Razorpay package import failed: {exc}', file=sys.stderr)
         return None
 
-    print(f'RAZORPAY_KEY_ID: {settings.RAZORPAY_KEY_ID}', file=sys.stderr)
-    print(f'RAZORPAY_KEY_SECRET: {"SET" if settings.RAZORPAY_KEY_SECRET else "NOT SET"}', file=sys.stderr)
+    def _mask(s, keep=4):
+        if not s:
+            return ''
+        if len(s) <= keep * 2:
+            return '***'
+        return s[:keep] + '...' + s[-keep:]
 
-    try:
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        print('✅ Razorpay client initialized', file=sys.stderr)
-        return client
-    except Exception as exc:
-        print(f'❌ Razorpay init error: {exc}', file=sys.stderr)
-        return None
+    print(f'RAZORPAY_KEY_ID: {settings.RAZORPAY_KEY_ID}', file=sys.stderr)
+    print(f'RAZORPAY_KEY_SECRET: {"SET" if settings.RAZORPAY_KEY_SECRET else "NOT SET"} (masked={_mask(settings.RAZORPAY_KEY_SECRET)})', file=sys.stderr)
+
+    # Basic format checks to catch common typos (O vs 0 etc.)
+    if settings.RAZORPAY_KEY_ID and not settings.RAZORPAY_KEY_ID.startswith(('rzp_test_', 'rzp_live_')):
+        print('WARNING: RAZORPAY_KEY_ID does not look like a typical Razorpay key (missing rzp_test_/rzp_live_ prefix).', file=sys.stderr)
+
+        try:
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            print('✅ Razorpay client initialized', file=sys.stderr)
+            return client
+        except Exception as exc:
+            print(f'❌ Razorpay init error: {exc}', file=sys.stderr)
+            return None
 
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
