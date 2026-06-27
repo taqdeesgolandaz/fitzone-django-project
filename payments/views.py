@@ -3,12 +3,11 @@ import re
 import sys
 import uuid
 from urllib.parse import quote
-import razorpay
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 
-# Initialize Razorpay client
-razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+# Razorpay client is initialized at runtime via `get_razorpay_client()` to avoid
+# import-time failures when keys or the SDK are missing in certain environments.
 
 def get_razorpay_client():
     try:

@@ -4,6 +4,7 @@ from django.utils import timezone
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
+import os
 
 class CustomUser(AbstractUser):
     """Custom User Model for FitZone"""
@@ -160,9 +161,11 @@ class CustomUser(AbstractUser):
             img.save(output, format='JPEG', quality=85, optimize=True)
             output.seek(0)
             
-            # Update the file
+            # Ensure we don't duplicate the upload_to prefix (e.g., 'profile_pics/profile_pics/...')
+            filename = os.path.basename(self.profile_picture.name)
+            safe_name = os.path.join('profile_pics', filename)
             self.profile_picture.save(
-                self.profile_picture.name,
+                safe_name,
                 ContentFile(output.read()),
                 save=False
             )
