@@ -30,13 +30,13 @@ def get_razorpay_client():
     if settings.RAZORPAY_KEY_ID and not settings.RAZORPAY_KEY_ID.startswith(('rzp_test_', 'rzp_live_')):
         print('WARNING: RAZORPAY_KEY_ID does not look like a typical Razorpay key (missing rzp_test_/rzp_live_ prefix).', file=sys.stderr)
 
-        try:
-            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-            print('✅ Razorpay client initialized', file=sys.stderr)
-            return client
-        except Exception as exc:
-            print(f'❌ Razorpay init error: {exc}', file=sys.stderr)
-            return None
+    try:
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        print('✅ Razorpay client initialized', file=sys.stderr)
+        return client
+    except Exception as exc:
+        print(f'❌ Razorpay init error: {exc}', file=sys.stderr)
+        return None
 
 
 def safe_create_order(client, order_data, context=''):
@@ -101,7 +101,7 @@ def initiate_session_payment(request, session_id):
         if client is None:
             raise RuntimeError('Razorpay client is unavailable. Please install the Razorpay SDK or check configuration.')
 
-        razorpay_order = client.order.create(data=order_data)
+        razorpay_order = safe_create_order(client, order_data, context='initiate_session_payment')
         
         payment = Payment.objects.create(
             user=request.user,
@@ -151,7 +151,7 @@ def upi_payment(request, plan_id):
         if client is None:
             raise RuntimeError('Razorpay client is unavailable. Please install/configure Razorpay.')
 
-        razorpay_order = client.order.create(data=order_data)
+        razorpay_order = safe_create_order(client, order_data, context='upi_payment')
 
         payment = Payment.objects.create(
             user=request.user,
@@ -207,7 +207,7 @@ def create_session_order(request, session_id):
                 'type': 'trainer_session',
             }
         }
-        order = client.order.create(data=order_data)
+        order = safe_create_order(client, order_data, context='create_session_order')
         payment = Payment.objects.create(
             user=request.user,
             amount=session.amount,
@@ -457,7 +457,7 @@ def upgrade_membership(request):
                             'type': 'upgrade'
                         }
                     }
-                    razorpay_order = client.order.create(data=order_data)
+                    razorpay_order = safe_create_order(client, order_data, context='upgrade_membership')
                 except Exception as e:
                     # Log but allow page to render
                     print(f"Razorpay order creation failed: {e}")
@@ -515,7 +515,7 @@ def create_upgrade_order(request):
                 'type': 'upgrade'
             }
         }
-        order = client.order.create(data=order_data)
+        order = safe_create_order(client, order_data, context='create_upgrade_order')
 
         return JsonResponse({
             'success': True,
