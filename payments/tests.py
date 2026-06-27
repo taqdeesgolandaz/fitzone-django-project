@@ -33,10 +33,11 @@ class MembershipPaymentTest(TestCase):
 			transaction_id=f'MEM{self.plan.id}_TEST'
 		)
 
-	@patch('payments.views.razorpay_client')
-	def test_payment_success_activates_membership(self, mock_razorpay_client):
-		# Mock Razorpay signature verification to not raise
-		mock_razorpay_client.utility.verify_payment_signature.return_value = None
+	@patch('payments.views.get_razorpay_client')
+	def test_payment_success_activates_membership(self, mock_get_razorpay_client):
+		# Mock Razorpay client and signature verification to not raise
+		mock_client = mock_get_razorpay_client.return_value
+		mock_client.utility.verify_payment_signature.return_value = None
 
 		url = reverse('payments:payment_success')
 		payload = {
@@ -60,9 +61,10 @@ class MembershipPaymentTest(TestCase):
 		um = UserMembership.objects.filter(user=user, plan=self.plan).first()
 		self.assertIsNotNone(um)
 
-	@patch('payments.views.razorpay_client')
-	def test_payment_success_accepts_form_encoded_data(self, mock_razorpay_client):
-		mock_razorpay_client.utility.verify_payment_signature.return_value = None
+	@patch('payments.views.get_razorpay_client')
+	def test_payment_success_accepts_form_encoded_data(self, mock_get_razorpay_client):
+		mock_client = mock_get_razorpay_client.return_value
+		mock_client.utility.verify_payment_signature.return_value = None
 
 		url = reverse('payments:payment_success')
 		response = self.client.post(url, {

@@ -51,8 +51,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.apple',
-    'cloudinary',
-    'cloudinary_storage',
     
     # Local apps
     'accounts',
@@ -66,6 +64,16 @@ INSTALLED_APPS = [
     'admin_dashboard',
     'achievements',
 ]
+
+CLOUDINARY_APPS = []
+try:
+    import cloudinary  # noqa: F401
+    import cloudinary_storage  # noqa: F401
+    CLOUDINARY_APPS = ['cloudinary', 'cloudinary_storage']
+except ImportError:
+    print('Cloudinary packages not installed; falling back to local file storage.', file=sys.stderr)
+
+INSTALLED_APPS += CLOUDINARY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -158,23 +166,27 @@ CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL', '')
 USE_CLOUDINARY = bool(CLOUDINARY_URL or os.environ.get('CLOUDINARY_CLOUD_NAME'))
 
 if USE_CLOUDINARY:
-    import cloudinary
-    import cloudinary.uploader
-    import cloudinary.api
+    try:
+        import cloudinary
+        import cloudinary.uploader
+        import cloudinary.api
 
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-    }
+        CLOUDINARY_STORAGE = {
+            'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+            'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+            'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+        }
 
-    cloudinary.config(
-        cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
-        api_key=os.environ.get('CLOUDINARY_API_KEY'),
-        api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
-    )
+        cloudinary.config(
+            cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+            api_key=os.environ.get('CLOUDINARY_API_KEY'),
+            api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+        )
 
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+        DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    except ImportError as exc:
+        print(f'Cloudinary package not installed: {exc}. Falling back to local file storage.', file=sys.stderr)
+        DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
@@ -241,8 +253,15 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Razorpay Configuration
 # Use environment variables - set in .env for local development and production
-RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID', 'rzp_test_SwU8wO2DuOpWoo')
-RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET', 'hS7jKWDqXYQRbo3IoS6J3oMB')
+raw_razorpay_key_id = os.getenv('RAZORPAY_KEY_ID', '')
+raw_razorpay_key_secret = os.getenv('RAZORPAY_KEY_SECRET', '')
+RAZORPAY_KEY_ID = raw_razorpay_key_id.strip() if raw_razorpay_key_id and raw_razorpay_key_id.strip().lower() != 'none' else 'rzp_test_SwU8wO2DuOpWoo'
+RAZORPAY_KEY_SECRET = raw_razorpay_key_secret.strip() if raw_razorpay_key_secret and raw_razorpay_key_secret.strip().lower() != 'none' else 'hS7jKWDqXYQRbo3IoS6J3oMB'
+
+if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
+    print('WARNING: Razorpay keys are not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the environment.', file=sys.stderr)
+if raw_razorpay_key_id.strip().lower() == 'none' or raw_razorpay_key_secret.strip().lower() == 'none':
+    print('WARNING: Razorpay environment variable value "None" was treated as unset.', file=sys.stderr)
 
 # UPI Payment Settings
 UPI_ID = '8177845613@kotakbank'

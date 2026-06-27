@@ -7,12 +7,29 @@ from django.conf import settings
 from .models import MembershipPlan, UserMembership
 from payments.models import BankAccount, Payment
 
+import sys
 import uuid
-try:
-    import razorpay
-    razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-except Exception:
-    razorpay_client = None
+
+def get_razorpay_client():
+    try:
+        import razorpay
+    except ImportError as exc:
+        print(f'Razorpay package import failed in membership views: {exc}', file=sys.stderr)
+        return None
+
+    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+        print(f'Razorpay API keys are missing in membership views. ID set: {bool(settings.RAZORPAY_KEY_ID)}, secret set: {bool(settings.RAZORPAY_KEY_SECRET)}', file=sys.stderr)
+        return None
+
+    try:
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        secret_mask = 'SET' if settings.RAZORPAY_KEY_SECRET else 'NOT SET'
+        print(f'Razorpay client initialized in membership views: {settings.RAZORPAY_KEY_ID}, secret {secret_mask}', file=sys.stderr)
+        return client
+    except Exception as exc:
+        print(f'Razorpay client initialization failed in membership views: {exc}', file=sys.stderr)
+        return None
+
 
 def plans_view(request):
     """View all membership plans"""
@@ -111,7 +128,8 @@ def purchase_plan(request, plan_id):
     }
 
     # Create a Razorpay order so the purchase page can open Checkout directly
-    if razorpay_client is not None:
+    client = get_razorpay_client()
+    if client is not None:
         try:
             amount_paise = int(float(plan.price) * 100)
             order_data = {
@@ -125,7 +143,7 @@ def purchase_plan(request, plan_id):
                     'type': 'membership',
                 }
             }
-            razorpay_order = razorpay_client.order.create(data=order_data)
+            razorpay_order = client.order.create(data=order_data)
 
             # Create pending Payment record
             payment = Payment.objects.create(
@@ -241,7 +259,8 @@ def upgrade_membership(request, plan_id):
     }
 
     # Create a Razorpay order if upgrade cost > 0
-    if razorpay_client is not None and upgrade_amount > 0:
+    client = get_razorpay_client()
+    if client is not None and upgrade_amount > 0:
         try:
             amount_paise = int(float(upgrade_amount) * 100)
             # Razorpay minimum amount is 100 paise (₹1). If below minimum, treat as free upgrade.
@@ -261,7 +280,7 @@ def upgrade_membership(request, plan_id):
                         'type': 'upgrade',
                     }
                 }
-                razorpay_order = razorpay_client.order.create(data=order_data)
+                razorpay_order = client.order.create(data=order_data)
 
                 # Create pending Payment record
                 payment = Payment.objects.create(

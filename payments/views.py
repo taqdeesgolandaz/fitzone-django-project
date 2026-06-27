@@ -1,15 +1,32 @@
 import json
 import re
+import sys
 import uuid
 from urllib.parse import quote
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 
-try:
-    import razorpay
-    razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-except Exception:
-    razorpay_client = None
+
+def get_razorpay_client():
+    try:
+        import razorpay
+    except ImportError as exc:
+        print(f'Razorpay package import failed: {exc}', file=sys.stderr)
+        return None
+
+    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+        print(f'Razorpay API keys are missing. ID set: {bool(settings.RAZORPAY_KEY_ID)}, secret set: {bool(settings.RAZORPAY_KEY_SECRET)}', file=sys.stderr)
+        return None
+
+    try:
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        secret_mask = 'SET' if settings.RAZORPAY_KEY_SECRET else 'NOT SET'
+        print(f'Razorpay client initialized: {settings.RAZORPAY_KEY_ID}, secret {secret_mask}', file=sys.stderr)
+        return client
+    except Exception as exc:
+        print(f'Razorpay client initialization failed: {exc}', file=sys.stderr)
+        return None
+
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -52,10 +69,11 @@ def initiate_session_payment(request, session_id):
     }
     
     try:
-        if razorpay_client is None:
+        client = get_razorpay_client()
+        if client is None:
             raise RuntimeError('Razorpay client is unavailable. Please install the Razorpay SDK or check configuration.')
 
-        razorpay_order = razorpay_client.order.create(data=order_data)
+        razorpay_order = client.order.create(data=order_data)
         
         payment = Payment.objects.create(
             user=request.user,
@@ -101,10 +119,11 @@ def upi_payment(request, plan_id):
     }
 
     try:
-        if razorpay_client is None:
+        client = get_razorpay_client()
+        if client is None:
             raise RuntimeError('Razorpay client is unavailable. Please install/configure Razorpay.')
 
-        razorpay_order = razorpay_client.order.create(data=order_data)
+        razorpay_order = client.order.create(data=order_data)
 
         payment = Payment.objects.create(
             user=request.user,
@@ -141,7 +160,8 @@ def create_session_order(request, session_id):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
 
-    if razorpay_client is None:
+    client = get_razorpay_client()
+    if client is None:
         return JsonResponse({'success': False, 'error': 'Razorpay client unavailable. Check server configuration.'})
 
     from trainers.models import TrainerSession
@@ -159,7 +179,7 @@ def create_session_order(request, session_id):
                 'type': 'trainer_session',
             }
         }
-        order = razorpay_client.order.create(data=order_data)
+        order = client.order.create(data=order_data)
         payment = Payment.objects.create(
             user=request.user,
             amount=session.amount,
@@ -229,7 +249,10 @@ def payment_success(request):
 
         # Verify signature with Razorpay
         try:
-            razorpay_client.utility.verify_payment_signature({
+            client = get_razorpay_client()
+            if client is None:
+                return JsonResponse({'success': False, 'error': 'Razorpay client unavailable. Check server configuration.'})
+            client.utility.verify_payment_signature({
                 'razorpay_order_id': razorpay_order_id,
                 'razorpay_payment_id': razorpay_payment_id,
                 'razorpay_signature': razorpay_signature
@@ -384,31 +407,34 @@ def upgrade_membership(request):
 
     razorpay_order = None
     razorpay_key = settings.RAZORPAY_KEY_ID
-    if upgrade_amount > 0 and razorpay_client is not None:
-        # Avoid Razorpay minimum amount error: do not create orders below 100 paise
-        if upgrade_amount < 1:  # 100 paise = 1 INR
-            # Treat as free upgrade (no Razorpay order)
-            razorpay_order = None
-        else:
-            try:
-                client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-                order_amount = int(upgrade_amount * 100)
-                order_data = {
-                    'amount': order_amount,
-                    'currency': 'INR',
-                    'receipt': f'upgrade_{request.user.id}_{timezone.now().timestamp()}',
-                    'payment_capture': 1,
-                    'notes': {
-                        'user_id': request.user.id,
-                        'current_plan': current_plan.id,
-                        'new_plan': new_plan.id,
-                        'type': 'upgrade'
+    if upgrade_amount > 0:
+        client = get_razorpay_client()
+        if client is not None:
+            # Avoid Razorpay minimum amount error: do not create orders below 100 paise
+            if upgrade_amount < 1:  # 100 paise = 1 INR
+                # Treat as free upgrade (no Razorpay order)
+                razorpay_order = None
+            else:
+                try:
+                    order_amount = int(upgrade_amount * 100)
+                    order_data = {
+                        'amount': order_amount,
+                        'currency': 'INR',
+                        'receipt': f'upgrade_{request.user.id}_{timezone.now().timestamp()}',
+                        'payment_capture': 1,
+                        'notes': {
+                            'user_id': request.user.id,
+                            'current_plan': current_plan.id,
+                            'new_plan': new_plan.id,
+                            'type': 'upgrade'
+                        }
                     }
-                }
-                razorpay_order = client.order.create(data=order_data)
-            except Exception as e:
-                # Log but allow page to render
-                print(f"Razorpay order creation failed: {e}")
+                    razorpay_order = client.order.create(data=order_data)
+                except Exception as e:
+                    # Log but allow page to render
+                    print(f"Razorpay order creation failed: {e}")
+        else:
+            print('Razorpay client unavailable in upgrade_membership. Skipping order creation.', file=sys.stderr)
 
     context = {
         'active_membership': active_membership,
@@ -445,7 +471,10 @@ def create_upgrade_order(request):
         if amount <= 0:
             return JsonResponse({'success': False, 'error': 'No payment required'})
 
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        client = get_razorpay_client()
+        if client is None:
+            return JsonResponse({'success': False, 'error': 'Razorpay client unavailable. Check server configuration.'})
+
         order_amount = int(amount * 100)
 
         order_data = {
@@ -482,7 +511,9 @@ def verify_upgrade_payment(request):
         signature = data.get('signature') or data.get('razorpay_signature')
 
         # Verify signature
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        client = get_razorpay_client()
+        if client is None:
+            return JsonResponse({'success': False, 'error': 'Razorpay client unavailable. Check server configuration.'})
         params_dict = {
             'razorpay_order_id': order_id,
             'razorpay_payment_id': payment_id,
