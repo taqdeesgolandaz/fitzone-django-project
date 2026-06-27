@@ -132,7 +132,8 @@ class CustomUser(AbstractUser):
     def optimize_profile_picture(self):
         """Optimize and resize profile picture to fit perfectly"""
         try:
-            img = Image.open(self.profile_picture.path)
+            self.profile_picture.open()
+            img = Image.open(self.profile_picture)
             
             # Convert to RGB if necessary (for PNG with transparency)
             if img.mode in ('RGBA', 'LA', 'P'):
@@ -167,6 +168,11 @@ class CustomUser(AbstractUser):
             )
         except Exception as e:
             print(f"Error optimizing profile picture: {e}")
+        finally:
+            try:
+                self.profile_picture.close()
+            except Exception:
+                pass
 
     class Meta:
         verbose_name = 'User'
