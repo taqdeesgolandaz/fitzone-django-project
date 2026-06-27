@@ -14,17 +14,15 @@ def get_razorpay_client():
         print(f'Razorpay package import failed: {exc}', file=sys.stderr)
         return None
 
-    if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
-        print(f'Razorpay API keys are missing. ID set: {bool(settings.RAZORPAY_KEY_ID)}, secret set: {bool(settings.RAZORPAY_KEY_SECRET)}', file=sys.stderr)
-        return None
+    print(f'RAZORPAY_KEY_ID: {settings.RAZORPAY_KEY_ID}', file=sys.stderr)
+    print(f'RAZORPAY_KEY_SECRET: {"SET" if settings.RAZORPAY_KEY_SECRET else "NOT SET"}', file=sys.stderr)
 
     try:
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        secret_mask = 'SET' if settings.RAZORPAY_KEY_SECRET else 'NOT SET'
-        print(f'Razorpay client initialized: {settings.RAZORPAY_KEY_ID}, secret {secret_mask}', file=sys.stderr)
+        print('✅ Razorpay client initialized', file=sys.stderr)
         return client
     except Exception as exc:
-        print(f'Razorpay client initialization failed: {exc}', file=sys.stderr)
+        print(f'❌ Razorpay init error: {exc}', file=sys.stderr)
         return None
 
 from django.urls import reverse
