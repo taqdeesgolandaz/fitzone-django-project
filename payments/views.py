@@ -38,6 +38,23 @@ def get_razorpay_client():
             print(f'❌ Razorpay init error: {exc}', file=sys.stderr)
             return None
 
+
+def safe_create_order(client, order_data, context=''):
+    """Create a Razorpay order with detailed error logging for troubleshooting."""
+    try:
+        return client.order.create(data=order_data)
+    except Exception as exc:
+        try:
+            import razorpay
+            err_type = type(exc)
+            print(f'Razorpay order creation error ({context}): {err_type.__name__}: {exc}', file=sys.stderr)
+            # Provide a hint for authentication errors
+            if 'Authentication' in str(exc) or 'auth' in str(exc).lower():
+                print('HINT: Authentication failed. Verify RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are correct and active.', file=sys.stderr)
+        except ImportError:
+            print(f'Order creation error ({context}): {exc}', file=sys.stderr)
+        raise
+
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
