@@ -22,10 +22,15 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here-chang
 DEBUG = os.getenv('DEBUG', 'True').lower() in ['true', '1', 'yes']
 
 ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-    if host.strip()
+    'localhost',
+    '127.0.0.1',
+    'fitzone-application.onrender.com',
+    '.onrender.com',
 ]
+
+# If DEBUG is True, allow all hosts
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
 
 # Custom User Model
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -253,15 +258,11 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Razorpay Configuration
 # Use environment variables - set in .env for local development and production
-raw_razorpay_key_id = os.getenv('RAZORPAY_KEY_ID', '')
-raw_razorpay_key_secret = os.getenv('RAZORPAY_KEY_SECRET', '')
-RAZORPAY_KEY_ID = raw_razorpay_key_id.strip() if raw_razorpay_key_id and raw_razorpay_key_id.strip().lower() != 'none' else 'rzp_test_SwU8w02Du0pWoo'
-RAZORPAY_KEY_SECRET = raw_razorpay_key_secret.strip() if raw_razorpay_key_secret and raw_razorpay_key_secret.strip().lower() != 'none' else 'hS7jKWdQXYQRbo3IoS6J3oMB'
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET')
 
 if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
     print('WARNING: Razorpay keys are not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the environment.', file=sys.stderr)
-if raw_razorpay_key_id.strip().lower() == 'none' or raw_razorpay_key_secret.strip().lower() == 'none':
-    print('WARNING: Razorpay environment variable value "None" was treated as unset.', file=sys.stderr)
 
 # UPI Payment Settings
 UPI_ID = '8177845613@kotakbank'
@@ -274,8 +275,8 @@ UPI_APPS = ['Google Pay', 'PhonePe', 'Paytm', 'BHIM']
 UPI_PAYEE_NAME = 'FitZone'
 
 # For Live Mode (to see GPay, PhonePe, Paytm buttons):
-RAZORPAY_KEY_ID = 'rzp_live_YourLiveKeyHere'
-RAZORPAY_KEY_SECRET = 'YourLiveSecretHere'
+# RAZORPAY_KEY_ID = 'rzp_live_YourLiveKeyHere'
+# RAZORPAY_KEY_SECRET = 'YourLiveSecretHere'
 
 # Login URLs
 LOGIN_URL = '/login/'
@@ -324,9 +325,6 @@ print(
     f'DEFAULT_FROM_EMAIL={DEFAULT_FROM_EMAIL}',
     file=sys.stderr,
 )
-
-# ALLOWED_HOSTS
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Templates (required for admin and django templates)
 TEMPLATES = [
