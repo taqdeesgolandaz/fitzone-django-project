@@ -1,31 +1,20 @@
 #!/bin/bash
-# render-build.sh
+# Exit on error
+set -o errexit
 
-echo "========================================="
 echo "🚀 Installing setuptools and wheel first..."
-echo "========================================="
 pip install --upgrade pip setuptools wheel
 
-echo "========================================="
-echo "📦 Installing all requirements..."
-echo "========================================="
+echo "📦 Installing all requirements from requirements.txt..."
 pip install -r requirements.txt
 
-echo "========================================="
-echo "🔍 Verifying razorpay installation..."
-echo "========================================="
-python -c "import pkg_resources; import razorpay; print('✅ Razorpay available')" || echo "❌ Razorpay verification failed"
+echo "🔍 Verifying pkg_resources is available..."
+python -c "import pkg_resources; print('✅ pkg_resources is available')"
 
-echo "========================================="
-echo "🔄 Running migrations..."
-echo "========================================="
-python manage.py migrate --noinput
+echo "🔄 Running database migrations..."
+python manage.py migrate
 
-echo "========================================="
 echo "📁 Collecting static files..."
-echo "========================================="
 python manage.py collectstatic --noinput
 
-echo "========================================="
-echo "✅ Build complete!"
-echo "========================================="
+echo "✅ Build completed successfully!"
