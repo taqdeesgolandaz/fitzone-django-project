@@ -256,13 +256,13 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-# Razorpay Configuration
-# Temporary: force correct test keys for debugging (remove after verification)
-RAZORPAY_KEY_ID = 'rzp_test_SwU8wO2DuOpWoo'
-RAZORPAY_KEY_SECRET = 'hS7jKWDqXYQRbo3IoS6J3oMB'
+ # Razorpay Configuration
+# Use environment variables - set in .env for local development and production
+RAZORPAY_KEY_ID = os.getenv('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET')
 
-print(f"FORCED RAZORPAY_KEY_ID: {RAZORPAY_KEY_ID}", file=sys.stderr)
-print(f"FORCED RAZORPAY_KEY_SECRET: {'SET' if RAZORPAY_KEY_SECRET else 'NOT SET'}", file=sys.stderr)
+if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
+    print('WARNING: Razorpay keys are not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the environment.', file=sys.stderr)
 
 # UPI Payment Settings
 UPI_ID = '8177845613@kotakbank'
