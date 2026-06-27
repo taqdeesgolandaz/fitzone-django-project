@@ -274,8 +274,8 @@ UPI_APPS = ['Google Pay', 'PhonePe', 'Paytm', 'BHIM']
 UPI_PAYEE_NAME = 'FitZone'
 
 # For Live Mode (to see GPay, PhonePe, Paytm buttons):
-# RAZORPAY_KEY_ID = 'rzp_live_YourLiveKeyHere'
-# RAZORPAY_KEY_SECRET = 'YourLiveSecretHere'
+RAZORPAY_KEY_ID = 'rzp_live_YourLiveKeyHere'
+RAZORPAY_KEY_SECRET = 'YourLiveSecretHere'
 
 # Login URLs
 LOGIN_URL = '/login/'
