@@ -572,13 +572,14 @@
         
         var rzp = new Razorpay(options);
         
-        rzp.on('payment.failed', function(response){
+            rzp.on('payment.failed', function(response){
             console.error('Payment failed:', response);
             alert('Payment failed. Please try again.');
             payButton.innerHTML = originalText;
             payButton.classList.remove('loading');
             payButton.disabled = false;
-            window.location.href = "{% url 'payments:payment_failed' %}";
+            // Include the order id so the server can mark the Payment as failed
+            window.location.href = "{% url 'payments:payment_failed' %}?order_id={{ razorpay_order.id }}";
         });
         
         rzp.open();

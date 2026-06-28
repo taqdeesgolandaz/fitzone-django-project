@@ -360,6 +360,17 @@ def download_invoice(request, payment_id):
 @csrf_exempt
 def payment_failed(request):
     """Handle failed payment."""
+    # Attempt to mark the related Payment record as failed when possible.
+    order_id = request.GET.get('order_id') or request.GET.get('razorpay_order_id')
+    try:
+        if order_id:
+            payment = Payment.objects.filter(razorpay_order_id=order_id).first()
+            if payment:
+                payment.status = 'failed'
+                payment.save()
+    except Exception as exc:  # non-fatal
+        print(f"Failed to mark payment as failed for order {order_id}: {exc}", file=sys.stderr)
+
     return render(request, 'payments/failed.html')
 
 

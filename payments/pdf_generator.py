@@ -188,10 +188,10 @@ class InvoiceGenerator:
         
         payment = Payment.objects.get(id=payment_id)
         
-        # # Check if payment is successful before allowing download
-        # if payment.status != 'success':
-        #     messages.error(request, 'Invoice is only available for successful payments.')
-        #     return redirect('payments:payment_history')
+        # Check if payment is successful before allowing download
+        if payment.status != 'success':
+            messages.error(request, 'Invoice is only available for successful payments.')
+            return redirect('payments:payment_history')
         
         membership = UserMembership.objects.filter(payment_id=payment.razorpay_payment_id).first()
         
