@@ -196,7 +196,32 @@
 "" 
 "---" 
 "" 
-"## ?? Running the Project" 
+"
+### Step 7: Prepare Render Data Sync
+
+If you want to send your local database data to Render, run:
+
+```bash
+./render_db_sync.sh
+```
+
+This generates `render_data.json`, which you can import in Render after deployment.
+
+### Step 8: Load Render Data on Deployment
+
+After deployment, use Render shell or a release step to load the fixture:
+
+```bash
+./render_db_load.sh
+```
+
+If you already deployed and have `render_data.json` in your app, you can also run:
+
+```bash
+python manage.py loaddata render_data.json
+```
+
+## ?? Running the Project" 
 "" 
 "```bash" 
 "python manage.py runserver" 
