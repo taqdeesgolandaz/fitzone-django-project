@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: ./render-build.sh
-    releaseCommand: python manage.py migrate
+    releaseCommand: bash -lc "if [ -n \"$SQLITE_PATH\" ]; then mkdir -p \$(dirname \"$SQLITE_PATH\"); cp /opt/render/project/src/db.sqlite3 \"$SQLITE_PATH\" || true; fi; python manage.py migrate"
     startCommand: gunicorn fitzone.wsgi --bind 0.0.0.0:$PORT --log-file -
     envVars:
       # DATABASE_URL removed — this service is using SQLite (db.sqlite3) and does not require DATABASE_URL
