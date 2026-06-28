@@ -11,7 +11,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login_view, name='login'),
     path('', include('accounts.urls')),
-    path('', include(('accounts.urls', 'accounts'), namespace='accounts')),
+    # Expose accounts app URLs under /accounts/ as well so template and diagnostic
+    # endpoints (e.g. debug-csrf) are reachable at /accounts/...
+    path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
     path('accounts/', include('allauth.urls')),
     path('membership/', include(('membership.urls', 'membership'), namespace='membership')),
     path('payments/', include('payments.urls')),  # This line is critical

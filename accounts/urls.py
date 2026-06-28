@@ -21,6 +21,7 @@ urlpatterns = [
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('reset-password/<uidb64>/<token>/', views.reset_password, name='reset_password'),
     path('delete-account/', views.delete_account, name='delete_account'),
+    path('api/csrf-token/', views.get_csrf_token, name='csrf_token'),
 
     # API URLs (for mobile app / React frontend)
     path('api/register/', RegisterView.as_view(), name='api_register'),

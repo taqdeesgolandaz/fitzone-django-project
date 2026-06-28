@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives, send_mail
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from notifications.services import NotificationService, send_email_via_brevo
@@ -24,6 +25,8 @@ import ssl
 import traceback
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from urllib3 import request
 from threading import Thread
 from .models import CustomUser
@@ -102,6 +105,8 @@ def home_view(request):
     }
     return render(request, 'base/home.html', context)
 
+@ensure_csrf_cookie
+@csrf_protect
 def login_view(request):
     """Render login page and handle login"""
     
@@ -111,12 +116,28 @@ def login_view(request):
         return redirect('dashboard')
     
     if request.method == 'POST':
-        username_or_email = request.POST.get('username')
-        password = request.POST.get('password')
+        # Debug: log incoming cookies and CSRF token to help diagnose mobile POSTs
+        try:
+            print(f"[login_view] POST remote_addr={request.META.get('REMOTE_ADDR')} cookies={request.COOKIES}", file=sys.stderr)
+            print(f"[login_view] POST csrfmiddlewaretoken={request.POST.get('csrfmiddlewaretoken')} x-csrftoken={request.META.get('HTTP_X_CSRFTOKEN')}", file=sys.stderr)
+            print(f"[login_view] POST headers origin={request.META.get('HTTP_ORIGIN')} referer={request.META.get('HTTP_REFERER')} host={request.META.get('HTTP_HOST')}", file=sys.stderr)
+        except Exception:
+            pass
 
-        if not username_or_email or not password:
-            messages.error(request, 'Please enter both username/email and password.')
-            return render(request, 'accounts/login.html')
+        username_or_email = (request.POST.get('username') or '').strip()
+        password = request.POST.get('password') or ''
+        print(f"[login_view] POST credentials username_or_email={username_or_email!r} password_length={len(password)}", file=sys.stderr)
+
+        # Local fallback: if token is provided and cookie is missing, trust POST token in DEBUG
+        if settings.DEBUG and 'csrftoken' not in request.COOKIES:
+            post_token = (
+                request.POST.get('csrfmiddlewaretoken') or
+                request.POST.get(settings.CSRF_COOKIE_NAME) or
+                request.META.get('HTTP_X_CSRFTOKEN')
+            )
+            if post_token:
+                request.COOKIES[settings.CSRF_COOKIE_NAME] = post_token
+                print(f"[login_view] injected csrftoken from POST in DEBUG mode token={post_token}", file=sys.stderr)
 
         username = username_or_email
         if '@' in username_or_email:
@@ -130,20 +151,91 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
+            request.session['login_confirmed'] = True
+            request.session.save()
             messages.success(request, 'Login successful!')
-            
-            if user.is_staff:
-                return redirect('admin_dashboard:dashboard')
-            return redirect('dashboard')
+            print(f"[login_view] authenticated user={user.username} session_key={request.session.session_key}", file=sys.stderr)
+
+            redirect_to = 'admin_dashboard:dashboard' if user.is_staff else 'dashboard'
+            response = redirect(redirect_to)
+            if settings.DEBUG:
+                session_key = request.session.session_key
+                max_age = settings.SESSION_COOKIE_AGE
+
+                response.set_cookie(
+                    settings.SESSION_COOKIE_NAME,
+                    session_key,
+                    secure=settings.SESSION_COOKIE_SECURE,
+                    httponly=settings.SESSION_COOKIE_HTTPONLY,
+                    samesite=settings.SESSION_COOKIE_SAMESITE,
+                    path=settings.SESSION_COOKIE_PATH,
+                    domain=None,
+                    max_age=max_age,
+                )
+
+                csrf_token = request.COOKIES.get(settings.CSRF_COOKIE_NAME) or request.POST.get('csrfmiddlewaretoken') or get_token(request)
+                response.set_cookie(
+                    settings.CSRF_COOKIE_NAME,
+                    csrf_token,
+                    secure=settings.CSRF_COOKIE_SECURE,
+                    httponly=settings.CSRF_COOKIE_HTTPONLY,
+                    samesite=settings.CSRF_COOKIE_SAMESITE,
+                    path=settings.CSRF_COOKIE_PATH,
+                    domain=None,
+                    max_age=max_age,
+                )
+                print(
+                    f"[login_view] ✅ Cookies set on login response: session_key={session_key} max_age={max_age}",
+                    file=sys.stderr,
+                )
+            return response
         else:
+            print(f"[login_view] authentication failed for username={username!r}", file=sys.stderr)
             messages.error(request, 'Invalid username/email or password.')
             return render(request, 'accounts/login.html')
     
     # Clear only old/expired messages for GET requests
     storage = messages.get_messages(request)
     storage.used = True
-    
-    return render(request, 'accounts/login.html')
+
+    response = render(request, 'accounts/login.html')
+    if settings.DEBUG:
+        token = get_token(request)
+        response.set_cookie(
+            settings.CSRF_COOKIE_NAME,
+            token,
+            secure=settings.CSRF_COOKIE_SECURE,
+            httponly=settings.CSRF_COOKIE_HTTPONLY,
+            samesite=settings.CSRF_COOKIE_SAMESITE,
+            path=settings.CSRF_COOKIE_PATH,
+            domain=None,
+            max_age=settings.CSRF_COOKIE_AGE,
+        )
+        print(
+            f"[login_view] GET set csrftoken cookie host={request.get_host()} "
+            f"CSRF_DOMAIN={settings.CSRF_COOKIE_DOMAIN} token={token} max_age={settings.CSRF_COOKIE_AGE}",
+            file=sys.stderr,
+        )
+    return response
+
+
+def get_csrf_token(request):
+    """Force-set a CSRF cookie and return the token for mobile diagnostics."""
+    token = get_token(request)
+    response = JsonResponse({'csrf_token': token})
+    response.set_cookie(
+        settings.CSRF_COOKIE_NAME,
+        token,
+        secure=settings.CSRF_COOKIE_SECURE,
+        httponly=settings.CSRF_COOKIE_HTTPONLY,
+        samesite=settings.CSRF_COOKIE_SAMESITE,
+        path=settings.CSRF_COOKIE_PATH,
+        domain=None,
+        max_age=getattr(settings, 'CSRF_COOKIE_AGE', 1209600),
+    )
+    print(f"[get_csrf_token] CSRF cookie forced set: {token}", file=sys.stderr)
+    return response
+
 
 def register_view(request):
     """Render registration page and handle registration"""

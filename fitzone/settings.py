@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file (for local development)
 from dotenv import load_dotenv
-load_dotenv(BASE_DIR / '.env')
+load_dotenv(BASE_DIR / '.env', override=True)
 
 try:
     import pkg_resources
@@ -36,6 +36,7 @@ DEBUG = os.getenv('DEBUG', 'True').lower() in ['true', '1', 'yes']
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '10.138.47.210',  # Add your IPv4 address
     'fitzone-application.onrender.com',
     '.onrender.com',
 ]
@@ -99,12 +100,15 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'fitzone.middleware.LocalDevCSRFExemptMiddleware',
+    # 'fitzone.middleware.LocalCSRFCookieMiddleware',  # disabled for standard Django CSRF handling
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'fitzone.middleware.SessionDebugMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'accounts.middleware.SingleSessionMiddleware',  # Add this (we'll create it)
+    'accounts.middleware.SingleSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'fitzone.urls'
@@ -355,12 +359,56 @@ TEMPLATES = [
     },
 ]
 
+# CSRF and session cookie settings for local development over HTTP
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_PATH = '/'
+CSRF_COOKIE_AGE = 1209600
+CSRF_USE_SESSIONS = False
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_PATH = '/'
+SESSION_COOKIE_AGE = 1209600
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+CSRF_COOKIE_DOMAIN = None
+SESSION_COOKIE_DOMAIN = None
+
+# Optional override for cookie domain in local debugging.
+# Set LOCAL_DEV_HOST=10.138.47.210 when accessing from mobile on that address.
+LOCAL_DEV_HOST = os.getenv('LOCAL_DEV_HOST', '')
+if DEBUG and LOCAL_DEV_HOST:
+    CSRF_COOKIE_DOMAIN = LOCAL_DEV_HOST
+    SESSION_COOKIE_DOMAIN = LOCAL_DEV_HOST
+
+# Trusted origins for local network/mobile access
+CSRF_TRUSTED_ORIGINS = [
+    # include both scheme+host and host:port variants used in local testing
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://0.0.0.0',
+    'http://[::1]',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://0.0.0.0:8000',
+    'http://[::1]:8000',
+    'http://10.138.47.210',
+    'http://10.138.47.210:8000',
+]
+
+# Detailed CSRF diagnostics for local development
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+
 # Security Settings for Production
 if not DEBUG:
     # HTTPS and Security Headers
     SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'false').lower() in ['true', '1', 'yes']
-    SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'true').lower() in ['true', '1', 'yes']
-    CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'true').lower() in ['true', '1', 'yes']
+    SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'false').lower() in ['true', '1', 'yes']
+    CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'false').lower() in ['true', '1', 'yes']
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_SECURITY_POLICY = {
         "default-src": ("'self'",),
