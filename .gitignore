@@ -37,9 +37,9 @@ env.bak/
 venv.bak/
 
 # Django
+# Note: db.sqlite3 is intentionally tracked in this project per user request.
 *.log
 local_settings.py
-db.sqlite3
 /media/
 /staticfiles/
 
@@ -60,8 +60,8 @@ htmlcov/
 .tox/
 
 # Database
-*.sqlite3
-db.sqlite3
+# SQLite files are tracked in this repo per user request so the app can use the included DB.
+# Remove or re-add these patterns if you later want to ignore SQLite files again.
 db.sqlite3.backup
 sqlite_data.json
 cookiejar.txt
