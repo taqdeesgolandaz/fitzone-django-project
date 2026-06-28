@@ -116,11 +116,18 @@ ROOT_URLCONF = 'fitzone.urls'
 
 WSGI_APPLICATION = 'fitzone.wsgi.application'
 
-# Database: use SQLite only (local built-in DB)
+# Database: prefer a persisted SQLite path if provided via SQLITE_PATH, otherwise use local db.sqlite3
+# This allows attaching a persistent disk on Render and pointing `SQLITE_PATH` to the mounted path
+sqlite_path_env = os.environ.get('SQLITE_PATH')
+if sqlite_path_env:
+    db_name = sqlite_path_env
+else:
+    db_name = BASE_DIR / 'db.sqlite3'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': db_name,
     }
 }
 
