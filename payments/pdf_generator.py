@@ -70,6 +70,32 @@ class InvoiceGenerator:
         story.append(Paragraph("FitZone Fitness Platform", title_style))
         story.append(Paragraph("Smart Fitness & Membership Management", styles['Normal']))
         story.append(Spacer(1, 0.2*inch))
+
+        # Status banner for non-success payments
+        status = (payment.status or '').lower()
+        if status in ('failed', 'refunded'):
+            status_style = ParagraphStyle(
+                'StatusFailed',
+                parent=styles['Heading2'],
+                fontSize=16,
+                textColor=colors.white,
+                backColor=colors.HexColor('#E94560'),
+                alignment=1,
+                spaceAfter=12,
+            )
+            story.append(Paragraph(status.title(), status_style))
+            story.append(Spacer(1, 0.1*inch))
+        elif status == 'pending':
+            status_style = ParagraphStyle(
+                'StatusPending',
+                parent=styles['Heading3'],
+                fontSize=12,
+                textColor=colors.HexColor('#E94560'),
+                alignment=1,
+                spaceAfter=10,
+            )
+            story.append(Paragraph('Pending', status_style))
+            story.append(Spacer(1, 0.1*inch))
         
         # Company Details
         company_data = [
@@ -188,9 +214,9 @@ class InvoiceGenerator:
         
         payment = Payment.objects.get(id=payment_id)
         
-        # Check if payment is successful before allowing download
-        if payment.status != 'success':
-            messages.error(request, 'Invoice is only available for successful payments.')
+        # Allow invoice download for successful, failed, or refunded payments.
+        if payment.status not in ('success', 'failed', 'refunded'):
+            messages.error(request, 'Invoice is only available for successful, failed, or refunded payments.')
             return redirect('payments:payment_history')
         
         membership = UserMembership.objects.filter(payment_id=payment.razorpay_payment_id).first()
