@@ -414,6 +414,40 @@
         </div>
     </div>
 
+<script>
+// Make the recently deactivated/deleted lists collapsible.
+document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.collapsible-users').forEach(function(container){
+        var viewMore = container.querySelector('.view-more-btn');
+        var extraItems = container.querySelectorAll('.extra-user');
+        if(!viewMore) return;
+
+        function setExpanded(expanded){
+            extraItems.forEach(function(it){
+                if(expanded) it.classList.remove('hidden'); else it.classList.add('hidden');
+            });
+            viewMore.textContent = expanded ? 'View less' : 'View more';
+        }
+
+        // default collapsed
+        setExpanded(false);
+
+        viewMore.addEventListener('click', function(ev){
+            ev.stopPropagation();
+            var expanded = viewMore.textContent !== 'View less';
+            setExpanded(expanded);
+        });
+
+        // Toggle when card clicked (but ignore clicks on links)
+        container.addEventListener('click', function(ev){
+            if(ev.target.closest('a')) return; // let links behave normally
+            var expanded = viewMore.textContent !== 'View less';
+            setExpanded(expanded);
+        });
+    });
+});
+</script>
+
     <!-- Today's Summary -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8 today-summary-grid">
         <div class="bg-gradient-to-r from-[#1A1A2E] to-[#16213E] rounded-xl p-4 border border-[#E94560]/20 summary-card card-hover">
@@ -490,10 +524,10 @@
         <!-- Deactivated Users -->
         <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover">
             <h3 class="text-white font-semibold mb-3 section-title">Recently Deactivated Users</h3>
-            <div class="space-y-3">
+            <div class="space-y-3 collapsible-users" data-section="deactivated">
                 {% if recent_deactivations %}
                     {% for log in recent_deactivations %}
-                    <div class="flex items-center justify-between bg-[#0F0F1A] p-3 rounded-lg">
+                    <div class="flex items-center justify-between bg-[#0F0F1A] p-3 rounded-lg {% if not forloop.first %}hidden extra-user{% endif %}">
                         <div>
                             {% if log.target_user %}
                                 <a href="{% url 'admin_dashboard:user_details' log.target_user.id %}" class="text-white font-medium">@{{ log.target_user.username }}</a>
@@ -508,6 +542,9 @@
                         </div>
                     </div>
                     {% endfor %}
+                    {% if recent_deactivations|length > 1 %}
+                    <div class="text-text-gray text-sm mt-2 cursor-pointer view-more-btn">View more</div>
+                    {% endif %}
                 {% else %}
                     <p class="text-text-gray">No recent deactivations.</p>
                 {% endif %}
@@ -517,11 +554,11 @@
         <!-- Deleted Users -->
         <div class="bg-[#1A1A2E] rounded-xl p-6 border border-[#E94560]/20 card-hover">
             <h3 class="text-white font-semibold mb-3 section-title">Recently Deleted Users</h3>
-            <div class="space-y-3">
+            <div class="space-y-3 collapsible-users" data-section="deleted">
                 {% if recent_deletions %}
                     {% for log in recent_deletions %}
                     <a href="{% url 'admin_dashboard:recreate_user' log.id %}" class="block">
-                    <div class="flex items-center justify-between bg-[#0F0F1A] p-3 rounded-lg hover:bg-[#141425]">
+                    <div class="flex items-center justify-between bg-[#0F0F1A] p-3 rounded-lg hover:bg-[#141425] {% if not forloop.first %}hidden extra-user{% endif %}">
                         <div>
                             <div class="text-white font-medium">{{ log.description|truncatechars:80 }}</div>
                             <div class="text-text-gray text-xs">{% if log.admin_user %}{{ log.admin_user.username }}{% else %}System{% endif %}</div>
@@ -533,6 +570,9 @@
                     </div>
                     </a>
                     {% endfor %}
+                    {% if recent_deletions|length > 1 %}
+                    <div class="text-text-gray text-sm mt-2 cursor-pointer view-more-btn">View more</div>
+                    {% endif %}
                 {% else %}
                     <p class="text-text-gray">No recent deletions.</p>
                 {% endif %}
