@@ -405,11 +405,18 @@ def upgrade_membership(request):
         messages.warning(request, 'You are already on this plan.')
         return redirect('membership:my_membership')
 
-    # Calculate days remaining (use .date to avoid timezone differences)
+    # Calculate days remaining (safely handle missing/invalid end_date)
+    days_remaining = 0
     try:
-        days_remaining = (active_membership.end_date.date() - timezone.now().date()).days
+        if active_membership.end_date:
+            # Prefer date arithmetic to avoid timezone surprises
+            try:
+                days_remaining = (active_membership.end_date.date() - timezone.now().date()).days
+            except Exception:
+                # Fallback to datetime subtraction
+                days_remaining = max(0, (active_membership.end_date - timezone.now()).days)
     except Exception:
-        days_remaining = max(0, (active_membership.end_date - timezone.now()).days)
+        days_remaining = 0
     if days_remaining < 0:
         days_remaining = 0
 
@@ -491,6 +498,8 @@ def upgrade_membership(request):
         'new_end_date': timezone.now().date() + timedelta(days=total_days),
         'razorpay_order': razorpay_order,
         'razorpay_key': razorpay_key,
+        # For progress bar in template
+        'days_remaining_percent': int((days_remaining / max(1, current_plan.get_duration_days())) * 100) if current_plan.get_duration_days() else 0,
     }
 
     # Render the membership upgrade template directly to avoid duplicate base layout
