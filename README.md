@@ -207,6 +207,20 @@ If you want to send your local database data to Render, run:
 
 This generates `render_data.json`, which you can import in Render after deployment.
 
+### Step 7b: Sync local SQLite data to Neon/Postgres
+
+To copy your local Django data into Neon, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\sync_neon.ps1 -RemoteUrl "postgresql://..." -Import
+```
+
+For a safe preview first, use:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\sync_neon.ps1 -RemoteUrl "postgresql://..." -DryRun
+```
+
 ### Step 8: Load Render Data on Deployment
 
 After deployment, use Render shell or a release step to load the fixture:
