@@ -110,6 +110,15 @@ class UserMembership(models.Model):
             remaining = (self.end_date - timezone.now()).days
             return max(0, remaining)
         return 0
+
+    @classmethod
+    def deactivate_other_active_memberships(cls, user, keep_membership_id=None):
+        """Deactivate any other active memberships for the same user."""
+        queryset = cls.objects.filter(user=user, status='active', end_date__gt=timezone.now())
+        if keep_membership_id is not None:
+            queryset = queryset.exclude(id=keep_membership_id)
+        updated = queryset.update(status='cancelled')
+        return updated
     
     class Meta:
         ordering = ['-start_date']

@@ -530,7 +530,7 @@
             </div>
             <div class="text-center md:text-right mt-4 md:mt-0 active-membership-right">
                 <p class="text-text-gray text-sm days-label">Days Remaining</p>
-                <p class="text-4xl font-bold text-[#E94560] days-remaining">{{ active_membership.days_remaining }}</p>
+                <p class="text-4xl font-bold text-[#E94560] days-remaining">{{ active_membership.days_remaining_value|default:active_membership.days_remaining }}</p>
                 <p class="text-text-gray text-sm days-label">days</p>
             </div>
         </div>

@@ -111,6 +111,7 @@ def purchase_plan(request, plan_id):
         end_date = timezone.now() + timezone.timedelta(days=plan.get_duration_days())
         
         # Create membership (payment will be integrated later)
+        UserMembership.deactivate_other_active_memberships(request.user)
         membership = UserMembership.objects.create(
             user=request.user,
             plan=plan,
@@ -218,21 +219,21 @@ def upgrade_membership(request, plan_id):
         upgrade_amount = new_remaining_cost - current_remaining_cost
         upgrade_amount = max(0, round(upgrade_amount, 2))  # Ensure non-negative
         
-        # Create new membership with end date extended from current
-        new_end_date = active_membership.end_date + timezone.timedelta(days=new_plan_days)
-        
+        # Create a fresh membership period that starts from the upgrade date.
+        upgrade_start_date = timezone.now()
+        new_end_date = upgrade_start_date + timezone.timedelta(days=new_plan_days)
+
+        active_membership.status = 'cancelled'
+        active_membership.save(update_fields=['status'])
+        UserMembership.deactivate_other_active_memberships(request.user, keep_membership_id=active_membership.id)
         new_membership = UserMembership.objects.create(
             user=request.user,
             plan=new_plan,
-            start_date=timezone.now(),
+            start_date=upgrade_start_date,
             end_date=new_end_date,
             amount_paid=upgrade_amount,
             status='active'
         )
-        
-        # Cancel old membership
-        active_membership.status = 'cancelled'
-        active_membership.save()
         
         # Update user's membership status
         request.user.current_membership = new_plan
@@ -265,7 +266,7 @@ def upgrade_membership(request, plan_id):
         'active_membership': active_membership,
         'days_remaining': days_remaining,
         'upgrade_amount': upgrade_amount,
-        'new_end_date': active_membership.end_date + timezone.timedelta(days=new_plan_days),
+        'new_end_date': timezone.now() + timezone.timedelta(days=new_plan_days),
     }
 
     # Create a Razorpay order if upgrade cost > 0
@@ -318,11 +319,16 @@ def my_membership_view(request):
         user=request.user,
         status='active',
         end_date__gt=timezone.now()
-    ).first()
-    
+    ).order_by('-start_date').first()
+
+    if active_membership is not None:
+        active_membership.days_remaining_value = active_membership.days_remaining()
+    else:
+        active_membership = None
+
     expired_memberships = UserMembership.objects.filter(
         user=request.user
-    ).exclude(id=active_membership.id if active_membership else None)[:5]
+    ).exclude(id=active_membership.id if active_membership else None).order_by('-start_date')[:5]
     
     context = {
         'active_membership': active_membership,

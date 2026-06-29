@@ -174,8 +174,13 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise Configuration for serving static files in production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# WhiteNoise staticfiles storage.
+# Use the non-manifest storage so Django admin and other pages keep rendering even
+# when collectstatic has not produced a complete manifest entry.
+STATICFILES_STORAGE = os.getenv(
+    'DJANGO_STATICFILES_STORAGE',
+    'whitenoise.storage.CompressedStaticFilesStorage',
+)
 
 # Media files (User uploads)
 MEDIA_URL = '/media/'

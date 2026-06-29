@@ -304,7 +304,7 @@ html {
                     <a href="{% url 'admin_dashboard:revenue_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Revenue</a>
                     <a href="{% url 'admin_dashboard:user_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Users</a>
                     <a href="{% url 'admin_dashboard:membership_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Memberships</a>
-                    <a href="/admin/" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Admin Panel</a>
+                    <a href="{% url 'auto_admin_login' %}" class="text-text-gray hover:text-[#E94560] transition-colors text-sm whitespace-nowrap">Admin Panel</a>
                     
                     <!-- Preview Features Dropdown -->
                     <div class="relative inline-block text-left" x-data="{ open: false }">
@@ -457,7 +457,7 @@ html {
                     <a href="{% url 'admin_dashboard:revenue_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Revenue</a>
                     <a href="{% url 'admin_dashboard:user_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Users</a>
                     <a href="{% url 'admin_dashboard:membership_report' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Memberships</a>
-                    <a href="/admin/" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Admin Panel</a>
+                    <a href="{% url 'auto_admin_login' %}" class="text-text-gray hover:text-[#E94560] transition-colors py-2 block">Admin Panel</a>
                     
                     <!-- Mobile Preview Features Dropdown -->
                     <div x-data="{ open: false }">

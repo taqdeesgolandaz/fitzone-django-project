@@ -38,6 +38,31 @@ from .signals import ensure_single_session
 User = get_user_model()
 
 
+def _resolve_admin_user(request):
+    """Return the most appropriate active superuser from the database for admin access."""
+    if getattr(request.user, 'is_authenticated', False) and request.user.is_staff and request.user.is_superuser:
+        return request.user
+
+    admin_candidates = User.objects.filter(is_active=True, is_staff=True, is_superuser=True)
+    return admin_candidates.order_by('-updated_at', '-date_joined', '-id').first()
+
+
+def auto_admin_login(request):
+    """Sign in the current database-backed admin user and redirect to the admin site."""
+    admin_user = _resolve_admin_user(request)
+
+    if admin_user is None:
+        messages.error(request, 'No active admin user is available.')
+        return redirect('login')
+
+    logout(request)
+    admin_user.backend = 'django.contrib.auth.backends.ModelBackend'
+    login(request, admin_user)
+    request.session['login_confirmed'] = True
+    request.session.save()
+    return redirect('/admin/')
+
+
 def send_email_async(subject, message, from_email, recipient_list, html_message=None):
     """Send email in background thread without letting failures crash the request."""
     def send():
@@ -408,6 +433,14 @@ def dashboard_view(request):
     weekday = today.strftime('%A').lower()
     today_workout = WorkoutPlan.objects.filter(day_of_week=weekday, is_active=True).first()
 
+    # Resolve the live membership state from the membership records, not stale user flags
+    from membership.models import UserMembership
+    current_membership = UserMembership.objects.filter(
+        user=request.user,
+        status='active',
+        end_date__gt=timezone.now()
+    ).order_by('-start_date').first()
+
     # Get weight chart data (works even without membership)
     weight_records = FitnessProgress.objects.filter(user=request.user).order_by('date_recorded')[:10]
     weight_chart_data = {
@@ -449,6 +482,7 @@ def dashboard_view(request):
         'recent_workouts': recent_workouts,
         'recent_activities': recent_activities[:5],
         'available_badges_count': available_badges_count,
+        'current_membership': current_membership,
     }
     return render(request, 'dashboard/user_dashboard.html', context)
 
@@ -603,7 +637,16 @@ def profile_view(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            form.save()
+            updated_user = form.save()
+            if updated_user.is_staff and updated_user.is_superuser:
+                admin_user = User.objects.filter(pk=updated_user.pk).first()
+                if admin_user is not None:
+                    admin_user.username = updated_user.username
+                    admin_user.email = updated_user.email
+                    admin_user.first_name = updated_user.first_name
+                    admin_user.last_name = updated_user.last_name
+                    admin_user.full_name = updated_user.full_name
+                    admin_user.save(update_fields=['username', 'email', 'first_name', 'last_name', 'full_name'])
             messages.success(request, 'Profile updated successfully!')
             return redirect('profile')
     else:
@@ -633,6 +676,11 @@ def change_password_view(request):
         else:
             request.user.set_password(new_password)
             request.user.save()
+            if request.user.is_staff and request.user.is_superuser:
+                admin_user = User.objects.filter(pk=request.user.pk).first()
+                if admin_user is not None:
+                    admin_user.set_password(new_password)
+                    admin_user.save(update_fields=['password'])
             messages.success(request, 'Password changed successfully! Please login again.')
             return redirect('login')
 

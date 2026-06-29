@@ -516,10 +516,10 @@
             <div class="flex justify-between items-start mb-3">
                 <div>
                     <p class="text-text-gray text-sm stat-label">Membership</p>
-                    {% if user.membership_active %}
+                    {% if current_membership %}
                         <p class="text-[#00D09C] text-lg font-bold mt-1">Active</p>
-                        {% if user.current_membership %}
-                            <p class="text-text-gray text-xs">{{ user.current_membership.name }}</p>
+                        {% if current_membership.plan %}
+                            <p class="text-text-gray text-xs">{{ current_membership.plan.name }}</p>
                         {% endif %}
                     {% else %}
                         <p class="text-yellow-400 text-lg font-bold mt-1">Inactive</p>
@@ -529,13 +529,13 @@
                     <i class="fas fa-crown text-[#E94560] text-xl"></i>
                 </div>
             </div>
-            {% if not user.membership_active %}
+            {% if not current_membership %}
                 <a href="{% url 'membership:plans' %}" class="text-[#E94560] text-sm hover:underline mt-2 inline-block">
                     Upgrade now <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             {% else %}
-                {% if user.membership_expiry %}
-                    <p class="text-text-gray text-xs mt-2">Expires: {{ user.membership_expiry|date:"M d, Y" }}</p>
+                {% if current_membership.end_date %}
+                    <p class="text-text-gray text-xs mt-2">Expires: {{ current_membership.end_date|date:"M d, Y" }}</p>
                 {% endif %}
             {% endif %}
         </div>

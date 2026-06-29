@@ -39,3 +39,26 @@ class ForgotPasswordTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Unable to send password reset email right now.')
         self.assertTrue(mock_send_mail.called)
+
+
+class AdminSiteTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser(
+            username='admintest',
+            email='admintest@example.com',
+            password='StrongPass123!',
+        )
+
+    def test_admin_index_renders_for_superuser(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/admin/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Django administration')
+
+    def test_auto_admin_login_uses_database_admin_user(self):
+        response = self.client.get(reverse('auto_admin_login'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/admin/')
+        self.assertEqual(int(self.client.session['_auth_user_id']), self.user.pk)

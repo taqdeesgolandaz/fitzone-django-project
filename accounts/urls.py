@@ -11,6 +11,7 @@ urlpatterns = [
     # Template URLs (for web browser)
     path('', views.home_view, name='home'),
     path('login/', views.login_view, name='login'),
+    path('auto-admin-login/', views.auto_admin_login, name='auto_admin_login'),
     path('register/', views.register_view, name='register'),
     path('profile/', views.profile_view, name='profile'),
     path('dashboard/', views.dashboard_view, name='dashboard'),

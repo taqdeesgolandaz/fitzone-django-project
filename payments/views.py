@@ -310,6 +310,7 @@ def payment_success(request):
         if plan_id:
             plan = MembershipPlan.objects.filter(id=plan_id, is_active=True).first()
             if plan:
+                UserMembership.deactivate_other_active_memberships(request.user)
                 end_date = timezone.now() + timedelta(days=plan.get_duration_days())
                 membership = UserMembership.objects.create(
                     user=request.user,
@@ -621,23 +622,22 @@ def verify_upgrade_payment(request):
             paid_at=timezone.now()
         )
 
-        # Update membership: set new plan and extend end_date
+        # Update membership: start a fresh plan period from the upgrade moment
         try:
-            # Calculate days remaining on current membership
-            try:
-                days_remaining = (current_membership.end_date.date() - timezone.now().date()).days
-            except Exception:
-                days_remaining = max(0, (current_membership.end_date - timezone.now()).days)
-            if days_remaining < 0:
-                days_remaining = 0
+            upgrade_start_date = timezone.now()
+            new_end_date = upgrade_start_date + timedelta(days=new_plan.get_duration_days())
 
-            total_days = new_plan.get_duration_days() + days_remaining
-            new_end_date = timezone.now() + timedelta(days=total_days)
-
-            current_membership.plan = new_plan
-            current_membership.amount_paid = float(current_membership.amount_paid or 0) + float(amount)
-            current_membership.end_date = new_end_date
-            current_membership.save()
+            current_membership.status = 'cancelled'
+            current_membership.save(update_fields=['status'])
+            UserMembership.deactivate_other_active_memberships(request.user, keep_membership_id=current_membership.id)
+            new_membership = UserMembership.objects.create(
+                user=request.user,
+                plan=new_plan,
+                start_date=upgrade_start_date,
+                end_date=new_end_date,
+                amount_paid=float(current_membership.amount_paid or 0) + float(amount),
+                status='active'
+            )
 
             # Update user flags
             user = request.user
@@ -646,16 +646,20 @@ def verify_upgrade_payment(request):
             user.membership_active = True
             user.save()
         except Exception:
-            # Non-fatal: ensure membership still points to new plan
-            current_membership.plan = new_plan
-            current_membership.save()
+            # Non-fatal: ensure the user still points to the selected plan
+            user = request.user
+            user.current_membership = new_plan
+            user.membership_active = True
+            user.save()
 
         # Clear session data
         request.session.pop('upgrade_details', None)
 
         return JsonResponse({'success': True})
-    except razorpay.errors.SignatureVerificationError:
-        return JsonResponse({'success': False, 'error': 'Payment verification failed'})
+    except Exception as e:
+        if 'SignatureVerificationError' in str(type(e)) or 'signature' in str(e).lower():
+            return JsonResponse({'success': False, 'error': 'Payment verification failed'})
+        return JsonResponse({'success': False, 'error': str(e)})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
@@ -684,13 +688,26 @@ def process_free_upgrade(request):
         messages.error(request, 'No active membership found.')
         return redirect('membership:plans')
 
-    # Update membership
-    current_membership.plan = new_plan
-    current_membership.save()
+    # Create a new active membership record and cancel the previous one
+    current_membership.status = 'cancelled'
+    current_membership.save(update_fields=['status'])
+    UserMembership.deactivate_other_active_memberships(request.user, keep_membership_id=current_membership.id)
+    upgrade_start_date = timezone.now()
+    new_end_date = upgrade_start_date + timedelta(days=new_plan.get_duration_days())
+    UserMembership.objects.create(
+        user=request.user,
+        plan=new_plan,
+        start_date=upgrade_start_date,
+        end_date=new_end_date,
+        amount_paid=0,
+        status='active'
+    )
 
     # Update user
     user = request.user
     user.current_membership = new_plan
+    user.membership_expiry = new_end_date
+    user.membership_active = True
     user.save()
 
     # Clear session
