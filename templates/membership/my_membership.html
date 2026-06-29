@@ -33,11 +33,20 @@
         transform: translateY(-5px);
         box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
     }
+
+    .membership-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        box-sizing: border-box;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
     
     /* Very Large Desktops (1400px and above) */
     @media (min-width: 1400px) {
         .membership-container {
-            max-width: 100%;
+            max-width: 1200px;
             padding-left: 2rem;
             padding-right: 2rem;
         }
@@ -67,7 +76,7 @@
     /* Tablets Landscape (768px to 991px) */
     @media (min-width: 768px) and (max-width: 991px) {
         .membership-container {
-            max-width: 720px;
+            max-width: 100%;
             padding-left: 1rem;
             padding-right: 1rem;
         }
@@ -115,7 +124,7 @@
     /* Tablets Portrait (576px to 767px) */
     @media (min-width: 576px) and (max-width: 767px) {
         .membership-container {
-            max-width: 540px;
+            max-width: 100%;
             padding-left: 1rem;
             padding-right: 1rem;
         }
@@ -240,9 +249,9 @@
     /* Mobile Landscape (375px to 575px) */
     @media (min-width: 375px) and (max-width: 575px) {
         .membership-container {
-            max-width: 95%;
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
+            max-width: 100%;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
         }
         
         .page-title {
@@ -253,6 +262,14 @@
             font-size: 0.8rem;
         }
         
+        .active-membership-card,
+        .features-access-card,
+        .quick-action-card,
+        .no-membership-card,
+        .table-container {
+            width: 100%;
+        }
+
         .active-membership-card {
             padding: 0.875rem;
             margin-bottom: 1rem;
@@ -358,9 +375,9 @@
     /* Small Mobile Devices (320px to 374px) */
     @media (min-width: 320px) and (max-width: 374px) {
         .membership-container {
-            max-width: 98%;
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
+            max-width: 100%;
+            padding-left: 0.35rem;
+            padding-right: 0.35rem;
         }
         
         .page-title {
@@ -485,7 +502,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="py-12 membership-container fade-in">
+<div class="py-12 membership-container fade-in w-full">
     <div class="text-center mb-8">
         <h1 class="text-3xl font-bold text-white mb-2 page-title">My Membership</h1>
         <p class="text-text-gray page-subtitle">View and manage your membership details</p>
