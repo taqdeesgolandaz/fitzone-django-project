@@ -379,12 +379,14 @@ def upgrade_membership(request):
     """Display upgrade page and handle upgrade logic (membership -> payments bridge)
     This view calculates prorated upgrade cost and renders a payments/upgrade.html template.
     """
-    # Get current membership
-    active_membership = UserMembership.objects.filter(
-        user=request.user,
-        status='active',
-        end_date__gt=timezone.now()
-    ).first()
+    import traceback
+    try:
+        # Get current membership
+        active_membership = UserMembership.objects.filter(
+            user=request.user,
+            status='active',
+            end_date__gt=timezone.now()
+        ).first()
 
     if not active_membership:
         messages.error(request, "You don't have an active membership to upgrade.")
@@ -502,8 +504,14 @@ def upgrade_membership(request):
         'days_remaining_percent': int((days_remaining / max(1, current_plan.get_duration_days())) * 100) if current_plan.get_duration_days() else 0,
     }
 
-    # Render the membership upgrade template directly to avoid duplicate base layout
-    return render(request, 'membership/upgrade.html', context)
+        # Render the membership upgrade template directly to avoid duplicate base layout
+        return render(request, 'membership/upgrade.html', context)
+    except Exception as exc:
+        # Log full traceback to stderr so it appears in Render logs
+        traceback.print_exc()
+        print(f"upgrade_membership error: {exc}", file=sys.stderr)
+        messages.error(request, 'An internal error occurred while preparing the upgrade. Please try again later.')
+        return redirect('membership:plans')
 
 
 @login_required
