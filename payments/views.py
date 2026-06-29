@@ -388,121 +388,121 @@ def upgrade_membership(request):
             end_date__gt=timezone.now()
         ).first()
 
-    if not active_membership:
-        messages.error(request, "You don't have an active membership to upgrade.")
-        return redirect('membership:plans')
+        if not active_membership:
+            messages.error(request, "You don't have an active membership to upgrade.")
+            return redirect('membership:plans')
 
-    current_plan = active_membership.plan
+        current_plan = active_membership.plan
 
-    # Get the plan to upgrade to (pass from URL query or session)
-    new_plan_id = request.GET.get('plan_id') or request.session.get('upgrade_plan_id')
-    if not new_plan_id:
-        messages.error(request, 'Please select a plan to upgrade to.')
-        return redirect('membership:plans')
+        # Get the plan to upgrade to (pass from URL query or session)
+        new_plan_id = request.GET.get('plan_id') or request.session.get('upgrade_plan_id')
+        if not new_plan_id:
+            messages.error(request, 'Please select a plan to upgrade to.')
+            return redirect('membership:plans')
 
-    new_plan = get_object_or_404(MembershipPlan, id=new_plan_id, is_active=True)
+        new_plan = get_object_or_404(MembershipPlan, id=new_plan_id, is_active=True)
 
-    # Don't allow upgrade to same plan
-    if current_plan.id == new_plan.id:
-        messages.warning(request, 'You are already on this plan.')
-        return redirect('membership:my_membership')
+        # Don't allow upgrade to same plan
+        if current_plan.id == new_plan.id:
+            messages.warning(request, 'You are already on this plan.')
+            return redirect('membership:my_membership')
 
-    # Calculate days remaining (safely handle missing/invalid end_date)
-    days_remaining = 0
-    try:
-        if active_membership.end_date:
-            # Prefer date arithmetic to avoid timezone surprises
-            try:
-                days_remaining = (active_membership.end_date.date() - timezone.now().date()).days
-            except Exception:
-                # Fallback to datetime subtraction
-                days_remaining = max(0, (active_membership.end_date - timezone.now()).days)
-    except Exception:
+        # Calculate days remaining (safely handle missing/invalid end_date)
         days_remaining = 0
-    if days_remaining < 0:
-        days_remaining = 0
-
-    total_days = new_plan.get_duration_days() + days_remaining
-
-    # Daily rate of current plan (approx)
-    current_daily_rate = float(current_plan.price) / max(1, current_plan.get_duration_days())
-
-    # Pro-rated value of remaining days
-    current_pro_rate = current_daily_rate * days_remaining
-
-    # Full price of new plan
-    new_plan_price = float(new_plan.price)
-
-    # Calculate adjustment (cap by new plan price)
-    adjustment = min(current_pro_rate, new_plan_price)
-    upgrade_amount = new_plan_price - adjustment
-    upgrade_amount = max(0.0, round(upgrade_amount, 2))
-
-    # Store upgrade details in session for subsequent calls
-    request.session['upgrade_details'] = {
-        'new_plan_id': int(new_plan.id),
-        'upgrade_amount': float(upgrade_amount),
-        'current_plan_id': int(current_plan.id),
-    }
-
-    # Features
-    current_features = current_plan.features if hasattr(current_plan, 'features') else []
-    new_features = new_plan.features if hasattr(new_plan, 'features') else []
-    additional_features = [f for f in new_features if f not in current_features]
-
-    # Savings percentage
-    savings_percent = 0
-    if new_plan_price > 0:
-        savings_percent = round(((new_plan_price - upgrade_amount) / new_plan_price) * 100)
-
-    razorpay_order = None
-    razorpay_key = settings.RAZORPAY_KEY_ID
-    if upgrade_amount > 0:
-        client = get_razorpay_client()
-        if client is not None:
-            # Avoid Razorpay minimum amount error: do not create orders below 100 paise
-            if upgrade_amount < 1:  # 100 paise = 1 INR
-                # Treat as free upgrade (no Razorpay order)
-                razorpay_order = None
-            else:
+        try:
+            if active_membership.end_date:
+                # Prefer date arithmetic to avoid timezone surprises
                 try:
-                    order_amount = int(upgrade_amount * 100)
-                    order_data = {
-                        'amount': order_amount,
-                        'currency': 'INR',
-                        'receipt': f'upgrade_{request.user.id}_{timezone.now().timestamp()}',
-                        'payment_capture': 1,
-                        'notes': {
-                            'user_id': request.user.id,
-                            'current_plan': current_plan.id,
-                            'new_plan': new_plan.id,
-                            'type': 'upgrade'
-                        }
-                    }
-                    razorpay_order = safe_create_order(client, order_data, context='upgrade_membership')
-                except Exception as e:
-                    # Log but allow page to render
-                    print(f"Razorpay order creation failed: {e}")
-        else:
-            print('Razorpay client unavailable in upgrade_membership. Skipping order creation.', file=sys.stderr)
+                    days_remaining = (active_membership.end_date.date() - timezone.now().date()).days
+                except Exception:
+                    # Fallback to datetime subtraction
+                    days_remaining = max(0, (active_membership.end_date - timezone.now()).days)
+        except Exception:
+            days_remaining = 0
+        if days_remaining < 0:
+            days_remaining = 0
 
-    context = {
-        'active_membership': active_membership,
-        'current_plan': current_plan,
-        'new_plan': new_plan,
-        'days_remaining': days_remaining,
-        'total_days': total_days,
-        'current_pro_rate': current_pro_rate,
-        'adjustment': adjustment,
-        'upgrade_amount': upgrade_amount,
-        'additional_features': additional_features,
-        'savings_percent': savings_percent,
-        'new_end_date': timezone.now().date() + timedelta(days=total_days),
-        'razorpay_order': razorpay_order,
-        'razorpay_key': razorpay_key,
-        # For progress bar in template
-        'days_remaining_percent': int((days_remaining / max(1, current_plan.get_duration_days())) * 100) if current_plan.get_duration_days() else 0,
-    }
+        total_days = new_plan.get_duration_days() + days_remaining
+
+        # Daily rate of current plan (approx)
+        current_daily_rate = float(current_plan.price) / max(1, current_plan.get_duration_days())
+
+        # Pro-rated value of remaining days
+        current_pro_rate = current_daily_rate * days_remaining
+
+        # Full price of new plan
+        new_plan_price = float(new_plan.price)
+
+        # Calculate adjustment (cap by new plan price)
+        adjustment = min(current_pro_rate, new_plan_price)
+        upgrade_amount = new_plan_price - adjustment
+        upgrade_amount = max(0.0, round(upgrade_amount, 2))
+
+        # Store upgrade details in session for subsequent calls
+        request.session['upgrade_details'] = {
+            'new_plan_id': int(new_plan.id),
+            'upgrade_amount': float(upgrade_amount),
+            'current_plan_id': int(current_plan.id),
+        }
+
+        # Features
+        current_features = current_plan.features if hasattr(current_plan, 'features') else []
+        new_features = new_plan.features if hasattr(new_plan, 'features') else []
+        additional_features = [f for f in new_features if f not in current_features]
+
+        # Savings percentage
+        savings_percent = 0
+        if new_plan_price > 0:
+            savings_percent = round(((new_plan_price - upgrade_amount) / new_plan_price) * 100)
+
+        razorpay_order = None
+        razorpay_key = settings.RAZORPAY_KEY_ID
+        if upgrade_amount > 0:
+            client = get_razorpay_client()
+            if client is not None:
+                # Avoid Razorpay minimum amount error: do not create orders below 100 paise
+                if upgrade_amount < 1:  # 100 paise = 1 INR
+                    # Treat as free upgrade (no Razorpay order)
+                    razorpay_order = None
+                else:
+                    try:
+                        order_amount = int(upgrade_amount * 100)
+                        order_data = {
+                            'amount': order_amount,
+                            'currency': 'INR',
+                            'receipt': f'upgrade_{request.user.id}_{timezone.now().timestamp()}',
+                            'payment_capture': 1,
+                            'notes': {
+                                'user_id': request.user.id,
+                                'current_plan': current_plan.id,
+                                'new_plan': new_plan.id,
+                                'type': 'upgrade'
+                            }
+                        }
+                        razorpay_order = safe_create_order(client, order_data, context='upgrade_membership')
+                    except Exception as e:
+                        # Log but allow page to render
+                        print(f"Razorpay order creation failed: {e}")
+            else:
+                print('Razorpay client unavailable in upgrade_membership. Skipping order creation.', file=sys.stderr)
+
+        context = {
+            'active_membership': active_membership,
+            'current_plan': current_plan,
+            'new_plan': new_plan,
+            'days_remaining': days_remaining,
+            'total_days': total_days,
+            'current_pro_rate': current_pro_rate,
+            'adjustment': adjustment,
+            'upgrade_amount': upgrade_amount,
+            'additional_features': additional_features,
+            'savings_percent': savings_percent,
+            'new_end_date': timezone.now().date() + timedelta(days=total_days),
+            'razorpay_order': razorpay_order,
+            'razorpay_key': razorpay_key,
+            # For progress bar in template
+            'days_remaining_percent': int((days_remaining / max(1, current_plan.get_duration_days())) * 100) if current_plan.get_duration_days() else 0,
+        }
 
         # Render the membership upgrade template directly to avoid duplicate base layout
         return render(request, 'membership/upgrade.html', context)
