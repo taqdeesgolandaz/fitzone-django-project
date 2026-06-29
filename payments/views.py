@@ -457,6 +457,16 @@ def upgrade_membership(request):
 
         razorpay_order = None
         razorpay_key = settings.RAZORPAY_KEY_ID
+
+        # Resolve logo URL from staticfiles manifest safely (avoid raising MissingManifestEntry)
+        try:
+            from django.contrib.staticfiles.storage import staticfiles_storage
+            try:
+                logo_url = staticfiles_storage.url('images/logo.png')
+            except Exception:
+                logo_url = ''
+        except Exception:
+            logo_url = ''
         if upgrade_amount > 0:
             client = get_razorpay_client()
             if client is not None:
@@ -500,6 +510,7 @@ def upgrade_membership(request):
             'new_end_date': timezone.now().date() + timedelta(days=total_days),
             'razorpay_order': razorpay_order,
             'razorpay_key': razorpay_key,
+            'logo_url': logo_url,
             # For progress bar in template
             'days_remaining_percent': int((days_remaining / max(1, current_plan.get_duration_days())) * 100) if current_plan.get_duration_days() else 0,
         }

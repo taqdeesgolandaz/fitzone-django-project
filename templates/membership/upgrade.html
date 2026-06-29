@@ -907,7 +907,7 @@
                     "currency": "INR",
                     "name": "FitZone",
                     "description": "Membership Upgrade: {{ current_plan.name }} → {{ new_plan.name }}",
-                    "image": "{% static 'images/logo.png' %}",
+                    "image": "{{ logo_url }}",
                     "handler": function (response) {
                         verifyPayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
                     },
