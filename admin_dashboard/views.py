@@ -100,7 +100,7 @@ def admin_dashboard(request):
     
     # Membership distribution with single query
     membership_distribution = list(MembershipPlan.objects.filter(is_active=True).annotate(
-        count=Count('memberships', filter=Q(memberships__status='active'))
+        count=Count('usermembership', filter=Q(usermembership__status='active'))
     ).values('name', 'count').order_by('-count'))
     
     for item in membership_distribution:
@@ -164,7 +164,7 @@ def admin_dashboard(request):
     
     # Most popular workout plans with single query
     popular_workouts = list(WorkoutPlan.objects.annotate(
-        count=Count('progress')
+        count=Count('userworkoutprogress')
     ).filter(count__gt=0).values('name', 'count').order_by('-count')[:5])
     
     # ==================== TRAINER STATISTICS ====================
