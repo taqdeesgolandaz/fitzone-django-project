@@ -5,7 +5,7 @@ from .models import CustomUser
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'user_full_name', 'email', 'user_mobile', 'is_staff', 'membership_active')
     list_filter = ('is_staff', 'is_active', 'membership_active', 'fitness_goal')
-    search_fields = ('username', 'full_name', 'email', 'mobile_number')
+    search_fields = ('username', 'email')
     
     def user_full_name(self, obj):
         """Safe full name display"""
