@@ -101,10 +101,8 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'fitzone.middleware.LocalDevCSRFExemptMiddleware',
-    # 'fitzone.middleware.LocalCSRFCookieMiddleware',  # disabled for standard Django CSRF handling
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'fitzone.middleware.SessionDebugMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -377,7 +375,7 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_PATH = '/'
 SESSION_COOKIE_AGE = 1209600
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_SAVE_EVERY_REQUEST = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 CSRF_COOKIE_DOMAIN = None
 SESSION_COOKIE_DOMAIN = None
