@@ -34,7 +34,10 @@ class WorkoutPlanAdmin(admin.ModelAdmin):
     inlines = [WorkoutPlanExerciseInline]  # Use inline instead of filter_horizontal
     
     def exercise_count(self, obj):
-        return obj.exercises.count()
+        try:
+            return getattr(obj.exercises, 'count', lambda: 0)()
+        except Exception:
+            return 0
     exercise_count.short_description = 'Exercises'
 
 

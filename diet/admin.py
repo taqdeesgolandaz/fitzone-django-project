@@ -52,5 +52,9 @@ class UserDietProgressAdmin(admin.ModelAdmin):
     search_fields = ['user__username']
     
     def get_meal_name(self, obj):
-        return obj.meal.name if obj.meal else obj.meal_type
+        try:
+            meal = getattr(obj, 'meal', None)
+            return meal.name if meal else getattr(obj, 'meal_type', 'N/A')
+        except Exception:
+            return 'N/A'
     get_meal_name.short_description = 'Meal'

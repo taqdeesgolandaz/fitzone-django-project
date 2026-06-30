@@ -62,3 +62,9 @@ class AdminSiteTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/admin/')
         self.assertEqual(int(self.client.session['_auth_user_id']), self.user.pk)
+
+    def test_admin_user_changelist_renders_without_broken_display_fields(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/admin/accounts/customuser/')
+
+        self.assertEqual(response.status_code, 200)
