@@ -115,6 +115,23 @@ class MembershipLogicTests(TestCase):
 
         self.assertTrue(user.has_active_membership())
 
+    def test_has_active_membership_sets_current_membership_plan(self):
+        user = get_user_model().objects.create_user(
+            username='membershipplanuser',
+            email='membershipplan@example.com',
+            password='strongpass123'
+        )
+        UserMembership.objects.create(
+            user=user,
+            plan=self.pro_plan,
+            end_date=timezone.now() + timedelta(days=30),
+            amount_paid=399,
+            status='active'
+        )
+
+        self.assertTrue(user.has_active_membership())
+        self.assertEqual(user.current_membership, self.pro_plan)
+
     def test_plans_page_shows_only_three_canonical_tiers(self):
         MembershipPlan.objects.create(
             name='Basic Plan Duplicate',

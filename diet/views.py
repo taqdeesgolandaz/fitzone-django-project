@@ -7,7 +7,10 @@ from .models import DietPlan, DietCategory, Meal, UserDietProgress
 
 
 def _get_user_plan_type(user):
-    if user.is_authenticated and getattr(user, 'has_active_membership', lambda: False)():
+    if not user.is_authenticated:
+        return None
+
+    if getattr(user, 'has_active_membership', lambda: False)():
         current = getattr(user, 'current_membership', None)
         if not current:
             try:
@@ -25,7 +28,9 @@ def _get_user_plan_type(user):
 def diet_list(request):
     """Display diet plans based on membership level"""
 
-    has_membership = request.user.is_authenticated and (request.user.is_staff or getattr(request.user, 'has_active_membership', lambda: False)())
+    has_membership = request.user.is_authenticated and (
+        request.user.is_staff or getattr(request.user, 'has_active_membership', lambda: False)()
+    )
     if not has_membership:
         return render(request, 'diet/list.html', {
             'membership_required': True,
@@ -45,7 +50,10 @@ def diet_list(request):
             except Exception:
                 current = None
         if current:
-            user_plan = getattr(current, 'plan_type', None) or getattr(current.plan, 'plan_type', None) if hasattr(current, 'plan') else None
+            plan_type = getattr(current, 'plan_type', None)
+            if not plan_type and hasattr(current, 'plan'):
+                plan_type = getattr(current.plan, 'plan_type', None)
+            user_plan = plan_type
 
     # Restrictions per plan type
     # Basic: Basic Diet Plans (limit 5)
