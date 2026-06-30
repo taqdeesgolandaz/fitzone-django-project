@@ -79,36 +79,47 @@ def admin_dashboard(request):
     total_subscribers = NewsletterSubscriber.objects.count()
 
     # ==================== USER STATISTICS ====================
-    total_users = CustomUser.objects.filter(is_staff=False).count()
-    active_users = CustomUser.objects.filter(is_active=True, is_staff=False).count()
-    new_users_today = CustomUser.objects.filter(date_joined__date=today, is_staff=False).count()
-    new_users_this_month = CustomUser.objects.filter(date_joined__date__gte=start_of_month, is_staff=False).count()
+    user_stats = CustomUser.objects.filter(is_staff=False).aggregate(
+        total=Count('id'),
+        active=Count('id', filter=Q(is_active=True)),
+        new_today=Count('id', filter=Q(date_joined__date=today)),
+        new_this_month=Count('id', filter=Q(date_joined__date__gte=start_of_month))
+    )
+    total_users = user_stats['total']
+    active_users = user_stats['active']
+    new_users_today = user_stats['new_today']
+    new_users_this_month = user_stats['new_this_month']
     
     # ==================== MEMBERSHIP STATISTICS ====================
-    active_memberships = UserMembership.objects.filter(
-        status='active', 
-        end_date__gte=timezone.now()
-    ).count()
+    membership_stats = UserMembership.objects.aggregate(
+        active=Count('id', filter=Q(status='active', end_date__gte=timezone.now())),
+        total=Count('id')
+    )
+    active_memberships = membership_stats['active']
+    total_memberships_sold = membership_stats['total']
     
-    total_memberships_sold = UserMembership.objects.count()
+    # Membership distribution with single query
+    membership_distribution = list(MembershipPlan.objects.filter(is_active=True).annotate(
+        count=Count('memberships', filter=Q(memberships__status='active'))
+    ).values('name', 'count').order_by('-count'))
     
-    # Membership distribution
-    membership_distribution = []
-    for plan in MembershipPlan.objects.all():
-        count = UserMembership.objects.filter(plan=plan, status='active').count()
-        membership_distribution.append({
-            'name': plan.name,
-            'count': count,
-            'color': '#E94560' if plan.name == 'Pro Plan' else '#00D09C' if plan.name == 'Premium Plan' else '#F5A623'
-        })
+    for item in membership_distribution:
+        name = item['name']
+        item['color'] = '#E94560' if 'Pro' in name else '#00D09C' if 'Premium' in name else '#F5A623'
     
     # ==================== REVENUE STATISTICS ====================
-    total_revenue = Payment.objects.filter(status='success').aggregate(Sum('amount'))['amount__sum'] or 0
-    revenue_today = Payment.objects.filter(status='success', paid_at__date=today).aggregate(Sum('amount'))['amount__sum'] or 0
-    revenue_this_month = Payment.objects.filter(status='success', paid_at__date__gte=start_of_month).aggregate(Sum('amount'))['amount__sum'] or 0
-    revenue_this_year = Payment.objects.filter(status='success', paid_at__date__gte=start_of_year).aggregate(Sum('amount'))['amount__sum'] or 0
+    revenue_stats = Payment.objects.filter(status='success').aggregate(
+        total=Sum('amount'),
+        today=Sum('amount', filter=Q(paid_at__date=today)),
+        month=Sum('amount', filter=Q(paid_at__date__gte=start_of_month)),
+        year=Sum('amount', filter=Q(paid_at__date__gte=start_of_year))
+    )
+    total_revenue = revenue_stats['total'] or 0
+    revenue_today = revenue_stats['today'] or 0
+    revenue_this_month = revenue_stats['month'] or 0
+    revenue_this_year = revenue_stats['year'] or 0
     
-    # Calculate growth percentage (compare with previous month)
+    # Calculate growth percentage
     last_month_start = (start_of_month - timedelta(days=1)).replace(day=1)
     revenue_last_month = Payment.objects.filter(
         status='success', 
@@ -142,33 +153,36 @@ def admin_dashboard(request):
         })
     
     # ==================== WORKOUT STATISTICS ====================
-    total_workouts_completed = UserWorkoutProgress.objects.filter(status='completed').count()
-    total_calories_burned = UserWorkoutProgress.objects.filter(status='completed').aggregate(Sum('calories_burned'))['calories_burned__sum'] or 0
-    total_workout_minutes = UserWorkoutProgress.objects.filter(status='completed').aggregate(Sum('duration_minutes'))['duration_minutes__sum'] or 0
+    workout_stats = UserWorkoutProgress.objects.filter(status='completed').aggregate(
+        total=Count('id'),
+        calories=Sum('calories_burned'),
+        minutes=Sum('duration_minutes')
+    )
+    total_workouts_completed = workout_stats['total']
+    total_calories_burned = workout_stats['calories'] or 0
+    total_workout_minutes = workout_stats['minutes'] or 0
     
-    # Most popular workout plans
-    popular_workouts = []
-    for plan in WorkoutPlan.objects.all():
-        count = UserWorkoutProgress.objects.filter(workout_plan=plan).count()
-        if count > 0:
-            popular_workouts.append({
-                'name': plan.name,
-                'count': count
-            })
-    popular_workouts = sorted(popular_workouts, key=lambda x: x['count'], reverse=True)[:5]
+    # Most popular workout plans with single query
+    popular_workouts = list(WorkoutPlan.objects.annotate(
+        count=Count('progress')
+    ).filter(count__gt=0).values('name', 'count').order_by('-count')[:5])
     
     # ==================== TRAINER STATISTICS ====================
-    total_sessions = TrainerSession.objects.count()
-    completed_sessions = TrainerSession.objects.filter(status='completed').count()
-    pending_sessions = TrainerSession.objects.filter(status='pending').count()
+    trainer_stats = TrainerSession.objects.aggregate(
+        total=Count('id'),
+        completed=Count('id', filter=Q(status='completed')),
+        pending=Count('id', filter=Q(status='pending'))
+    )
+    total_sessions = trainer_stats['total']
+    completed_sessions = trainer_stats['completed']
+    pending_sessions = trainer_stats['pending']
     
     # ==================== RECENT ACTIVITIES ====================
-    recent_payments = Payment.objects.filter(status='success').order_by('-created_at')[:10]
+    recent_payments = Payment.objects.filter(status='success').select_related('user').order_by('-created_at')[:10]
     recent_users = CustomUser.objects.filter(is_staff=False).order_by('-date_joined')[:10]
-    recent_memberships = UserMembership.objects.filter(status='active').order_by('-start_date')[:10]
+    recent_memberships = UserMembership.objects.filter(status='active').select_related('plan', 'user').order_by('-start_date')[:10]
     
     # ==================== TODAY'S ACTIVITIES ====================
-    today_new_users = CustomUser.objects.filter(date_joined__date=today, is_staff=False).count()
     today_payments = Payment.objects.filter(status='success', paid_at__date=today).count()
     today_workouts = UserWorkoutProgress.objects.filter(completed_date__date=today, status='completed').count()
     
@@ -217,7 +231,7 @@ def admin_dashboard(request):
         'recent_deletions': recent_deletions,
         
         # Today's activities
-        'today_new_users': today_new_users,
+        'today_new_users': new_users_today,
         'today_payments': today_payments,
         'today_workouts': today_workouts,
         'total_subscribers': total_subscribers,
