@@ -29,24 +29,40 @@ class TrainerAdmin(admin.ModelAdmin):
 
     def move_up(self, request, queryset):
         """Move selected trainers up in ordering (swap with previous)."""
-        for obj in queryset.order_by('position'):
-            neighbor = Trainer.objects.filter(position__lt=obj.position).order_by('-position').first()
-            if neighbor:
-                obj.position, neighbor.position = neighbor.position, obj.position
-                obj.save()
-                neighbor.save()
-        self.message_user(request, "Selected trainers moved up")
+        try:
+            count = 0
+            for obj in queryset.order_by('position'):
+                neighbor = Trainer.objects.filter(position__lt=obj.position).order_by('-position').first()
+                if neighbor:
+                    obj.position, neighbor.position = neighbor.position, obj.position
+                    obj.save(update_fields=['position'])
+                    neighbor.save(update_fields=['position'])
+                    count += 1
+            if count > 0:
+                self.message_user(request, f"{count} trainer(s) moved up successfully")
+            else:
+                self.message_user(request, "No trainers could be moved up (already at top)")
+        except Exception as e:
+            self.message_user(request, f"Error moving trainers up: {str(e)}", level='error')
     move_up.short_description = 'Move selected trainers up'
 
     def move_down(self, request, queryset):
         """Move selected trainers down in ordering (swap with next)."""
-        for obj in queryset.order_by('-position'):
-            neighbor = Trainer.objects.filter(position__gt=obj.position).order_by('position').first()
-            if neighbor:
-                obj.position, neighbor.position = neighbor.position, obj.position
-                obj.save()
-                neighbor.save()
-        self.message_user(request, "Selected trainers moved down")
+        try:
+            count = 0
+            for obj in queryset.order_by('-position'):
+                neighbor = Trainer.objects.filter(position__gt=obj.position).order_by('position').first()
+                if neighbor:
+                    obj.position, neighbor.position = neighbor.position, obj.position
+                    obj.save(update_fields=['position'])
+                    neighbor.save(update_fields=['position'])
+                    count += 1
+            if count > 0:
+                self.message_user(request, f"{count} trainer(s) moved down successfully")
+            else:
+                self.message_user(request, "No trainers could be moved down (already at bottom)")
+        except Exception as e:
+            self.message_user(request, f"Error moving trainers down: {str(e)}", level='error')
     move_down.short_description = 'Move selected trainers down'
 
 @admin.register(TrainerSession)
