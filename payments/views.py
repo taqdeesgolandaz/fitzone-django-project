@@ -446,6 +446,10 @@ def upgrade_membership(request):
             'current_plan_id': int(current_plan.id),
         }
 
+        upgrade_start_date = timezone.now()
+        new_plan_remaining_days = new_plan.get_duration_days()
+        current_remaining_cost = current_pro_rate
+
         # Features
         current_features = current_plan.features if hasattr(current_plan, 'features') else []
         new_features = new_plan.features if hasattr(new_plan, 'features') else []
@@ -508,7 +512,10 @@ def upgrade_membership(request):
             'upgrade_amount': upgrade_amount,
             'additional_features': additional_features,
             'savings_percent': savings_percent,
-            'new_end_date': timezone.now().date() + timedelta(days=total_days),
+            'upgrade_start_date': upgrade_start_date,
+            'current_remaining_cost': current_remaining_cost,
+            'new_plan_remaining_days': new_plan_remaining_days,
+            'new_end_date': upgrade_start_date + timedelta(days=new_plan_remaining_days),
             'razorpay_order': razorpay_order,
             'razorpay_key': razorpay_key,
             'logo_url': logo_url,

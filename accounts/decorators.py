@@ -13,7 +13,7 @@ def membership_required(view_func):
         if request.user.is_staff:
             return view_func(request, *args, **kwargs)
         
-        if not request.user.membership_active:
+        if not getattr(request.user, 'has_active_membership', lambda: False)():
             messages.warning(request, '⚠️ You need an active membership to access this feature. Please purchase a membership plan first.')
             return redirect('membership:plans')
         

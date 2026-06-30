@@ -393,7 +393,7 @@
 {% endblock %}
 
 {% block content %}
-{% if not user.membership_active and not user.is_staff %}
+{% if not user.has_active_membership and not user.is_staff %}
 <div class="py-0 workouts-container">
     <div class="bg-[#1A1A2E] rounded-2xl border border-[#E94560]/20 p-12 text-center max-w-2xl mx-auto restricted-card fade-in">
         <div class="w-20 h-20 bg-[#E94560]/20 rounded-full flex items-center justify-center mx-auto mb-6 restricted-icon">

@@ -112,9 +112,32 @@ class CustomUser(AbstractUser):
         return "Not available"
     
     def has_active_membership(self):
-        """Check if membership is active"""
+        """Check if membership is active based on the real membership record or cached user flag."""
+        from membership.models import UserMembership
+
         if self.membership_active and self.membership_expiry:
-            return timezone.now() <= self.membership_expiry
+            if timezone.now() <= self.membership_expiry:
+                return True
+
+        active_membership = UserMembership.objects.filter(
+            user=self,
+            status='active',
+            end_date__gt=timezone.now()
+        ).first()
+
+        if active_membership:
+            self.membership_active = True
+            self.membership_expiry = active_membership.end_date
+            self.current_membership = active_membership.plan
+            self.save(update_fields=['membership_active', 'membership_expiry', 'current_membership'])
+            return True
+
+        if self.membership_active and self.membership_expiry and timezone.now() > self.membership_expiry:
+            self.membership_active = False
+            self.membership_expiry = None
+            self.current_membership = None
+            self.save(update_fields=['membership_active', 'membership_expiry', 'current_membership'])
+
         return False
     
     def save(self, *args, **kwargs):

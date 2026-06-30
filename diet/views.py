@@ -7,7 +7,7 @@ from .models import DietPlan, DietCategory, Meal, UserDietProgress
 
 
 def _get_user_plan_type(user):
-    if user.is_authenticated and getattr(user, 'membership_active', False):
+    if user.is_authenticated and getattr(user, 'has_active_membership', lambda: False)():
         current = getattr(user, 'current_membership', None)
         if not current:
             try:
@@ -25,7 +25,7 @@ def _get_user_plan_type(user):
 def diet_list(request):
     """Display diet plans based on membership level"""
 
-    has_membership = request.user.is_authenticated and (request.user.is_staff or getattr(request.user, 'membership_active', False))
+    has_membership = request.user.is_authenticated and (request.user.is_staff or getattr(request.user, 'has_active_membership', lambda: False)())
     if not has_membership:
         return render(request, 'diet/list.html', {
             'membership_required': True,
@@ -37,7 +37,7 @@ def diet_list(request):
 
     # Get user's membership level
     user_plan = None
-    if getattr(request.user, 'membership_active', False):
+    if getattr(request.user, 'has_active_membership', lambda: False)():
         current = getattr(request.user, 'current_membership', None)
         if not current:
             try:
@@ -147,7 +147,7 @@ def diet_detail(request, plan_id):
     """Display diet plan details - Membership required"""
     diet_plan = get_object_or_404(DietPlan, id=plan_id, is_active=True)
 
-    if not request.user.is_authenticated or (not request.user.is_staff and not getattr(request.user, 'membership_active', False)):
+    if not request.user.is_authenticated or (not request.user.is_staff and not getattr(request.user, 'has_active_membership', lambda: False)()):
         return render(request, 'diet/detail.html', {
             'membership_required': True,
             'diet_plan': diet_plan,
@@ -187,7 +187,7 @@ def diet_detail(request, plan_id):
         return set(ids)
 
     allowed_ids = set()
-    if request.user.is_authenticated and getattr(request.user, 'membership_active', False):
+    if request.user.is_authenticated and getattr(request.user, 'has_active_membership', lambda: False)():
         # determine plan type similar to list
         current = getattr(request.user, 'current_membership', None)
         if not current:

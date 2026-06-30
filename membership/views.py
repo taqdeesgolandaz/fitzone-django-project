@@ -43,7 +43,18 @@ def get_razorpay_client():
 
 def plans_view(request):
     """View all membership plans"""
-    plans = MembershipPlan.objects.filter(is_active=True)
+    plans = MembershipPlan.objects.filter(is_active=True).order_by('price')
+    seen_plan_types = set()
+    filtered_plans = []
+    for plan in plans:
+        if plan.plan_type in seen_plan_types:
+            continue
+        filtered_plans.append(plan)
+        seen_plan_types.add(plan.plan_type)
+        if len(filtered_plans) >= 3:
+            break
+
+    plans = filtered_plans
     
     # Get user's current membership if logged in
     current_membership = None
@@ -252,10 +263,12 @@ def upgrade_membership(request, plan_id):
     current_daily_rate = float(current_plan.price) / current_plan_days
     new_daily_rate = float(new_plan.price) / new_plan_days
     
+    upgrade_start_date = timezone.now()
     current_remaining_cost = current_daily_rate * days_remaining
     new_remaining_cost = new_daily_rate * days_remaining
     
     upgrade_amount = max(0, round(new_remaining_cost - current_remaining_cost, 2))
+    new_plan_remaining_days = new_plan_days
     
     bank_account = BankAccount.objects.filter(is_active=True, is_verified=True).first()
     payee_name = bank_account.account_holder_name.strip() if bank_account and bank_account.account_holder_name else 'FitZone'
@@ -266,7 +279,11 @@ def upgrade_membership(request, plan_id):
         'active_membership': active_membership,
         'days_remaining': days_remaining,
         'upgrade_amount': upgrade_amount,
-        'new_end_date': timezone.now() + timezone.timedelta(days=new_plan_days),
+        'upgrade_start_date': upgrade_start_date,
+        'current_remaining_cost': current_remaining_cost,
+        'new_remaining_cost': new_remaining_cost,
+        'new_plan_remaining_days': new_plan_remaining_days,
+        'new_end_date': upgrade_start_date + timezone.timedelta(days=new_plan_days),
     }
 
     # Create a Razorpay order if upgrade cost > 0

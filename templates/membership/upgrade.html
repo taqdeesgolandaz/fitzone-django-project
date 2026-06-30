@@ -744,12 +744,12 @@
             
             <div class="bg-[#0F0F1A] rounded-lg p-3 mt-3">
                 <div class="flex justify-between text-sm">
-                    <span class="text-text-gray">New Expiry</span>
-                    <span class="text-[#00D09C] font-semibold">{{ new_end_date|date:"M d, Y" }}</span>
+                    <span class="text-text-gray">Starts</span>
+                    <span class="text-[#00D09C] font-semibold">{{ upgrade_start_date|default:active_membership.start_date|date:"M d, Y" }}</span>
                 </div>
                 <div class="flex justify-between text-sm mt-1">
-                    <span class="text-text-gray">Extended By</span>
-                    <span class="text-white font-semibold">{{ new_plan.get_duration_days }} days</span>
+                    <span class="text-text-gray">Expires</span>
+                    <span class="text-white font-semibold">{{ new_end_date|date:"M d, Y" }}</span>
                 </div>
             </div>
             <div class="progress-bar-wrapper">
@@ -767,16 +767,12 @@
         </div>
         
         <div class="breakdown-row">
-            <span>{{ current_plan.name }} Pro-rated ({{ days_remaining }} days)</span>
-            <span>₹{{ current_pro_rate|floatformat:2 }}</span>
+            <span>Current Plan Credit</span>
+            <span>- ₹{{ current_remaining_cost|default:current_pro_rate|floatformat:2 }}</span>
         </div>
         <div class="breakdown-row">
-            <span>{{ new_plan.name }} (Full month)</span>
-            <span>₹{{ new_plan.price }}</span>
-        </div>
-        <div class="breakdown-row text-text-gray text-sm">
-            <span>Adjustment</span>
-            <span>- ₹{{ adjustment|floatformat:2 }}</span>
+            <span>{{ new_plan.name }}</span>
+            <span>₹{{ new_plan.price|floatformat:2 }}</span>
         </div>
         <div class="breakdown-row breakdown-total">
             <span>Total Amount Due</span>
@@ -785,7 +781,7 @@
         
         <p class="text-text-gray text-xs mt-3 mb-0 flex items-center gap-1">
             <i class="fas fa-info-circle"></i>
-            Your remaining days will be converted at pro-rated cost.
+            Your current plan credit is applied toward the selected plan price.
         </p>
     </div>
     {% else %}

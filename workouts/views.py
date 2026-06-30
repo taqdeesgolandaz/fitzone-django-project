@@ -17,7 +17,7 @@ DAY_ORDER = {
 }
 
 def _get_user_plan_type(user):
-    if user.is_authenticated and getattr(user, 'membership_active', False):
+    if user.is_authenticated and getattr(user, 'has_active_membership', lambda: False)():
         current = getattr(user, 'current_membership', None)
         if not current:
             try:
@@ -118,7 +118,7 @@ def workout_detail(request, plan_id):
         return redirect('login')
     
     # Check if user has active membership (admin/staff users are exempt)
-    if not request.user.is_staff and not request.user.membership_active:
+    if not request.user.is_staff and not getattr(request.user, 'has_active_membership', lambda: False)():
         return render(request, 'workouts/detail.html', {
             'membership_required': True,
             'message': 'You need an active membership to view workout details. Choose a plan that best suits your fitness goals!',
@@ -165,7 +165,7 @@ def workout_detail(request, plan_id):
 def start_workout(request, plan_id):
     """Start tracking a workout"""
     # Check if user has active membership (admin/staff users are exempt)
-    if not request.user.is_staff and not request.user.membership_active:
+    if not request.user.is_staff and not getattr(request.user, 'has_active_membership', lambda: False)():
         messages.warning(request, 'You need an active membership to start a workout.')
         return redirect('membership:plans')
     
@@ -232,7 +232,7 @@ def my_progress(request):
         return redirect('login')
     
     # Check if user has active membership (admin/staff users are exempt)
-    if not request.user.is_staff and not request.user.membership_active:
+    if not request.user.is_staff and not getattr(request.user, 'has_active_membership', lambda: False)():
         return render(request, 'workouts/progress.html', {
             'membership_required': True,
             'message': 'You need an active membership to view your workout progress. Choose a plan that best suits your fitness goals!',

@@ -36,6 +36,23 @@ def get_client_ip(request):
     return ip
 
 
+def _is_test_or_debug_account(user):
+    """Return True for obvious test/debug accounts that should not appear in admin reports."""
+    if not user:
+        return True
+
+    username = (user.username or '').lower()
+    email = (user.email or '').lower()
+
+    if username.startswith(('debuguser', 'verifyuser', 'testuser', 'demo', 'sample')):
+        return True
+    if username.startswith('test') and username != 'test':
+        return True
+    if email.endswith('@example.com') or email.endswith('@example.org') or '@example.' in email:
+        return True
+    return False
+
+
 def log_audit_action(admin_user, target_user, action, description='', request=None):
     """Log administrative action."""
     audit = AuditLog(
@@ -382,12 +399,24 @@ def cancel_membership(request, membership_id):
 def membership_report(request):
     """Detailed membership report"""
     memberships = UserMembership.objects.select_related('user', 'plan').order_by('-start_date')
+    latest_memberships = []
+    seen_users = set()
+    for membership in memberships:
+        if membership.user_id in seen_users:
+            continue
+        if _is_test_or_debug_account(membership.user):
+            continue
+        seen_users.add(membership.user_id)
+        latest_memberships.append(membership)
+
+    active_memberships_count = sum(1 for membership in latest_memberships if membership.status == 'active')
+    expired_memberships_count = sum(1 for membership in latest_memberships if membership.status == 'expired')
     
     context = {
-        'memberships': memberships,
-        'total_memberships': memberships.count(),
-        'active_memberships': memberships.filter(status='active').count(),
-        'expired_memberships': memberships.filter(status='expired').count(),
+        'memberships': latest_memberships,
+        'total_memberships': len(latest_memberships),
+        'active_memberships': active_memberships_count,
+        'expired_memberships': expired_memberships_count,
     }
     return render(request, 'admin_dashboard/membership_report.html', context)
 

@@ -539,7 +539,7 @@ html {
 </nav>
 
 <!-- Membership Warning Banner -->
-{% if user.is_authenticated and not user.membership_active and not user.is_staff %}
+{% if user.is_authenticated and not user.has_active_membership and not user.is_staff %}
 <div class="bg-gradient-to-r from-[#E94560]/20 to-[#16213E] border-b border-[#E94560]/20">
     <div class="w-full px-3 sm:px-4 lg:px-6 py-2 text-center">
         <p class="text-text-gray text-sm">
