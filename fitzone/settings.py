@@ -387,9 +387,9 @@ if DEBUG and LOCAL_DEV_HOST:
     CSRF_COOKIE_DOMAIN = LOCAL_DEV_HOST
     SESSION_COOKIE_DOMAIN = LOCAL_DEV_HOST
 
-# Trusted origins for local network/mobile access
+# Trusted origins for local network/mobile access and production
 CSRF_TRUSTED_ORIGINS = [
-    # include both scheme+host and host:port variants used in local testing
+    # Local development (HTTP)
     'http://localhost',
     'http://127.0.0.1',
     'http://0.0.0.0',
@@ -400,6 +400,9 @@ CSRF_TRUSTED_ORIGINS = [
     'http://[::1]:8000',
     'http://10.138.47.210',
     'http://10.138.47.210:8000',
+    # Production (HTTPS)
+    'https://fitzone-application.onrender.com',
+    'https://*.onrender.com',
 ]
 
 # Detailed CSRF diagnostics for local development
@@ -419,9 +422,10 @@ if not DEBUG:
     }
     
     # HSTS (HTTP Strict Transport Security)
-    SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000'))
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'true').lower() in ['true', '1', 'yes']
-    SECURE_HSTS_PRELOAD = os.getenv('SECURE_HSTS_PRELOAD', 'true').lower() in ['true', '1', 'yes']
+    # On Render, SSL/TLS is terminated by Render's reverse proxy, so we can use a reasonable value
+    SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '0'))  # Disabled by default for compatibility
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'false').lower() in ['true', '1', 'yes']
+    SECURE_HSTS_PRELOAD = os.getenv('SECURE_HSTS_PRELOAD', 'false').lower() in ['true', '1', 'yes']
     
     # Content Security
     X_FRAME_OPTIONS = 'DENY'
