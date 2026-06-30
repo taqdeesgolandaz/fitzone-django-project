@@ -55,6 +55,13 @@ class CustomUser(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
     
     # Membership tracking
+    current_membership = models.ForeignKey(
+        'membership.MembershipPlan',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='current_users',
+    )
     membership_expiry = models.DateTimeField(null=True, blank=True)
     membership_active = models.BooleanField(default=False)
     
