@@ -343,9 +343,13 @@ def my_membership_view(request):
     else:
         active_membership = None
 
-    expired_memberships = UserMembership.objects.filter(
-        user=request.user
-    ).exclude(id=active_membership.id if active_membership else None).order_by('-start_date')[:5]
+    expired_memberships = UserMembership.objects.filter(user=request.user)
+    if active_membership is not None:
+        expired_memberships = expired_memberships.exclude(
+            status='active',
+            end_date__gt=timezone.now()
+        )
+    expired_memberships = expired_memberships.order_by('-start_date')[:5]
     
     context = {
         'active_membership': active_membership,

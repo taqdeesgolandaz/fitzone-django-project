@@ -59,6 +59,32 @@ class MembershipLogicTests(TestCase):
         self.assertIsNone(response.context['active_membership'])
         self.assertContains(response, 'No Active Membership')
 
+    def test_my_membership_view_filters_duplicate_active_memberships_from_history(self):
+        active_membership_1 = UserMembership.objects.create(
+            user=self.user,
+            plan=self.basic_plan,
+            start_date=timezone.now() - timedelta(days=10),
+            end_date=timezone.now() + timedelta(days=20),
+            amount_paid=199,
+            status='active'
+        )
+        active_membership_2 = UserMembership.objects.create(
+            user=self.user,
+            plan=self.pro_plan,
+            start_date=timezone.now() - timedelta(days=5),
+            end_date=timezone.now() + timedelta(days=25),
+            amount_paid=399,
+            status='active'
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.get(reverse('membership:my_membership'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['active_membership'], active_membership_2)
+        self.assertNotIn(active_membership_1, response.context['expired_memberships'])
+        self.assertNotIn(active_membership_2, response.context['expired_memberships'])
+
     def test_upgrade_starts_new_membership_from_upgrade_date(self):
         UserMembership.objects.create(
             user=self.user,
