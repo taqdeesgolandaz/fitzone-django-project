@@ -68,3 +68,5 @@ class AdminSiteTests(TestCase):
         response = self.client.get('/admin/accounts/customuser/')
 
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Membership')
+        self.assertNotContains(response, 'Membership active')
