@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils import timezone
 from .models import MembershipPlan, UserMembership
 
 def cancel_membership(modeladmin, request, queryset):
@@ -8,12 +9,22 @@ def cancel_membership(modeladmin, request, queryset):
         membership.status = 'cancelled'
         membership.save()
         
-        # Reset user's membership flags
+        # Reset user's membership flags only if no other active memberships exist
         user = membership.user
-        user.membership_active = False
-        user.current_membership = None
-        user.membership_expiry = None
-        user.save()
+        
+        # Check if user has any other active memberships
+        other_active = UserMembership.objects.filter(
+            user=user,
+            status='active',
+            end_date__gt=timezone.now()
+        ).exclude(id=membership.id).exists()
+        
+        if not other_active:
+            # No other active memberships, reset user state
+            user.membership_active = False
+            user.current_membership = None
+            user.membership_expiry = None
+            user.save()
     
     modeladmin.message_user(request, f'{queryset.count()} membership(s) cancelled successfully. Users can now purchase a new plan.')
 
