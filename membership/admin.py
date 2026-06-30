@@ -60,15 +60,19 @@ class UserMembershipAdmin(admin.ModelAdmin):
     
     def status_badge(self, obj):
         """Display status with color-coded badge"""
-        colors = {
-            'active': '#00D09C',
-            'expired': '#F5A623',
-            'cancelled': '#f87171',
-        }
-        color = colors.get(obj.status, '#A0A0A0')
-        return format_html(
-            '<span style="color: {}; font-weight: bold;">✓ {}</span>',
-            color,
-            obj.get_status_display()
-        )
+        try:
+            colors = {
+                'active': '#00D09C',
+                'expired': '#F5A623',
+                'cancelled': '#f87171',
+            }
+            color = colors.get(getattr(obj, 'status', None), '#A0A0A0')
+            status_text = obj.get_status_display() if hasattr(obj, 'get_status_display') else str(getattr(obj, 'status', 'Unknown'))
+            return format_html(
+                '<span style="color: {}; font-weight: bold;">✓ {}</span>',
+                color,
+                status_text
+            )
+        except Exception:
+            return 'N/A'
     status_badge.short_description = 'Status'

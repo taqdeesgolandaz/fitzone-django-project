@@ -88,5 +88,12 @@ class TrainerReviewAdmin(admin.ModelAdmin):
     search_fields = ['trainer__full_name', 'user__username']
     
     def review_preview(self, obj):
-        return obj.review[:50] + '...' if len(obj.review) > 50 else obj.review
+        """Safe preview of review text with null check"""
+        try:
+            review_text = getattr(obj, 'review', None)
+            if not review_text:
+                return 'N/A'
+            return review_text[:50] + '...' if len(review_text) > 50 else review_text
+        except Exception:
+            return 'N/A'
     review_preview.short_description = 'Review'

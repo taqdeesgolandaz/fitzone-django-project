@@ -9,12 +9,18 @@ class CustomUserAdmin(UserAdmin):
     
     def user_full_name(self, obj):
         """Safe full name display"""
-        return obj.full_name or obj.first_name or obj.username or 'N/A'
+        try:
+            return obj.full_name or obj.first_name or obj.username or 'N/A'
+        except Exception:
+            return 'N/A'
     user_full_name.short_description = 'Full Name'
     
     def user_mobile(self, obj):
         """Safe mobile number display"""
-        return obj.mobile_number or 'N/A'
+        try:
+            return obj.mobile_number or 'N/A'
+        except Exception:
+            return 'N/A'
     user_mobile.short_description = 'Mobile Number'
     
     fieldsets = UserAdmin.fieldsets + (
