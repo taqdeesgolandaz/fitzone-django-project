@@ -8,8 +8,9 @@ from datetime import timedelta
 import json
 from django.utils import timezone as dj_timezone
 from membership.models import UserMembership
+from accounts.decorators import membership_required
 
-@login_required
+@membership_required
 def tracking_dashboard(request):
     """Main tracking dashboard with charts"""
     # Get user's progress records (last 30 days)
@@ -52,7 +53,7 @@ def tracking_dashboard(request):
     return render(request, 'tracking/dashboard.html', context)
 
 
-@login_required
+@membership_required
 def add_progress(request):
     """Add new fitness progress entry"""
     if request.method == 'POST':
@@ -97,7 +98,7 @@ def add_progress(request):
     return render(request, 'tracking/add_progress.html')
 
 
-@login_required
+@membership_required
 def edit_progress(request, progress_id):
     """Edit existing progress entry"""
     progress = get_object_or_404(FitnessProgress, id=progress_id, user=request.user)
@@ -117,7 +118,7 @@ def edit_progress(request, progress_id):
     return render(request, 'tracking/edit_progress.html', {'progress': progress})
 
 
-@login_required
+@membership_required
 def delete_progress(request, progress_id):
     """Delete progress entry"""
     progress = get_object_or_404(FitnessProgress, id=progress_id, user=request.user)
@@ -126,7 +127,7 @@ def delete_progress(request, progress_id):
     return redirect('tracking:dashboard')
 
 
-@login_required
+@membership_required
 def set_goal(request):
     """Set or update fitness goal"""
     goal, created = UserFitnessGoal.objects.get_or_create(user=request.user)
@@ -147,7 +148,7 @@ def set_goal(request):
     return render(request, 'tracking/set_goal.html', {'goal': goal})
 
 
-@login_required
+@membership_required
 def bmi_calculator(request):
     """BMI Calculator tool"""
     # Require active membership to access BMI calculator
@@ -197,7 +198,7 @@ def bmi_calculator(request):
     return render(request, 'tracking/bmi_calculator.html', context)
 
 
-@login_required
+@membership_required
 def workout_log(request):
     """Log workout activity"""
     if request.method == 'POST':

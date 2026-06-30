@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
 from .models import DietPlan, DietCategory, Meal, UserDietProgress
+from accounts.decorators import membership_required
 
 
 def _get_user_plan_type(user):
@@ -25,18 +26,9 @@ def _get_user_plan_type(user):
     return None
 
 
+@membership_required
 def diet_list(request):
     """Display diet plans based on membership level"""
-
-    has_membership = request.user.is_authenticated and (
-        request.user.is_staff or getattr(request.user, 'has_active_membership', lambda: False)()
-    )
-    if not has_membership:
-        return render(request, 'diet/list.html', {
-            'membership_required': True,
-            'membership_alert_title': 'Membership Required',
-            'membership_alert_message': 'You need an active membership to access diet plans. Choose a plan that best suits your fitness goals!',
-        })
 
     categories = DietCategory.objects.filter(is_active=True)
 
@@ -151,15 +143,10 @@ def diet_list(request):
     return render(request, 'diet/list.html', context)
 
 
+@membership_required
 def diet_detail(request, plan_id):
-    """Display diet plan details - Membership required"""
+    """Display diet plan details"""
     diet_plan = get_object_or_404(DietPlan, id=plan_id, is_active=True)
-
-    if not request.user.is_authenticated or (not request.user.is_staff and not getattr(request.user, 'has_active_membership', lambda: False)()):
-        return render(request, 'diet/detail.html', {
-            'membership_required': True,
-            'diet_plan': diet_plan,
-        })
 
     # Get today's progress for this user
     today_progress = None
@@ -211,8 +198,8 @@ def diet_detail(request, plan_id):
 
     # If the diet_plan is not in allowed set, block and suggest upgrade
     if allowed_ids and diet_plan.id not in allowed_ids:
-        messages.info(request, 'This diet plan is available on higher membership tiers. Please upgrade to access it.')
-        return redirect('membership:plans')
+        # Suggest upgrade by rendering the membership required template
+        return render(request, 'tracking/membership_required.html')
 
     context = {
         'diet_plan': diet_plan,
@@ -222,7 +209,7 @@ def diet_detail(request, plan_id):
     return render(request, 'diet/detail.html', context)
 
 
-@login_required
+@membership_required
 def track_meal(request, progress_id):
     """Mark meal as completed"""
     progress = get_object_or_404(UserDietProgress, id=progress_id, user=request.user)
@@ -239,7 +226,7 @@ def track_meal(request, progress_id):
     return render(request, 'diet/track.html', {'progress': progress})
 
 
-@login_required
+@membership_required
 def my_diet_progress(request):
     """Show user's diet progress"""
     progress_records = UserDietProgress.objects.filter(
@@ -264,7 +251,7 @@ def my_diet_progress(request):
     return render(request, 'diet/progress.html', context)
 
 
-@login_required
+@membership_required
 def shopping_list(request):
     """Generate shopping list based on user's diet plan"""
     today = timezone.now().date()

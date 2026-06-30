@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib import messages
 from functools import wraps
 
@@ -14,8 +14,8 @@ def membership_required(view_func):
             return view_func(request, *args, **kwargs)
         
         if not getattr(request.user, 'has_active_membership', lambda: False)():
-            messages.warning(request, '⚠️ You need an active membership to access this feature. Please purchase a membership plan first.')
-            return redirect('membership:plans')
+            # Render a dedicated membership required template instead of flashing a message
+            return render(request, 'tracking/membership_required.html')
         
         return view_func(request, *args, **kwargs)
     return wrapper

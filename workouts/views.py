@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.utils import timezone
 from .models import WorkoutPlan, WorkoutCategory, UserWorkoutProgress, Exercise
+from accounts.decorators import membership_required
 
 # Day order for sorting
 DAY_ORDER = {
@@ -35,9 +36,9 @@ def _get_user_plan_type(user):
     return None
 
 
+@membership_required
 def workout_list(request):
     """Display workout plans based on membership level"""
-    from accounts.decorators import membership_required as _membership_required  # ensure decorator available
 
     user_plan = _get_user_plan_type(request.user)
     categories = WorkoutCategory.objects.filter(is_active=True)
@@ -113,30 +114,9 @@ def workout_list(request):
     return render(request, 'workouts/list.html', context)
 
 
+@membership_required
 def workout_detail(request, plan_id):
-    """Display workout plan details - Shows message if no membership"""
-    
-    # Check if user is not logged in
-    if not request.user.is_authenticated:
-        return redirect('login')
-
-    has_active_membership = False
-    try:
-        has_active_membership = request.user.is_staff or getattr(request.user, 'has_active_membership', lambda: False)()
-    except Exception:
-        has_active_membership = False
-
-    # Check if user has active membership (admin/staff users are exempt)
-    if not has_active_membership:
-        return render(request, 'workouts/detail.html', {
-            'membership_required': True,
-            'message': 'You need an active membership to view workout details. Choose a plan that best suits your fitness goals!',
-            'workout_plan': None,  # Add this
-            'exercises': [],  # Add this - empty list to avoid template error
-            'today_workout': None,  # Add this
-        })
-    
-    # If has membership, show normal content
+    """Display workout plan details"""
     workout_plan = get_object_or_404(WorkoutPlan, id=plan_id, is_active=True)
     
     # Get exercises for this plan
@@ -170,19 +150,17 @@ def workout_detail(request, plan_id):
     return render(request, 'workouts/detail.html', context)
 
 
-@login_required
+@membership_required
 def start_workout(request, plan_id):
     """Start tracking a workout"""
-    has_active_membership = False
+    # Membership decorator already enforces access; keep a fallback that shows the membership template
     try:
         has_active_membership = request.user.is_staff or getattr(request.user, 'has_active_membership', lambda: False)()
     except Exception:
         has_active_membership = False
 
-    # Check if user has active membership (admin/staff users are exempt)
     if not has_active_membership:
-        messages.warning(request, 'You need an active membership to start a workout.')
-        return redirect('membership:plans')
+        return render(request, 'tracking/membership_required.html')
     
     workout_plan = get_object_or_404(WorkoutPlan, id=plan_id, is_active=True)
     
@@ -207,7 +185,7 @@ def start_workout(request, plan_id):
     return redirect('workouts:track_workout', progress_id=progress.id)
 
 
-@login_required
+@membership_required
 def track_workout(request, progress_id):
     """Track and complete a workout"""
     progress = get_object_or_404(UserWorkoutProgress, id=progress_id, user=request.user)
@@ -239,35 +217,9 @@ def track_workout(request, progress_id):
     }
     return render(request, 'workouts/track.html', context)
 
+@membership_required
 def my_progress(request):
-    """Show user's workout progress - Shows message if no membership"""
-    
-    # Check if user is not logged in
-    if not request.user.is_authenticated:
-        return redirect('login')
-
-    has_active_membership = False
-    try:
-        has_active_membership = request.user.is_staff or getattr(request.user, 'has_active_membership', lambda: False)()
-    except Exception:
-        has_active_membership = False
-
-    # Check if user has active membership (admin/staff users are exempt)
-    if not has_active_membership:
-        return render(request, 'workouts/progress.html', {
-            'membership_required': True,
-            'message': 'You need an active membership to view your workout progress. Choose a plan that best suits your fitness goals!',
-            'progress_records': [],
-            'stats': {
-                'total_workouts': 0,
-                'completed_workouts': 0,
-                'completion_rate': 0,
-                'total_calories': 0,
-                'streak': 0,
-            },
-        })
-    
-    # If has membership, show normal progress
+    """Show user's workout progress"""
     from django.utils import timezone
     from .models import UserWorkoutProgress
     

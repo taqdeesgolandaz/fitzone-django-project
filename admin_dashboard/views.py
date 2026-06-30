@@ -365,22 +365,32 @@ def user_details_view(request, user_id):
 
 
 @staff_member_required
+@require_http_methods(["POST"])
 def cancel_membership(request, membership_id):
     """Cancel a specific membership and reset user subscription"""
     membership = get_object_or_404(UserMembership, id=membership_id)
-    membership.status = 'cancelled'
-    membership.save()
-    
-    # Reset user's membership flags
     user = membership.user
-    user.membership_active = False
-    user.current_membership = None
-    user.membership_expiry = None
-    user.save()
-    
-    # Send notification to user
+
+    if membership.status == 'cancelled':
+        messages.info(request, f'Membership for {user.username} is already cancelled.')
+        return redirect('admin_dashboard:membership_report')
+
+    with transaction.atomic():
+        membership.status = 'cancelled'
+        membership.save(update_fields=['status'])
+
+        # Recompute the user's active membership state after cancellation.
+        if user.has_active_membership():
+            messages.success(request, f'Membership for {user.username} cancelled. Their current active membership remains intact.')
+        else:
+            user.membership_active = False
+            user.current_membership = None
+            user.membership_expiry = None
+            user.save(update_fields=['membership_active', 'current_membership', 'membership_expiry'])
+            messages.success(request, f'Membership for {user.username} cancelled. Notification sent to user.')
+
+    # Send notification to user if the cancellation was effective
     try:
-        from notifications.services import NotificationService
         NotificationService.create_notification(
             user=user,
             title='❌ Membership Cancelled',
@@ -390,8 +400,7 @@ def cancel_membership(request, membership_id):
         )
     except Exception as e:
         print(f"Error sending notification: {str(e)}")
-    
-    messages.success(request, f'Membership for {user.username} cancelled. Notification sent to user.')
+
     return redirect('admin_dashboard:membership_report')
 
 
