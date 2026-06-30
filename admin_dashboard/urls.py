@@ -13,6 +13,7 @@ urlpatterns = [
     path('user-delete/<int:user_id>/', views.delete_user_view, name='delete_user'),
     path('user-confirm-delete/<int:user_id>/', views.confirm_delete_user_view, name='confirm_delete_user'),
     path('recreate-user/<int:audit_id>/', views.recreate_user_view, name='recreate_user'),
+    path('user-edit-email/<int:user_id>/', views.edit_user_email, name='edit_user_email'),
     path('membership-report/', views.membership_report, name='membership_report'),
     path('membership-report/cancel/<int:membership_id>/', views.cancel_membership, name='cancel_membership'),
     path('member-details/<int:user_id>/', views.member_details, name='member_details'),

@@ -735,3 +735,39 @@ def recreate_user_view(request, audit_id):
         'audit': audit,
         'payload': payload or {},
     })
+
+
+@staff_member_required
+@require_http_methods(["POST"])
+def edit_user_email(request, user_id):
+    """Update user email address from admin panel"""
+    user = get_object_or_404(CustomUser, id=user_id)
+    new_email = request.POST.get('email', '').strip()
+    
+    # Validate email
+    if not new_email:
+        return JsonResponse({'success': False, 'error': 'Email cannot be empty'}, status=400)
+    
+    # Check if email already exists
+    if CustomUser.objects.filter(email=new_email).exclude(id=user_id).exists():
+        return JsonResponse({'success': False, 'error': 'Email already in use by another user'}, status=400)
+    
+    # Update email
+    old_email = user.email
+    user.email = new_email
+    user.save(update_fields=['email'])
+    
+    # Log audit action
+    log_audit_action(
+        admin_user=request.user,
+        target_user=user,
+        action='update_email',
+        description=f'Email changed from {old_email} to {new_email}',
+        request=request
+    )
+    
+    return JsonResponse({
+        'success': True, 
+        'message': f'Email updated from {old_email} to {new_email}',
+        'new_email': new_email
+    })

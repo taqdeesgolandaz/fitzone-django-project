@@ -447,10 +447,10 @@
                 <i class="fas fa-phone text-xs"></i>
                 <span>Call</span>
             </a>
-            <a href="mailto:{{ profile_user.email }}" class="contact-btn btn-email text-xs px-2 py-1">
+            <button onclick="openEmailModal()" class="contact-btn btn-email text-xs px-2 py-1">
                 <i class="fas fa-envelope text-xs"></i>
                 <span>Email</span>
-            </a>
+            </button>
             <a href="{% url 'admin_dashboard:membership_report' %}" class="contact-btn btn-report text-xs px-2 py-1">
                 <i class="fas fa-id-card-alt text-xs"></i>
                 <span>Membership</span>
@@ -480,8 +480,11 @@
                 </div>
 
                 <div class="w-full grid gap-3">
-                    <div class="info-card">
-                        <p class="info-label">Email</p>
+                    <div class="info-card cursor-pointer group relative" onclick="openEmailModal()">
+                        <p class="info-label flex justify-between items-center">
+                            Email
+                            <i class="fas fa-edit text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                        </p>
                         <p class="info-value">{{ profile_user.email }}</p>
                     </div>
                     <div class="info-card">
@@ -717,6 +720,68 @@
         // Confirm before deactivating a user
         function confirmDeactivate(username) {
             return confirm(`Deactivate user ${username}?\n\nThey can reactivate their account later.`);
+        }
+
+        function openEmailModal() {
+            const currentEmail = '{{ profile_user.email }}';
+            const newEmail = prompt('Enter new email address:', currentEmail);
+            
+            if (newEmail === null) return;
+            
+            if (!newEmail.trim()) {
+                alert('Email cannot be empty');
+                return;
+            }
+            
+            if (newEmail === currentEmail) {
+                alert('Email is the same as current');
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(newEmail)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            // Send update request
+            fetch('{% url "admin_dashboard:edit_user_email" profile_user.id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: 'email=' + encodeURIComponent(newEmail)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Email updated successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update email');
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 {% endblock %}
