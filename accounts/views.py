@@ -115,12 +115,21 @@ from achievements.models import UserAchievement, Badge
 def home_view(request):
     """Landing page view"""
     from membership.models import MembershipPlan
-    
-    # Get active membership plans for home page
+
+    # Show only the first three unique plan tiers on the homepage.
     plans = MembershipPlan.objects.filter(is_active=True).order_by('price')
-    
+    seen_plan_types = set()
+    filtered_plans = []
+    for plan in plans:
+        if plan.plan_type in seen_plan_types:
+            continue
+        filtered_plans.append(plan)
+        seen_plan_types.add(plan.plan_type)
+        if len(filtered_plans) >= 3:
+            break
+
     context = {
-        'plans': plans,
+        'plans': filtered_plans,
     }
     return render(request, 'base/home.html', context)
 

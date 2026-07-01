@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
 
+from membership.models import MembershipPlan
+
 User = get_user_model()
 
 
@@ -39,6 +41,21 @@ class ForgotPasswordTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Unable to send password reset email right now.')
         self.assertTrue(mock_send_mail.called)
+
+
+class HomePageTests(TestCase):
+    def test_home_page_shows_only_three_unique_plan_tiers(self):
+        MembershipPlan.objects.create(name='Basic Plan', plan_type='basic', price=1, features=['x'])
+        MembershipPlan.objects.create(name='Pro Plan', plan_type='pro', price=2, features=['x'])
+        MembershipPlan.objects.create(name='Premium Plan', plan_type='premium', price=3, features=['x'])
+        MembershipPlan.objects.create(name='Extra Basic Plan', plan_type='basic', price=199, features=['x'])
+
+        response = self.client.get(reverse('home'))
+
+        self.assertEqual(response.status_code, 200)
+        plans = response.context['plans']
+        self.assertEqual(len(plans), 3)
+        self.assertEqual([plan.plan_type for plan in plans], ['basic', 'pro', 'premium'])
 
 
 class AdminSiteTests(TestCase):
